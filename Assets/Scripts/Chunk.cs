@@ -1014,10 +1014,8 @@ namespace Voxels {
 			}
 			//Backwards
 			if ( z > 0 ) {
-				if ( !HasFullBlockAt(x, y, z - 1) ) {
-					res.SunBackward = _blocks[x, y, z - 1].SunLevel;
-					res.OBackward   = _blocks[x, y, z - 1].LightLevel;
-				}
+				res.SunBackward = _blocks[x, y, z - 1].SunLevel;
+				res.OBackward = _blocks[x, y, z - 1].LightLevel;
 			} else {
 				var chunk = neighborChunks[5];
 				if ( chunk != null ) {

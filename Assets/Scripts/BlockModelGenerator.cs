@@ -112,7 +112,6 @@ namespace Voxels {
 				return;
 			}
 			var pointer = meshInfo.Vertices.Count;
-			var oldPointer = pointer;
 			var sub = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)];
 
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Backward) ) {
