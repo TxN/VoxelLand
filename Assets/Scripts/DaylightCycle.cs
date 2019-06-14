@@ -8,6 +8,7 @@ namespace Voxels {
 		public Gradient SunColor     = null;
 		public Material SkyboxMaterial = null;
 		public Material TilesetOpaqueMaterial = null;
+		public Material TilesetTranslucentMaterial = null;
 
 		public float TimeScale = 1f;
 
@@ -34,6 +35,7 @@ namespace Voxels {
 			SkyboxMaterial.SetVector("_SunVector", sunVec);
 
 			TilesetOpaqueMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));
+			TilesetTranslucentMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));
 			
 		}
 

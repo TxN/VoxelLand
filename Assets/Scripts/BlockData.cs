@@ -20,7 +20,7 @@ namespace Voxels {
 			AddColor   = 0;
 		}
 
-		public BlockData(BlockType type, byte subtype, byte rotation) {
+		public BlockData(BlockType type, byte subtype) {
 			Type       = type;
 			Subtype    = subtype;
 			Metadata   = 0;

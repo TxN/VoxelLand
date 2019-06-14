@@ -57,14 +57,14 @@ namespace Voxels {
 				for ( int lz = 0; lz < Chunk.CHUNK_SIZE_Z; lz++ ) {
 					var height = _heightmap[(x + lx) * 256 + z + lz];
 					var stoneHeight = Mathf.RoundToInt( height * 0.8f);
-					chunk.PutBlock(lx, 0, lz, new BlockData(BlockType.Bedrock, 0, 0));
+					chunk.PutBlock(lx, 0, lz, new BlockData(BlockType.Bedrock, 0));
 					for ( int y = 1; y < height; y++ ) {
 						if ( y < stoneHeight ) {
-							chunk.PutBlock(lx, y, lz, new BlockData(BlockType.Stone, 0, 0));
+							chunk.PutBlock(lx, y, lz, new BlockData(BlockType.Stone, 0));
 						} else {
-							chunk.PutBlock(lx, y, lz, new BlockData(BlockType.Dirt, 0, 0));
+							chunk.PutBlock(lx, y, lz, new BlockData(BlockType.Dirt, 0));
 						}
-						chunk.PutBlock(lx, height, lz, new BlockData(BlockType.Grass, 0, 0));
+						chunk.PutBlock(lx, height, lz, new BlockData(BlockType.Grass, 0));
 					}
 				}
 			}
@@ -102,17 +102,17 @@ namespace Voxels {
 			for ( int x = 0; x < sizeX; x++ ) {
 				for ( int z = 0; z < sizeZ; z++ ) {
 					
-					cm.PutBlock(x, 0, z, new BlockData(BlockType.Bedrock, 0, 0));
+					cm.PutBlock(x, 0, z, new BlockData(BlockType.Bedrock, 0));
 
 					var height =  Mathf.RoundToInt(GetHeight(x,z));
 					var stoneHeight = Mathf.RoundToInt( height * 0.8f);
 					for ( int y = 1; y < height; y++ ) {
 						if ( y < stoneHeight ) {
-							cm.PutBlock(x, y, z, new BlockData(BlockType.Stone, 0, 0));
+							cm.PutBlock(x, y, z, new BlockData(BlockType.Stone, 0));
 						} else {
-							cm.PutBlock(x, y, z, new BlockData(BlockType.Dirt, 0, 0));
+							cm.PutBlock(x, y, z, new BlockData(BlockType.Dirt, 0));
 						}
-						cm.PutBlock(x, height, z, new BlockData(BlockType.Grass, 0, 0));
+						cm.PutBlock(x, height, z, new BlockData(BlockType.Grass, 0));
 					}
 				}
 				if ( counter % 1 == 0 ) {
@@ -123,9 +123,9 @@ namespace Voxels {
 			}
 			yield return new WaitForEndOfFrame();
 
-			var weed     = new BlockData(BlockType.Weed,0,0);
-			var shrooms1 = new BlockData(BlockType.Mushroom,0,0);
-			var shrooms2 = new BlockData(BlockType.Mushroom,1,0);
+			var weed     = new BlockData(BlockType.Weed,0);
+			var shrooms1 = new BlockData(BlockType.Mushroom,0);
+			var shrooms2 = new BlockData(BlockType.Mushroom,1);
 			for ( int i = 0; i < 50; i++ ) {
 				PlaceBlockFromTop(weed, Random.Range(0, sizeX), Random.Range(0, sizeZ), BlockType.Grass, BlockType.Dirt);
 				PlaceBlockFromTop(shrooms1, Random.Range(0, sizeX), Random.Range(0, sizeZ), BlockType.Grass, BlockType.Dirt);

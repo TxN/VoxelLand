@@ -28,7 +28,7 @@ Material:
     - Vector1_114497C3: 0
     - Vector1_9ED5AA56: 0.3
     - _AlphaCutoff: 0.05
-    - _Daylight: 0.0084273815
+    - _Daylight: 0.9992592
     m_Colors:
     - Color_13C8A320: {r: 1, g: 0.8988529, b: 0.759434, a: 0}
     - Color_B3BEC4F6: {r: 1, g: 0.96672755, b: 0.8066038, a: 0}

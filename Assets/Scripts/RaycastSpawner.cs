@@ -29,13 +29,16 @@ namespace Voxels {
 						}
 
 						if ( Input.GetKeyUp(KeyCode.G) ) {
-							cm.PutBlock(_pointOut, new BlockData(BlockType.RedstoneLamp, 1, 0));
+							cm.PutBlock(_pointOut, new BlockData(BlockType.RedstoneLamp, 1));
 						}
                         if ( Input.GetKeyUp(KeyCode.H) ) {
-                            cm.PutBlock(_pointOut, new BlockData(BlockType.Bricks, 0, 0));
+                            cm.PutBlock(_pointOut, new BlockData(BlockType.Bricks, 0));
                         }
 						if ( Input.GetKeyUp(KeyCode.B) ) {
-							cm.PutBlock(_pointOut, new BlockData(BlockType.Weed, 0, 0));
+							cm.PutBlock(_pointOut, new BlockData(BlockType.Weed, 0));
+						}
+						if ( Input.GetKeyUp(KeyCode.V) ) {
+							cm.PutBlock(_pointOut, new BlockData(BlockType.WaterStill, 0));
 						}
 					}
 				}
