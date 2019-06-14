@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BlockMat
+  m_Shader: {fileID: -6465566751694194690, guid: 79549f9141c6b444e822b847bb809644,
+    type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_2048BBDB:
+        m_Texture: {fileID: 2800000, guid: e3f9040ebe2c2284b9117f62154a63ce, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_114497C3: 0
+    - Vector1_9ED5AA56: 0.3
+    - _Daylight: 0.99852157
+    m_Colors:
+    - Color_13C8A320: {r: 1, g: 0.8988529, b: 0.759434, a: 0}
+    - Color_B3BEC4F6: {r: 1, g: 0.96672755, b: 0.8066038, a: 0}
+    - Color_C90622FA: {r: 0.09803922, g: 0.105882354, b: 0.16078432, a: 0}
