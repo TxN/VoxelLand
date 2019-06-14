@@ -1056,11 +1056,17 @@ namespace Voxels {
 				_blocks[x, y, z].LightLevel = _owner.Library.GetBlockDescription(block.Type).LightLevel;
 				_lightAddQueue.Enqueue(new Int3(x, y, z));
 			}
-			if (oldLight > 0 &&  !_owner.Library.IsLightPassBlock(block.Type) ) {
+			var isLightPass = _owner.Library.IsLightPassBlock(block.Type);
+
+			if (oldLight > 0 &&  !isLightPass ) {
 				_lightRemQueue.Enqueue(new LightRemNode(x, y, z, oldLight));
 			}
-			if ( oldSunlight > 0 && !_owner.Library.IsLightPassBlock(block.Type) ) {
+			if ( oldSunlight > 0 && !isLightPass ) {
 				_sunlightRemQueue.Enqueue(new LightRemNode(x, y, z, oldSunlight));
+			}
+			if ( isLightPass ) {
+				_blocks[x, y, z].LightLevel = oldLight;
+				_blocks[x, y, z].SunLevel = oldSunlight;
 			}
 			AddDirtyBlock(x, y, z);
 		}

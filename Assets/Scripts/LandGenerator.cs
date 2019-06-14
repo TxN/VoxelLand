@@ -68,7 +68,7 @@ namespace Voxels {
 					}
 				}
 			}
-			//chunk.InitSunlight();
+			chunk.InitSunlight();
 		}
 
 		IEnumerator ByChunkGenRoutine(int sizeX, int sizeZ) {

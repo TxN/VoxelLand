@@ -9,8 +9,8 @@ namespace Voxels {
 		Vector3 _pointIn;
 		Vector3 _pointOut;
 
-		Rect DebugInBlock = new Rect(10, 10, 250, 50);
-		Rect DebugOutBlock = new Rect(10, 70, 250, 50);
+		Rect DebugInBlock = new Rect(10, 10, 250, 40);
+		Rect DebugOutBlock = new Rect(10, 60, 250, 40);
 
 		private void Update() {
 			var hitInfo = new RaycastHit();
@@ -34,6 +34,9 @@ namespace Voxels {
                         if ( Input.GetKeyUp(KeyCode.H) ) {
                             cm.PutBlock(_pointOut, new BlockData(BlockType.Bricks, 0, 0));
                         }
+						if ( Input.GetKeyUp(KeyCode.B) ) {
+							cm.PutBlock(_pointOut, new BlockData(BlockType.Weed, 0, 0));
+						}
 					}
 				}
 			}

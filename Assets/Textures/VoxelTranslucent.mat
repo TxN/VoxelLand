@@ -8,18 +8,22 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: VoxelTranslucent
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: -6465566751694194690, guid: 79549f9141c6b444e822b847bb809644,
+    type: 3}
   m_ShaderKeywords: _ALPHAPREMULTIPLY_ON _GLOSSYREFLECTIONS_OFF _SPECULARHIGHLIGHTS_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2D_2048BBDB:
+        m_Texture: {fileID: 2800000, guid: e3f9040ebe2c2284b9117f62154a63ce, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -59,6 +63,7 @@ Material:
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
+    - _Daylight: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
     - _GlossMapScale: 1
@@ -74,5 +79,7 @@ Material:
     - _UVSec: 0
     - _ZWrite: 0
     m_Colors:
+    - Color_13C8A320: {r: 1, g: 0.8988529, b: 0.759434, a: 0}
+    - Color_C90622FA: {r: 0.01960784, g: 0.01960784, b: 0.07058821, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 0.65882355}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
