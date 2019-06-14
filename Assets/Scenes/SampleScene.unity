@@ -97,7 +97,7 @@ LightmapSettings:
     m_ShowResolutionOverlay: 1
     m_ExportTrainingData: 0
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -360,6 +360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ce25627b6677784787fc30d58805c9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DrawDebugGUI: 1
   Cursor: {fileID: 98965698}
 --- !u!114 &534669908
 MonoBehaviour:
@@ -670,7 +671,7 @@ MonoBehaviour:
   SkyboxMaterial: {fileID: 2100000, guid: 1b2db7f374b50c24f82d2a5cc7451246, type: 2}
   TilesetOpaqueMaterial: {fileID: 2100000, guid: 923864d8c47883b4ead13f52be9c02b3,
     type: 2}
-  TimeScale: 1
+  TimeScale: 10
   DayLength: 1200
 --- !u!4 &1683576870
 Transform:
