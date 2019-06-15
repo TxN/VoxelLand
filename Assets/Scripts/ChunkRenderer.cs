@@ -23,11 +23,11 @@ namespace Voxels {
 
 		void UpdateRenderer() {
 			MeshFilter.mesh = null;
-			MeshFilter.mesh = _targetChunk.OpaqueMesh.Mesh;
+			MeshFilter.mesh = _targetChunk.OpaqueCollidedMesh.Mesh;
 			TransparentFilter.mesh = null;
-			TransparentFilter.mesh = _targetChunk.TranslucentMesh.Mesh;
+			TransparentFilter.mesh = _targetChunk.TranslucentPassableMesh.Mesh;
 			Collider.sharedMesh = null;
-			Collider.sharedMesh = _targetChunk.OpaqueMesh.Mesh;
+			Collider.sharedMesh = _targetChunk.OpaqueCollidedMesh.Mesh;
 		}
 
 		void OnChunkUpdate(Event_ChunkMeshUpdate e) {

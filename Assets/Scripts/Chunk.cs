@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Voxels {
-	public enum DirIndex: byte {
+	public enum DirIndex: byte { //for reference
 		UP       = 0,
 		DOWN     = 1,
 		RIGHT    = 2,
@@ -50,23 +50,23 @@ namespace Voxels {
 		public const int LIGHT_SOURCES_CAPACITY               = 64;
 		public const int LIGHT_FALLOF_VALUE                   = 16;
 		public const int MAX_SUNLIGHT_VALUE                   = 255;
+		public const int MESHER_CAPACITY                      = 2048;
 
 		public ChunkRenderer Renderer = null;
 
+		public Vector3 OriginPos        { get; }
 		public bool Dirty               { get; private set; } = false;
 		public bool NeedRebuildGeometry { get; private set; } = false;
 
 		ChunkManager        _owner           = null;
-		GeneratableMesh     _opaqueMesh      = null;
-		GeneratableMesh     _translucentMesh = null;
-		Vector3             _rootPos         = Vector3.zero;
+		ChunkMesher         _mesher          = null;
+
 		VisibilityFlags[,,] _visibiltiy      = null;
 		BlockData[,,]       _blocks          = null;
 		int     _indexX                      = 0;
 		int     _indexY                      = 0;
 		int     _indexZ                      = 0;
-		Vector3 _originPos                   = Vector3.zero;
-		bool    _needUpdateVisibilityAll     = true;
+		bool _needUpdateVisibilityAll     = true;
 		int     _maxNonEmptyY                = 0;
 
 		List<Int3> _dirtyBlocks = new List<Int3>(MAX_DIRTY_BLOCKS_BEFORE_FULL_REBUILD);
@@ -78,31 +78,24 @@ namespace Voxels {
 
 		public Chunk(ChunkManager owner, int x, int y, int z, Vector3 originPos) {
 			_owner           = owner;
-			_opaqueMesh      = new GeneratableMesh(CHUNK_MESH_CAPACITY);
-			_translucentMesh = new GeneratableMesh(CHUNK_MESH_CAPACITY / 8);
 			_visibiltiy      = new VisibilityFlags[CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z];
 			_blocks          = new BlockData      [CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z];
-			_originPos       = originPos;
+			_mesher          = new ChunkMesher(_owner.Library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, originPos);
+			OriginPos       = originPos;
 			_indexX          = x;
 			_indexY          = y;
 			_indexZ          = z;
 		}
 
-		public GeneratableMesh OpaqueMesh {
+		public GeneratableMesh OpaqueCollidedMesh {
 			get {
-				return _opaqueMesh;
+				return _mesher.OpaqueCollidedMesh;
 			}
 		}
 
-		public GeneratableMesh TranslucentMesh {
+		public GeneratableMesh TranslucentPassableMesh {
 			get {
-				return _translucentMesh;
-			}
-		}
-
-		public Vector3 OriginPos {
-			get {
-				return _originPos;
+				return _mesher.TranslucentPassableMesh;
 			}
 		}
 
@@ -688,12 +681,7 @@ namespace Voxels {
 		}
 
 		public void UpdateGeometry() {
-			if ( _opaqueMesh == null || _translucentMesh == null ) {
-				return;
-			}
-			_opaqueMesh.ClearAll();
-			_translucentMesh.ClearAll();
-			var helper    = _owner.TilesetHelper;
+			_mesher.PrepareMesher();
 			var neighbors = GetNeighborChunks();
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
 				for ( int y = 0; y < _maxNonEmptyY; y++ ) {
@@ -702,20 +690,16 @@ namespace Voxels {
 						if ( block.IsEmpty() || _visibiltiy[x, y, z] == VisibilityFlags.None ) {
 							continue;
 						}
-						var visibility = _visibiltiy[x,y,z];
-						var pos        = _originPos + new Vector3(x,y,z);
-						var desc       = GetBlockDescription(block.Type);
-						var light      = GetLightForBlock(x, y, z, neighbors);
-						if ( desc.IsTranslucent ) {
-							BlockModelGenerator.AddBlock(_translucentMesh, desc, block, pos, visibility, light);				
-						} else {
-							BlockModelGenerator.AddBlock(_opaqueMesh, desc, block, pos, visibility, light);
-						}
+						var light = GetLightForBlock(x, y, z, neighbors);
+						_mesher.Blocks.Add(new MesherBlockInput() {
+							Block = block, Lighting = light,
+							Position = new Byte3(x, y, z),
+							Visibility = _visibiltiy[x, y, z]
+						});
 					}
 				}
 			}
-			_opaqueMesh.BakeMesh();
-			_translucentMesh.BakeMesh();
+			_mesher.StartMeshing();
 			NeedRebuildGeometry = false;
 		}
 

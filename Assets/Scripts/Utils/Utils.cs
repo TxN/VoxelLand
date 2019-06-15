@@ -51,6 +51,35 @@ namespace Voxels {
 		}
 	}
 
+	[System.Serializable]
+	public struct Byte3 : System.IEquatable<Byte3> {
+		public byte X;
+		public byte Y;
+		public byte Z;
+
+		public Byte3(int x, int y, int z) {
+			X = (byte) x;
+			Y = (byte) y;
+			Z = (byte) z;
+		}
+
+		public Byte3(byte x, byte y, byte z) {
+			X = x;
+			Y = y;
+			Z = z;
+		}
+
+		public Byte3 Zero {
+			get {
+				return new Byte3(0, 0, 0);
+			}
+		}
+
+		public bool Equals(Byte3 other) {
+			return X == other.X && Y == other.Y && Z == other.Z;
+		}
+	}
+
 	public static class VisibilityFlagsHelper {
 		public static bool IsSet(this VisibilityFlags flags, VisibilityFlags flag) {
 			return (flags & flag) != 0;
