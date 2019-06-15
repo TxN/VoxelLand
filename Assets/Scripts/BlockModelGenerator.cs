@@ -3,7 +3,11 @@ using UnityEngine;
 
 namespace Voxels {
 	public static class BlockModelGenerator {
-		static Dictionary<Byte2, Vector2[]> _tileUVCache = new Dictionary<Byte2, Vector2[]>(); 
+		static Dictionary<Byte2, Vector2[]> _fullTileUVCache = new Dictionary<Byte2, Vector2[]>();
+
+		public static void PrepareGenerator() {
+			
+		}
 
 		public static void AddBlock(GeneratableMesh meshInfo, TilesetHelper helper, BlockDescription desc, BlockData data, Vector3 rootPos, VisibilityFlags visibility, LightInfo light) {
 			if ( desc == null ) {
@@ -19,6 +23,7 @@ namespace Voxels {
 					GenerateFullBlockComplex(meshInfo, helper, desc, data, rootPos, visibility, light);
 					return;
 				case BlockModelType.HalfBlockDown:
+					GenerateHalfBlockDown(meshInfo, helper, desc, data, rootPos, visibility, light);
 					return;
 				case BlockModelType.HalfBlockUp:
 					return;
@@ -145,6 +150,88 @@ namespace Voxels {
 				pointer += 4;
 			}
 		}
+
+		public static void GenerateHalfBlockDown(GeneratableMesh meshInfo, TilesetHelper helper, BlockDescription desc, BlockData data, Vector3 rootPos, VisibilityFlags visibility, LightInfo light) {
+			if ( visibility == VisibilityFlags.None ) {
+				return;
+			}
+			var pointer = meshInfo.Vertices.Count;
+			var sub = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)];
+
+			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Backward) ) {
+				var calcColor = new Color32(light.SunBackward, light.OBackward, 0, 0);
+				AddPlane(meshInfo, _halfBlockDBackSide, helper, sub.FaceTiles[0], rootPos, pointer, calcColor);
+				pointer += 4;
+			}
+			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Forward) ) {
+				var calcColor = new Color32(light.SunForward, light.OForward, 0, 0);
+				AddPlane(meshInfo, _halfBlockDFrontSide, helper, sub.FaceTiles[1], rootPos, pointer, calcColor);
+				pointer += 4;
+			}
+			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Left) ) {
+				var calcColor = new Color32(light.SunLeft, light.OLeft, 0, 0);
+				AddPlane(meshInfo, _halfBlockDLeftSide, helper, sub.FaceTiles[2], rootPos, pointer, calcColor);
+				pointer += 4;
+			}
+			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Right) ) {
+				var calcColor = new Color32(light.SunRight, light.ORight, 0, 0);
+				AddPlane(meshInfo, _halfBlockDRightSide, helper, sub.FaceTiles[3], rootPos, pointer, calcColor);
+				pointer += 4;
+			}
+
+			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Up) ) {
+				var calcColor = new Color32(light.SunUp, light.OUp, 0, 0);
+				AddPlane(meshInfo, _halfBlockDUpside, helper, sub.FaceTiles[4], rootPos, pointer, calcColor);
+				pointer += 4;
+			}
+			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Down) ) {
+				var calcColor = new Color32(light.SunDown, light.ODown, 0, 0);
+				AddPlane(meshInfo, _fullBlockDownSide, helper, sub.FaceTiles[5], rootPos, pointer, calcColor);
+				pointer += 4;
+			}
+		}
+
+		static Vector3[] _halfBlockDUpside = new Vector3[4] {
+			new Vector3(0f,0.5f,0f),
+			new Vector3(0f,0.5f,1f),
+			new Vector3(1f,0.5f,0f),
+			new Vector3(1f,0.5f,1f)
+		};
+
+		static Vector3[] _halfBlockDLeftSide = new Vector3[4] {
+			new Vector3(0f,0f,1f),
+			new Vector3(0f,0.5f,1f),
+			new Vector3(0f,0f,0f),
+			new Vector3(0f,0.5f,0f)
+		};
+
+		static Vector3[] _halfBlockDRightSide = new Vector3[4] {
+			new Vector3(1f,0f,0f),
+			new Vector3(1f,0.5f,0f),
+			new Vector3(1f,0f,1f),
+			new Vector3(1f,0.5f,1f)
+		};
+
+		static Vector3[] _halfBlockDBackSide = new Vector3[4] {
+			new Vector3(0f,0f,0f),
+			new Vector3(0f,0.5f,0f),
+			new Vector3(1f,0f,0f),
+			new Vector3(1f,0.5f,0f)
+		};
+
+		static Vector3[] _halfBlockDFrontSide = new Vector3[4] {
+			new Vector3(1f,0f,1f),
+			new Vector3(1f,0.5f,1f),
+			new Vector3(0f,0f,1f),
+			new Vector3(0f,0.5f,1f)
+		};
+
+		static Vector2[] _halfTileUV = new Vector2[4] {
+			new Vector2(0f,0.5f),
+			new Vector2(0f,0f),
+			new Vector2(1f,0.5f),
+			new Vector2(1f,0f)
+		};
 
 		static Vector3[] _fullBlockUpSide = new Vector3[4] {
 			new Vector3(0f,1f,0f),
@@ -293,12 +380,12 @@ namespace Voxels {
 			for ( int i = 0; i < uvs.Length; i++ ) {
 				uvs[i] = helper.RelativeToAbsolute(_fullTileUV[i].x, _fullTileUV[i].y, tilePos);
 			}
-			_tileUVCache.Add(tilePos, uvs);
+			_fullTileUVCache.Add(tilePos, uvs);
 			return uvs;
 		}
 
 		static Vector2[] GetCachedUVsForTile(TilesetHelper helper, Byte2 tilePos) {
-			return _tileUVCache.ContainsKey(tilePos) ? _tileUVCache[tilePos] : CacheUVsForTile(helper, tilePos);
+			return _fullTileUVCache.ContainsKey(tilePos) ? _fullTileUVCache[tilePos] : CacheUVsForTile(helper, tilePos);
 		}
 	}
 }

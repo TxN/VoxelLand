@@ -67,6 +67,7 @@ namespace Voxels {
 		int     _indexZ                      = 0;
 		Vector3 _originPos                   = Vector3.zero;
 		bool    _needUpdateVisibilityAll     = true;
+		public int     MaxNonEmptyY { get; private set; }
 
 		List<Int3> _dirtyBlocks = new List<Int3>(MAX_DIRTY_BLOCKS_BEFORE_FULL_REBUILD);
 
@@ -126,10 +127,21 @@ namespace Voxels {
 		}
 
 		public void InitSunlight() {
+			_sunlightAddQueue.Clear();
+			_sunlightRemQueue.Clear();
+
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
 				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
-					_blocks[x, CHUNK_SIZE_Y - 1, z].SunLevel = MAX_SUNLIGHT_VALUE;
-					_sunlightAddQueue.Enqueue(new Int3(x, CHUNK_SIZE_Y - 1, z));
+					for ( int y = CHUNK_SIZE_Y - 1; y >= MaxNonEmptyY; y-- ) {
+						_blocks[x, y, z].SunLevel = MAX_SUNLIGHT_VALUE;
+					}
+				}
+			}
+
+			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
+				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
+					_blocks[x, MaxNonEmptyY, z].SunLevel = MAX_SUNLIGHT_VALUE;
+					_sunlightAddQueue.Enqueue(new Int3(x, MaxNonEmptyY, z));
 				}
 			}
 		}
@@ -684,7 +696,7 @@ namespace Voxels {
 			var helper    = _owner.TilesetHelper;
 			var neighbors = GetNeighborChunks();
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
-				for ( int y = 0; y < CHUNK_SIZE_Y; y++ ) {
+				for ( int y = 0; y < MaxNonEmptyY; y++ ) {
 					for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
 						var block = _blocks[x, y, z];
 						if ( block.IsEmpty() || _visibiltiy[x, y, z] == VisibilityFlags.None ) {
@@ -713,7 +725,7 @@ namespace Voxels {
 			NeedRebuildGeometry = true;
 			var neighbors = GetNeighborChunks();
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
-				for ( int y = 0; y < CHUNK_SIZE_Y; y++ ) {
+				for ( int y = 0; y < MaxNonEmptyY; y++ ) {
 					for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
 						if ( _blocks[x, y, z].IsEmpty() ) {
 							_visibiltiy[x, y, z] = VisibilityFlags.None;
@@ -1047,6 +1059,7 @@ namespace Voxels {
 		}
 
 		public void PutBlock(int x, int y, int z, BlockData block) {
+			MaxNonEmptyY = (y+1) > MaxNonEmptyY ? y + 1 : MaxNonEmptyY;
 			var oldLight    = _blocks[x, y, z].LightLevel;
 			var oldSunlight = _blocks[x, y, z].SunLevel;
 			_blocks[x, y, z] = block;
