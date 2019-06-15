@@ -1104,12 +1104,24 @@ namespace Voxels {
 		}
 
 		public void RemoveBlock(int x, int y, int z) {
-			var oldLight = _blocks[x, y, z].LightLevel;
-			var oldSunlight = _blocks[x, y, z].SunLevel;
+			var nl = GetLightForBlock(x, y, z, GetNeighborChunks());
+			
+			var oldLight     = _blocks[x, y, z].LightLevel;
+			var oldSunlight  = _blocks[x, y, z].SunLevel;
 			_blocks[x, y, z] = BlockData.Empty;
-			_lightRemQueue.Enqueue(new LightRemNode(x, y, z, oldLight));
+			_blocks[x, y, z].LightLevel = (byte) Mathf.Clamp(Mathf.Max(nl.OBackward, nl.OForward, nl.OLeft, nl.ORight, nl.OUp, nl.ODown) - LIGHT_FALLOF_VALUE, 0, 255);
+			//_blocks[x, y, z].SunLevel   = (byte) Mathf.Clamp(Mathf.Max(nl.SunBackward, nl.SunForward, nl.SunLeft, nl.SunRight, nl.SunUp, nl.SunDown), 0, 255);
+			_lightAddQueue.Enqueue(new Int3(x, y, z));
+			//_sunlightAddQueue.Enqueue(new Int3(x, y, z));
+			_lightRemQueue.   Enqueue(new LightRemNode(x, y, z, oldLight));
 			_sunlightRemQueue.Enqueue(new LightRemNode(x, y, z, oldSunlight));
 			AddDirtyBlock(x, y, z);
+		}
+
+		byte CalculateOLightingByNeighbors(LightInfo neighborsLighting) {
+			byte res = 0;
+			
+			return res;
 		}
 
 		void AddDirtyBlock(int x, int y, int z) {
