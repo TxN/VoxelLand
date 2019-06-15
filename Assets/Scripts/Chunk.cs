@@ -699,8 +699,9 @@ namespace Voxels {
 						}
 						var light = GetLightForBlock(x, y, z, neighbors);
 						_mesher.Blocks.Add(new MesherBlockInput() {
-							Block = block, Lighting = light,
-							Position = new Byte3(x, y, z),
+							Block      = block,
+							Lighting   = light,
+							Position   = new Byte3(x, y, z),
 							Visibility = _visibiltiy[x, y, z]
 						});
 					}
@@ -1059,6 +1060,17 @@ namespace Voxels {
 			return false;
 		}
 
+		//Unsafe version, only for fast block setting in worldgen
+		public void PutBlockUnsafe(int x, int y, int z, BlockData block ) {
+			var checkY = y + 1;
+			_maxNonEmptyY = (checkY) > _maxNonEmptyY ? checkY : _maxNonEmptyY;
+			if ( _owner.Library.IsEmissiveBlock(block.Type) ) {
+				block.LightLevel = _owner.Library.GetBlockDescription(block.Type).LightLevel;
+				_lightAddQueue.Enqueue(new Int3(x, y, z));
+			}
+			_blocks[x, y, z] = block;
+		}
+
 		public void PutBlock(int x, int y, int z, BlockData block) {
 			var checkY = y + 1;
 			_maxNonEmptyY = (checkY) > _maxNonEmptyY ? checkY : _maxNonEmptyY;
@@ -1107,6 +1119,11 @@ namespace Voxels {
 				return;
 			}
 			_dirtyBlocks.Add(new Int3(x, y, z));
+		}
+
+		public void SetDirtyAll() {
+			Dirty = true;
+			_needUpdateVisibilityAll = true;
 		}
 
 		BlockDescription GetBlockDescription(BlockType type) {

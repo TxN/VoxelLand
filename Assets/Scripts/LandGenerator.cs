@@ -19,17 +19,17 @@ namespace Voxels {
 				Debug.Log("Chunk manager isn't present");
 				return;
 			}
-			var cm = ChunkManager.Instance;
-
+			var cm   = ChunkManager.Instance;
 			var size = 256;
 			_isGeneratingHeightmap = true;
-			_heigtmapGenData = new HeightGenJob();
-			_heigtmapGenData.BaseScale = 20;
-			_heigtmapGenData.Seed = 143;
-			_heigtmapGenData.SizeX = size;
-			_heigtmapGenData.SizeY = size;
-			_heigtmapGenData.Height = new Unity.Collections.NativeArray<byte>(size * size, Unity.Collections.Allocator.Persistent);
-			_heightGenJobHandle = _heigtmapGenData.Schedule(_heigtmapGenData.Height.Length, 128);
+			_heigtmapGenData = new HeightGenJob {
+				BaseScale = 20,
+				Seed     = 143,
+				SizeX    = size,
+				SizeY    = size,
+				Height   = new Unity.Collections.NativeArray<byte>(size * size, Unity.Collections.Allocator.Persistent)
+			};
+			_heightGenJobHandle        = _heigtmapGenData.Schedule(_heigtmapGenData.Height.Length, 128);
 		}
 
 		private void Update() {
@@ -47,7 +47,7 @@ namespace Voxels {
 		}
 
 		void GenSegment(int x, int z) {
-			var cm = ChunkManager.Instance;
+			var cm    = ChunkManager.Instance;
 			var chunk = cm.GetChunkInCoords(x,0,z);
 			if ( chunk == null ) {
 				return;
@@ -56,18 +56,19 @@ namespace Voxels {
 			for ( int lx = 0; lx < Chunk.CHUNK_SIZE_X; lx++ ) {
 				for ( int lz = 0; lz < Chunk.CHUNK_SIZE_Z; lz++ ) {
 					var height = _heightmap[(x + lx) * 256 + z + lz];
-					var stoneHeight = Mathf.RoundToInt( height * 0.8f);
-					chunk.PutBlock(lx, 0, lz, new BlockData(BlockType.Bedrock, 0));
+					var stoneHeight = (int)( height * 0.8f);
+					chunk.PutBlockUnsafe(lx, 0, lz, new BlockData(BlockType.Bedrock, 0));
 					for ( int y = 1; y < height; y++ ) {
 						if ( y < stoneHeight ) {
-							chunk.PutBlock(lx, y, lz, new BlockData(BlockType.Stone, 0));
+							chunk.PutBlockUnsafe(lx, y, lz, new BlockData(BlockType.Stone, 0));
 						} else {
-							chunk.PutBlock(lx, y, lz, new BlockData(BlockType.Dirt, 0));
+							chunk.PutBlockUnsafe(lx, y, lz, new BlockData(BlockType.Dirt, 0));
 						}
-						chunk.PutBlock(lx, height, lz, new BlockData(BlockType.Grass, 0));
 					}
+					chunk.PutBlockUnsafe(lx, height, lz, new BlockData(BlockType.Grass, 0));
 				}
 			}
+			chunk.SetDirtyAll();
 			chunk.InitSunlight();
 		}
 
@@ -78,7 +79,7 @@ namespace Voxels {
 					yield return new WaitForEndOfFrame();
 				}
 			}
-			var cm = ChunkManager.Instance;
+			var cm     = ChunkManager.Instance;
 			var chunks = cm.GetAllChunks;
 			foreach ( var chunk in chunks ) {
 				chunk.ForceUpdateChunk();
@@ -143,9 +144,9 @@ namespace Voxels {
 		float GetHeight(int x, int z) {
 			var noizeScale = 20;
 			var noise =  Mathf.PerlinNoise(x / (float) 32 + 32, z / (float) 32 + 32) * noizeScale * 0.5f;
-			noise += Mathf.PerlinNoise(x / (float)64 + 1, z / (float)64 + 1) * noizeScale;
+			noise += Mathf.PerlinNoise(x / (float)64 + 1,  z / (float)64 + 1) * noizeScale;
 			noise += Mathf.PerlinNoise(x / (float)128 + 5, z / (float)128 + 5) * noizeScale * 2;
-			noise += Mathf.PerlinNoise(x / (float)16 + 4, z / (float)16 + 6) * noizeScale * 0.25f;
+			noise += Mathf.PerlinNoise(x / (float)16 + 4,  z / (float)16 + 6) * noizeScale * 0.25f;
 			return noise;
 		}
 

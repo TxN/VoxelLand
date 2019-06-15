@@ -3,13 +3,12 @@ namespace Voxels {
 		public BlockDescription Info { get {
 				return ChunkManager.Instance.Library.GetBlockDescription(Type);
 		} }
-		public BlockType        Type;
-		public byte             Subtype;
-		public ushort           Metadata; //Для текущих нужд и байта хватит.
-		public byte             SunLevel;
-		public byte             LightLevel;
-		public ushort           AddColor;
-
+		public BlockType  Type;
+		public byte       Subtype;	
+		public byte       SunLevel;
+		public byte       LightLevel;
+		public ushort     AddColor;
+		public ushort     Metadata;		
 
 		public BlockData(BlockType type) {
 			Type       = type;

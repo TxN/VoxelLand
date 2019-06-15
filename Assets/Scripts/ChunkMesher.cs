@@ -19,7 +19,6 @@ namespace Voxels {
 	}
 
 	public sealed class ChunkMesher {
-
 		public bool Busy  { get; private set; }
 		public bool Ready { get; private set; }
 
@@ -31,13 +30,12 @@ namespace Voxels {
 		ResourceLibrary _library                 = null;
 		Thread          _curentThread            = null;
 
-
 		public ChunkMesher(ResourceLibrary library, int chunkMeshCapacity, int capacity, Vector3 originPos) {
-			_opaqueCollidedMesh = new GeneratableMesh(chunkMeshCapacity);
+			_opaqueCollidedMesh      = new GeneratableMesh(chunkMeshCapacity);
 			_translucentPassableMesh = new GeneratableMesh(chunkMeshCapacity / 8);
-			_library = library;
-			Blocks = new List<MesherBlockInput>(capacity);
-			_originPos = originPos;
+			_library                 = library;
+			_originPos               = originPos;
+			Blocks                   = new List<MesherBlockInput>(capacity);
 		}
 
 		public GeneratableMesh OpaqueCollidedMesh {
@@ -65,18 +63,20 @@ namespace Voxels {
 
 		void StartMeshing() {
 			Ready = false;
-			foreach ( var blockData in Blocks ) {			
-				var pos  = _originPos + new Vector3(blockData.Position.X, blockData.Position.Y, blockData.Position.Z);
-				var desc = _library.GetBlockDescription(blockData.Block.Type);
+			for ( int i = 0; i < Blocks.Count; i++ ) {
+				var blockItem = Blocks[i];
+				var rawPos    = blockItem.Position;
+				var pos       = _originPos + new Vector3(rawPos.X, rawPos.Y, rawPos.Z);
+				var blockData = blockItem.Block;
+				var desc      = _library.GetBlockDescription(blockData.Type);
 				if ( desc.IsTranslucent ) {
-					BlockModelGenerator.AddBlock(_translucentPassableMesh, desc, blockData.Block, pos, blockData.Visibility, blockData.Lighting);
-				}
-				else {
-					BlockModelGenerator.AddBlock(_opaqueCollidedMesh, desc, blockData.Block, pos, blockData.Visibility, blockData.Lighting);
+					BlockModelGenerator.AddBlock(_translucentPassableMesh, desc, blockData, pos, blockItem.Visibility, blockItem.Lighting);
+				} else {
+					BlockModelGenerator.AddBlock(_opaqueCollidedMesh, desc, blockData, pos, blockItem.Visibility, blockItem.Lighting);
 				}
 			}
 			Ready = true;
-			Busy = false;
+			Busy  = false;
 		}
 
 		public void FinalizeBake() {
