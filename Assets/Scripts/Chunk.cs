@@ -67,7 +67,7 @@ namespace Voxels {
 		int     _indexZ                      = 0;
 		Vector3 _originPos                   = Vector3.zero;
 		bool    _needUpdateVisibilityAll     = true;
-		public int     MaxNonEmptyY { get; private set; }
+		int     _maxNonEmptyY                = 0;
 
 		List<Int3> _dirtyBlocks = new List<Int3>(MAX_DIRTY_BLOCKS_BEFORE_FULL_REBUILD);
 
@@ -132,7 +132,7 @@ namespace Voxels {
 
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
 				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
-					for ( int y = CHUNK_SIZE_Y - 1; y >= MaxNonEmptyY; y-- ) {
+					for ( int y = CHUNK_SIZE_Y - 1; y >= _maxNonEmptyY; y-- ) {
 						_blocks[x, y, z].SunLevel = MAX_SUNLIGHT_VALUE;
 					}
 				}
@@ -140,8 +140,8 @@ namespace Voxels {
 
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
 				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
-					_blocks[x, MaxNonEmptyY, z].SunLevel = MAX_SUNLIGHT_VALUE;
-					_sunlightAddQueue.Enqueue(new Int3(x, MaxNonEmptyY, z));
+					_blocks[x, _maxNonEmptyY, z].SunLevel = MAX_SUNLIGHT_VALUE;
+					_sunlightAddQueue.Enqueue(new Int3(x, _maxNonEmptyY, z));
 				}
 			}
 		}
@@ -696,7 +696,7 @@ namespace Voxels {
 			var helper    = _owner.TilesetHelper;
 			var neighbors = GetNeighborChunks();
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
-				for ( int y = 0; y < MaxNonEmptyY; y++ ) {
+				for ( int y = 0; y < _maxNonEmptyY; y++ ) {
 					for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
 						var block = _blocks[x, y, z];
 						if ( block.IsEmpty() || _visibiltiy[x, y, z] == VisibilityFlags.None ) {
@@ -725,7 +725,7 @@ namespace Voxels {
 			NeedRebuildGeometry = true;
 			var neighbors = GetNeighborChunks();
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
-				for ( int y = 0; y < MaxNonEmptyY; y++ ) {
+				for ( int y = 0; y < _maxNonEmptyY; y++ ) {
 					for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
 						if ( _blocks[x, y, z].IsEmpty() ) {
 							_visibiltiy[x, y, z] = VisibilityFlags.None;
@@ -1059,26 +1059,27 @@ namespace Voxels {
 		}
 
 		public void PutBlock(int x, int y, int z, BlockData block) {
-			MaxNonEmptyY = (y+1) > MaxNonEmptyY ? y + 1 : MaxNonEmptyY;
-			var oldLight    = _blocks[x, y, z].LightLevel;
-			var oldSunlight = _blocks[x, y, z].SunLevel;
-			_blocks[x, y, z] = block;
-			if ( GetBlockEmissive(block.Type) ) {
-				_blocks[x, y, z].LightLevel = _owner.Library.GetBlockDescription(block.Type).LightLevel;
+			var checkY = y + 1;
+			_maxNonEmptyY = (checkY) > _maxNonEmptyY ? checkY : _maxNonEmptyY;
+			var oldBlock = _blocks[x, y, z];
+			var oldLight    = oldBlock.LightLevel;
+			var oldSunlight = oldBlock.SunLevel;	
+			if ( _owner.Library.IsEmissiveBlock(block.Type) ) {
+				block.LightLevel = _owner.Library.GetBlockDescription(block.Type).LightLevel;
 				_lightAddQueue.Enqueue(new Int3(x, y, z));
 			}
-			var isLightPass = _owner.Library.IsLightPassBlock(block.Type);
-
-			if (oldLight > 0 &&  !isLightPass ) {
-				_lightRemQueue.Enqueue(new LightRemNode(x, y, z, oldLight));
+			if ( !_owner.Library.IsLightPassBlock(block.Type) ) {
+				if ( oldLight > 0 ) {
+					_lightRemQueue.Enqueue(new LightRemNode(x, y, z, oldLight));
+				}
+				if ( oldSunlight > 0 ) {
+					_sunlightRemQueue.Enqueue(new LightRemNode(x, y, z, oldSunlight));
+				}
+			} else {
+				block.LightLevel = oldLight;
+				block.SunLevel = oldSunlight;
 			}
-			if ( oldSunlight > 0 && !isLightPass ) {
-				_sunlightRemQueue.Enqueue(new LightRemNode(x, y, z, oldSunlight));
-			}
-			if ( isLightPass ) {
-				_blocks[x, y, z].LightLevel = oldLight;
-				_blocks[x, y, z].SunLevel = oldSunlight;
-			}
+			_blocks[x, y, z] = block;
 			AddDirtyBlock(x, y, z);
 		}
 
