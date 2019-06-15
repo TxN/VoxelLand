@@ -1,24 +1,26 @@
 using System.Collections.Generic;
+using System.Threading;
 
 using UnityEngine;
 
 namespace Voxels {
 	public enum BlockMeshType : byte {
-		CollidedOpaque = 0,
+		CollidedOpaque      = 0,
 		PassableTranslucent = 1,
 		CollidedTranslucent = 2,
-		PassableOpaque = 3,
+		PassableOpaque      = 3,
 	}
 
 	public struct MesherBlockInput {
-		public BlockData Block;
-		public Byte3 Position;
-		public LightInfo Lighting;
+		public BlockData       Block;
+		public Byte3           Position;
+		public LightInfo       Lighting;
 		public VisibilityFlags Visibility;
 	}
 
 	public sealed class ChunkMesher {
 
+		public bool Busy  { get; private set; }
 		public bool Ready { get; private set; }
 
 		public List<MesherBlockInput> Blocks;
@@ -27,6 +29,8 @@ namespace Voxels {
 		GeneratableMesh _translucentPassableMesh = null;
 		Vector3         _originPos               = Vector3.zero;
 		ResourceLibrary _library                 = null;
+		Thread          _curentThread            = null;
+
 
 		public ChunkMesher(ResourceLibrary library, int chunkMeshCapacity, int capacity, Vector3 originPos) {
 			_opaqueCollidedMesh = new GeneratableMesh(chunkMeshCapacity);
@@ -45,12 +49,21 @@ namespace Voxels {
 		}
 
 		public void PrepareMesher() {
-			_opaqueCollidedMesh.ClearAll();
-			_translucentPassableMesh.ClearAll();
+			_opaqueCollidedMesh.ClearData();
+			_translucentPassableMesh.ClearData();
 			Blocks.Clear();
 		}
 
-		public void StartMeshing() {
+		public void StartAsyncMeshing() {
+			if ( _curentThread != null && _curentThread.IsAlive ) {
+				_curentThread.Abort();
+			}
+			Busy = true;
+			_curentThread = new Thread(StartMeshing);
+			_curentThread.Start();
+		}
+
+		void StartMeshing() {
 			Ready = false;
 			foreach ( var blockData in Blocks ) {			
 				var pos  = _originPos + new Vector3(blockData.Position.X, blockData.Position.Y, blockData.Position.Z);
@@ -62,11 +75,16 @@ namespace Voxels {
 					BlockModelGenerator.AddBlock(_opaqueCollidedMesh, desc, blockData.Block, pos, blockData.Visibility, blockData.Lighting);
 				}
 			}
-			//Do some magic
+			Ready = true;
+			Busy = false;
+		}
+
+		public void FinalizeBake() {
+			_opaqueCollidedMesh.ClearMesh();
+			_translucentPassableMesh.ClearMesh();
 			_opaqueCollidedMesh.BakeMesh();
 			_translucentPassableMesh.BakeMesh();
-			Ready = true;
+			Ready = false;
 		}
 	}
 }
-

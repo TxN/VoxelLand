@@ -24,11 +24,15 @@ namespace Voxels {
 			Vertices.Clear();
 		}
 
-		public void ClearAll() {
-			ClearData();
+		public void ClearMesh() {
 			if ( Mesh ) {
 				Mesh.Clear();
 			}
+		}
+
+		public void ClearAll() {
+			ClearData();
+			ClearMesh();
 		}
 
 		public void BakeMesh() {

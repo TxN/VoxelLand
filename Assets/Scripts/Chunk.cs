@@ -1,3 +1,4 @@
+using EventSys;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -85,6 +86,12 @@ namespace Voxels {
 			_indexX          = x;
 			_indexY          = y;
 			_indexZ          = z;
+		}
+
+		public bool MesherWorkComplete {
+			get {
+				return _mesher.Ready;
+			}
 		}
 
 		public GeneratableMesh OpaqueCollidedMesh {
@@ -699,8 +706,13 @@ namespace Voxels {
 					}
 				}
 			}
-			_mesher.StartMeshing();
+			_mesher.StartAsyncMeshing();
 			NeedRebuildGeometry = false;
+		}
+
+		public void FinalizeMeshUpdate() {
+			_mesher.FinalizeBake();
+			EventManager.Fire(new Event_ChunkMeshUpdate() { UpdatedChunk = this });
 		}
 
 		public void UpdateVisibilityAll() {

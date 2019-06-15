@@ -75,9 +75,15 @@ namespace Voxels {
 		void LateUpdate() {
 			foreach ( var chunkPair in _chunks ) {
 				var chunk = chunkPair.Value;
+				if ( chunk != null && chunk.MesherWorkComplete ) {
+					chunk.FinalizeMeshUpdate();
+				}
+			}
+
+			foreach ( var chunkPair in _chunks ) {
+				var chunk = chunkPair.Value;
 				if ( chunk != null && chunk.NeedRebuildGeometry ) {
 					chunk.UpdateGeometry();
-					EventManager.Fire(new Event_ChunkMeshUpdate() { UpdatedChunk = chunk });
 				}
 			}
 
