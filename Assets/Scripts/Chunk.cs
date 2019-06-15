@@ -707,9 +707,9 @@ namespace Voxels {
 						var desc       = GetBlockDescription(block.Type);
 						var light      = GetLightForBlock(x, y, z, neighbors);
 						if ( desc.IsTranslucent ) {
-							BlockModelGenerator.AddBlock(_translucentMesh, helper, desc, block, pos, visibility, light);				
+							BlockModelGenerator.AddBlock(_translucentMesh, desc, block, pos, visibility, light);				
 						} else {
-							BlockModelGenerator.AddBlock(_opaqueMesh, helper, desc, block, pos, visibility, light);
+							BlockModelGenerator.AddBlock(_opaqueMesh, desc, block, pos, visibility, light);
 						}
 					}
 				}
@@ -978,62 +978,66 @@ namespace Voxels {
 			var res = new LightInfo();
 			//Up
 			if ( y < CHUNK_SIZE_Y - 1 ) {
-				res.SunUp = _blocks[x, y + 1, z].SunLevel;
-				res.OUp   = _blocks[x, y + 1, z].LightLevel;
-			} else {
-				var chunk = neighborChunks[0];
-				if ( chunk != null ) {
-					res.SunUp = chunk._blocks[x, 0, z].SunLevel;
-					res.OUp   = chunk._blocks[x, 0, z].LightLevel;
-				}
+				var block = _blocks[x, y + 1, z];
+				res.SunUp = block.SunLevel;
+				res.OUp   = block.LightLevel;
 			}
 			//Down
 			if ( y > 0 ) {
-				res.SunDown = _blocks[x, y - 1, z].SunLevel;
-				res.ODown   = _blocks[x, y - 1, z].LightLevel;
+				var block = _blocks[x, y - 1, z];
+				res.SunDown = block.SunLevel;
+				res.ODown   = block.LightLevel;
 			}
 			//Right
 			if ( x < CHUNK_SIZE_X - 1 ) {
-				res.SunRight = _blocks[x + 1, y, z].SunLevel;
-				res.ORight   = _blocks[x + 1, y, z].LightLevel;
+				var block = _blocks[x + 1, y, z];
+				res.SunRight = block.SunLevel;
+				res.ORight   = block.LightLevel;
 			} else {
 				var chunk = neighborChunks[2];
 				if ( chunk != null ) {
-					res.SunRight = chunk._blocks[0, y, z].SunLevel;
-					res.ORight   = chunk._blocks[0, y, z].LightLevel;
+					var block = chunk._blocks[0, y, z];
+					res.SunRight = block.SunLevel;
+					res.ORight   = block.LightLevel;
 				}
 			}
 			//Left
 			if ( x > 0 ) {
-				res.SunLeft = _blocks[x - 1, y, z].SunLevel;
-				res.OLeft   = _blocks[x - 1, y, z].LightLevel;
+				var block = _blocks[x - 1, y, z];
+				res.SunLeft = block.SunLevel;
+				res.OLeft   = block.LightLevel;
 			} else {
 				var chunk = neighborChunks[3];
 				if ( chunk != null ) {
-					res.SunLeft = chunk._blocks[CHUNK_SIZE_X - 1, y, z].SunLevel;
-					res.OLeft   = chunk._blocks[CHUNK_SIZE_X - 1, y, z].LightLevel;
+					var block = chunk._blocks[CHUNK_SIZE_X - 1, y, z];
+					res.SunLeft = block.SunLevel;
+					res.OLeft   = block.LightLevel;
 				}
 			}
 			//Forward
 			if ( z < CHUNK_SIZE_Z - 1 ) {
-				res.SunForward = _blocks[x, y, z + 1].SunLevel;
-				res.OForward   = _blocks[x, y, z + 1].LightLevel;
+				var block = _blocks[x, y, z + 1];
+				res.SunForward = block.SunLevel;
+				res.OForward   = block.LightLevel;
 			} else {
 				var chunk = neighborChunks[4];
 				if ( chunk != null ) {
-					res.SunForward = chunk._blocks[x, y, 0].SunLevel;
-					res.OForward   = chunk._blocks[x, y, 0].LightLevel;
+					var block = chunk._blocks[x, y, 0];
+					res.SunForward = block.SunLevel;
+					res.OForward   = block.LightLevel;
 				}
 			}
 			//Backwards
 			if ( z > 0 ) {
-				res.SunBackward = _blocks[x, y, z - 1].SunLevel;
-				res.OBackward = _blocks[x, y, z - 1].LightLevel;
+				var block = _blocks[x, y, z - 1];
+				res.SunBackward = block.SunLevel;
+				res.OBackward   = block.LightLevel;
 			} else {
 				var chunk = neighborChunks[5];
 				if ( chunk != null ) {
-					res.SunBackward = chunk._blocks[x, y, CHUNK_SIZE_Z - 1].SunLevel;
-					res.OBackward   = chunk._blocks[x, y, CHUNK_SIZE_Z - 1].LightLevel;
+					var block = chunk._blocks[x, y, CHUNK_SIZE_Z - 1];
+					res.SunBackward = block.SunLevel;
+					res.OBackward   = block.LightLevel;
 				}
 			}
 			return res;

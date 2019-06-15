@@ -9,15 +9,14 @@ namespace Voxels {
 
 		public List<BlockDescription> BlockDescriptions = new List<BlockDescription>();
 
-		Dictionary<BlockType, BlockDescription> _blockDescDict = null;
-		bool[] _blockFullFlags        = null;
-		bool[] _blockTranslucentFlags = null;
-		bool[] _blockIllumFlags       = null;
-		bool[] _blockLightPassFlags   = null;
+		BlockDescription[] _desc                  = null;
+		bool[]             _blockFullFlags        = null;
+		bool[]             _blockTranslucentFlags = null;
+		bool[]             _blockIllumFlags       = null;
+		bool[]             _blockLightPassFlags   = null;
 
 		public BlockDescription GetBlockDescription(BlockType type) {
-			_blockDescDict.TryGetValue(type, out var res);
-			return res;
+			return _desc[(byte) type];
 		}
 
 		public bool IsFullBlock(BlockType type) {
@@ -37,9 +36,6 @@ namespace Voxels {
 		}
 
 		public void GenerateBlockDescDict() {
-			if ( _blockDescDict != null ) {
-				return;
-			}
 			var maxBlockValue = 0;
 			var typeValues = System.Enum.GetValues(typeof(BlockType));
 			foreach ( var t in  typeValues) {
@@ -48,15 +44,15 @@ namespace Voxels {
 					maxBlockValue = intVal;
 				}
 			}
-			_blockDescDict  = new Dictionary<BlockType, BlockDescription>(BlockDescriptions.Count);
-			_blockFullFlags = new bool[maxBlockValue];
+			_desc                  = new BlockDescription[byte.MaxValue];
+			_blockFullFlags        = new bool[maxBlockValue];
 			_blockTranslucentFlags = new bool[maxBlockValue];
 			_blockIllumFlags       = new bool[maxBlockValue];
 			_blockLightPassFlags   = new bool[maxBlockValue];
 
-			foreach ( var desc in BlockDescriptions ) {
-				_blockDescDict.Add(desc.Type, desc);
+			foreach ( var desc in BlockDescriptions ) {				
 				var key =  (int)desc.Type;
+				_desc[key]                  = desc;
 				_blockFullFlags[key]        =  desc.IsFull;
 				_blockTranslucentFlags[key] =  desc.IsTranslucent;
 				_blockIllumFlags[key]       =  desc.IsLightEmitting;

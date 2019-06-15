@@ -52,7 +52,7 @@ namespace Voxels {
 	}
 
 	public static class VisibilityFlagsHelper {
-		public static bool IsSet(VisibilityFlags flags, VisibilityFlags flag) {
+		public static bool IsSet(this VisibilityFlags flags, VisibilityFlags flag) {
 			return (flags & flag) != 0;
 		}
 

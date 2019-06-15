@@ -34,8 +34,9 @@ namespace Voxels {
 			base.Awake();
 			_sizeY = 1;
 			_chunks = new Dictionary<Int3, Chunk>();
-			Library.GenerateBlockDescDict();
 			TilesetHelper = new TilesetHelper(Library.TileSize, Library.TilesetSize);
+			BlockModelGenerator.PrepareGenerator(TilesetHelper);
+			Library.GenerateBlockDescDict();
 		}
 
 		public Chunk GetOrInitChunk(Int3 index) {
