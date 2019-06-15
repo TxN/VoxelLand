@@ -731,7 +731,7 @@ namespace Voxels {
 							_visibiltiy[x, y, z] = VisibilityFlags.None;
 							continue;
 						}
-						_visibiltiy[x, y, z] = GetBlockTranslucent(_blocks[x, y, z].Type) ? CheckVisibilityTranslucent(x, y, z, neighbors) : CheckVisibilityOpaque(x, y, z, neighbors);
+						_visibiltiy[x, y, z] = _owner.Library.IsTranslucentBlock(_blocks[x, y, z].Type) ? CheckVisibilityTranslucent(x, y, z, neighbors) : CheckVisibilityOpaque(x, y, z, neighbors);
 					}
 				}
 			}
@@ -750,10 +750,11 @@ namespace Voxels {
 		public void UpdateVisibilityForDirtyBlocks() {
 			if ( _needUpdateVisibilityAll ) {
 				UpdateVisibilityAll();
-			}
-			var neighbors = GetNeighborChunks();
-			foreach ( var block in _dirtyBlocks ) {
-				UpdateVisibilityForNeighbors(block.X, block.Y, block.Z, neighbors);
+			} else {
+				var neighbors = GetNeighborChunks();
+				foreach ( var block in _dirtyBlocks ) {
+					UpdateVisibilityForNeighbors(block.X, block.Y, block.Z, neighbors);
+				}
 			}
 			_dirtyBlocks.Clear();
 			Dirty = false;

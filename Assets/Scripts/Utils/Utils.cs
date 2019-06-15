@@ -29,7 +29,7 @@ namespace Voxels {
 	}
 
 	[System.Serializable]
-	public struct Int3 {
+	public struct Int3: System.IEquatable<Int3> {
 		public int X;
 		public int Y;
 		public int Z;
@@ -44,6 +44,10 @@ namespace Voxels {
 			get {
 				return new Int3(0, 0, 0);
 			}
+		}
+
+		public bool Equals(Int3 other) {
+			return X == other.X && Y == other.Y && Z == other.Z;
 		}
 	}
 

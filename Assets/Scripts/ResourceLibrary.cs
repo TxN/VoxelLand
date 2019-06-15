@@ -10,10 +10,10 @@ namespace Voxels {
 		public List<BlockDescription> BlockDescriptions = new List<BlockDescription>();
 
 		Dictionary<BlockType, BlockDescription> _blockDescDict = null;
-		List<bool> _blockFullFlags        = null;
-		List<bool> _blockTranslucentFlags = null;
-		List<bool> _blockIllumFlags       = null;
-		List<bool> _blockLightPassFlags   = null;
+		bool[] _blockFullFlags        = null;
+		bool[] _blockTranslucentFlags = null;
+		bool[] _blockIllumFlags       = null;
+		bool[] _blockLightPassFlags   = null;
 
 		public BlockDescription GetBlockDescription(BlockType type) {
 			_blockDescDict.TryGetValue(type, out var res);
@@ -49,16 +49,11 @@ namespace Voxels {
 				}
 			}
 			_blockDescDict  = new Dictionary<BlockType, BlockDescription>(BlockDescriptions.Count);
-			_blockFullFlags        = new List<bool>(maxBlockValue);
-			_blockTranslucentFlags = new List<bool>(maxBlockValue);
-			_blockIllumFlags       = new List<bool>(maxBlockValue);
-			_blockLightPassFlags   = new List<bool>(maxBlockValue);
-			for ( int i = 0; i <= maxBlockValue; i++ ) {
-				_blockFullFlags.Add(false);
-				_blockTranslucentFlags.Add(false);
-				_blockIllumFlags.Add(false);
-				_blockLightPassFlags.Add(false);
-			}
+			_blockFullFlags = new bool[maxBlockValue];
+			_blockTranslucentFlags = new bool[maxBlockValue];
+			_blockIllumFlags       = new bool[maxBlockValue];
+			_blockLightPassFlags   = new bool[maxBlockValue];
+
 			foreach ( var desc in BlockDescriptions ) {
 				_blockDescDict.Add(desc.Type, desc);
 				var key =  (int)desc.Type;
