@@ -19,6 +19,8 @@ namespace Voxels {
 				Debug.Log("Chunk manager isn't present");
 				return;
 			}
+			StartCoroutine(ParallelGenRoutine(16, 16));
+			return;
 			var cm   = ChunkManager.Instance;
 			var size = 256;
 			_isGeneratingHeightmap = true;
@@ -70,6 +72,59 @@ namespace Voxels {
 			}
 			chunk.SetDirtyAll();
 			chunk.InitSunlight();
+		}
+
+		IEnumerator ParallelGenRoutine(int sizeX, int sizeZ) {
+			var cm = ChunkManager.Instance;
+			for ( int x = 0; x < sizeX; x++ ) {
+				for ( int z = 0; z < sizeZ; z++ ) {
+					var heightmapJob = new HeightGenJob() {
+						BaseScale = 20,
+						Seed = 143,
+						SizeX = Chunk.CHUNK_SIZE_X,
+						SizeY = Chunk.CHUNK_SIZE_Z,
+						OffsetX = Chunk.CHUNK_SIZE_X * x,
+						OffsetY = Chunk.CHUNK_SIZE_Z * z,
+						Height = new Unity.Collections.NativeArray<byte>(Chunk.CHUNK_SIZE_X * Chunk.CHUNK_SIZE_Z, Unity.Collections.Allocator.Persistent)
+					};
+					var hHandle = heightmapJob.Schedule(256, 128);
+					hHandle.Complete();
+					
+					var blockCount = Chunk.CHUNK_SIZE_X * Chunk.CHUNK_SIZE_Y * Chunk.CHUNK_SIZE_Z;
+					var fillJob = new ChunkGenJob() {
+						SizeH = Chunk.CHUNK_SIZE_X,
+						SizeY = Chunk.CHUNK_SIZE_Y,
+						Seed = 143,
+						HeightMap = heightmapJob.Height,
+						Blocks = new Unity.Collections.NativeArray<BlockData>(blockCount, Unity.Collections.Allocator.Persistent)
+					};
+					
+					var fillHandler = fillJob.Schedule(blockCount, 512);
+					var height = heightmapJob.Height.ToArray();
+					var maxY = 0;
+					for ( int i = 0; i < height.Length; i++ ) {
+						if ( height[i] > maxY ) {
+							maxY = height[i];
+						}
+					}
+					yield return new WaitForEndOfFrame();
+					fillHandler.Complete();
+					
+					var chunk = cm.GetChunkInCoords(x * Chunk.CHUNK_SIZE_X, 0, z * Chunk.CHUNK_SIZE_Z);
+					if ( chunk != null ) {
+						chunk.SetAllBlocks(fillJob.Blocks.ToArray(), maxY +1 );
+						chunk.SetDirtyAll();
+					}
+					heightmapJob.Height.Dispose();
+					fillJob.Blocks.Dispose();
+				}
+			}
+			var chunks = cm.GetAllChunks;
+			foreach ( var chunk in chunks ) {
+				chunk.ForceUpdateChunk();
+				yield return new WaitForEndOfFrame();
+			}
+			yield return null;
 		}
 
 		IEnumerator ByChunkGenRoutine(int sizeX, int sizeZ) {

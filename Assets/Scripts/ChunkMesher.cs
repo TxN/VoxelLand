@@ -63,20 +63,24 @@ namespace Voxels {
 
 		void StartMeshing() {
 			Ready = false;
-			for ( int i = 0; i < Blocks.Count; i++ ) {
+			var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+			stopwatch.Start();
+			var start = Blocks.Count - 1;
+			for ( int i = start; i >= 0 ; i-- ) {
 				var blockItem = Blocks[i];
 				var rawPos    = blockItem.Position;
 				var pos       = _originPos + new Vector3(rawPos.X, rawPos.Y, rawPos.Z);
-				var blockData = blockItem.Block;
-				var desc      = _library.GetBlockDescription(blockData.Type);
+				var desc      = _library.GetBlockDescription(blockItem.Block.Type);
 				if ( desc.IsTranslucent ) {
-					BlockModelGenerator.AddBlock(_translucentPassableMesh, desc, blockData, pos, blockItem.Visibility, blockItem.Lighting);
+					BlockModelGenerator.AddBlock(_translucentPassableMesh, desc,ref pos, ref blockItem);
 				} else {
-					BlockModelGenerator.AddBlock(_opaqueCollidedMesh, desc, blockData, pos, blockItem.Visibility, blockItem.Lighting);
+					BlockModelGenerator.AddBlock(_opaqueCollidedMesh, desc, ref pos, ref blockItem);
 				}
 			}
 			Ready = true;
 			Busy  = false;
+			stopwatch.Stop();
+			AddTime(stopwatch.Elapsed.TotalMilliseconds);
 		}
 
 		public void FinalizeBake() {
@@ -85,6 +89,17 @@ namespace Voxels {
 			_opaqueCollidedMesh.BakeMesh();
 			_translucentPassableMesh.BakeMesh();
 			Ready = false;
+		}
+
+		static double totalTime = 0d;
+		public static int GenCount = 0;
+		public static void AddTime(double time) {
+			GenCount++;
+			totalTime += time;
+			//Debug.Log(string.Format("Cur:{0}, Av:{1}",time, totalTime / GenCount));
+		}
+		public static void PrintBenchmark() {
+			Debug.Log(string.Format("Av:{0}", totalTime / GenCount));
 		}
 	}
 }

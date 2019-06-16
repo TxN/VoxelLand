@@ -12,7 +12,7 @@ namespace Voxels {
 		public GeneratableMesh(int capacity) {
 			Mesh      = new Mesh();
 			Colors    = new List<Color32>(capacity);
-			Triangles = new List<int>(capacity);
+			Triangles = new List<int>    (capacity);
 			UVs       = new List<Vector2>(capacity);
 			Vertices  = new List<Vector3>(capacity);
 		}		

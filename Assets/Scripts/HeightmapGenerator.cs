@@ -1,20 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Jobs;
 using Unity.Collections;
+using Unity.Burst;
 
 namespace Voxels {
+	[BurstCompile]
 	public struct HeightGenJob : IJobParallelFor {
 		public int SizeX;
 		public int SizeY;
+		public int OffsetX;
+		public int OffsetY;
 		public int Seed;
 		public float BaseScale;
+
+		[WriteOnly]
 		public NativeArray<byte> Height;
 
 		public void Execute(int index) {
-			var x = index / SizeX;
-			var y = index % SizeY;
+			var x = OffsetX + ( index / SizeX);
+			var y = OffsetY + (index % SizeY);
 
 			var noise =  Mathf.PerlinNoise(x / (float) 32 + Seed, y / (float) 32 + Seed) * BaseScale * 0.5f;
 			noise += Mathf.PerlinNoise(x / (float)64 + Seed - 3, y / (float)64 + Seed - 3) * BaseScale;
@@ -24,7 +28,42 @@ namespace Voxels {
 		}
 	}
 
-	public class HeightGenSync {
-		
+	[BurstCompile]
+	public struct ChunkGenJob  : IJobParallelFor {
+		public int SizeH;
+		public int SizeY;
+		public int Seed;
+
+		[ReadOnly]
+		public NativeArray<byte> HeightMap;
+
+		[WriteOnly]
+		public NativeArray<BlockData> Blocks;
+		public void Execute(int index) {
+			var dh = SizeH * SizeH;
+			var y = index / dh;
+			var h = index % dh;
+			var x = h % SizeH;
+			var z = h / SizeH;
+			var height = HeightMap[(x) * SizeH + z];
+			var stoneHeight = (int)(height * 0.8f);
+			if ( y == 0 ) {
+				Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Bedrock, 0);
+				return;
+			}
+			if ( y < stoneHeight ) {
+				Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Stone, 0);
+			}
+			else if ( y < height ){
+				Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Dirt, 0);
+				return;
+			} else if ( y == height ) {
+				Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Grass, 0);
+			} else if ( y > height ) {
+				Blocks[y * dh + z * SizeH + x] = new BlockData() {
+					SunLevel = 255
+				};
+			}
+		}
 	}
 }

@@ -88,6 +88,18 @@ namespace Voxels {
 			_indexZ          = z;
 		}
 
+		public void SetAllBlocks(BlockData[] blocks, int maxY) {
+			_maxNonEmptyY = maxY;
+			for ( int i = 0; i < blocks.Length; i++ ) {
+				var y = i / (CHUNK_SIZE_X * CHUNK_SIZE_X);
+				var h = i % (CHUNK_SIZE_X * CHUNK_SIZE_X);
+				var x = h % CHUNK_SIZE_X;
+				var z = h / CHUNK_SIZE_X;
+				_blocks[x,y,z] = blocks[i];
+			}
+			InitSunlight();
+		}
+
 		public bool MesherWorkComplete {
 			get {
 				return _mesher.Ready;
@@ -130,14 +142,14 @@ namespace Voxels {
 			_sunlightAddQueue.Clear();
 			_sunlightRemQueue.Clear();
 
-			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
+		/*	for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
 				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
 					for ( int y = CHUNK_SIZE_Y - 1; y >= _maxNonEmptyY; y-- ) {
 						_blocks[x, y, z].SunLevel = MAX_SUNLIGHT_VALUE;
 					}
 				}
 			}
-
+			*/
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
 				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
 					_blocks[x, _maxNonEmptyY, z].SunLevel = MAX_SUNLIGHT_VALUE;
@@ -688,8 +700,10 @@ namespace Voxels {
 		}
 
 		public void UpdateGeometry() {
+			var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 			_mesher.PrepareMesher();
 			var neighbors = GetNeighborChunks();
+			var blockList = _mesher.Blocks;
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
 				for ( int y = 0; y < _maxNonEmptyY; y++ ) {
 					for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
@@ -697,11 +711,10 @@ namespace Voxels {
 						if ( block.IsEmpty() || _visibiltiy[x, y, z] == VisibilityFlags.None ) {
 							continue;
 						}
-						var light = GetLightForBlock(x, y, z, neighbors);
-						_mesher.Blocks.Add(new MesherBlockInput() {
+						blockList.Add(new MesherBlockInput() {
 							Block      = block,
-							Lighting   = light,
 							Position   = new Byte3(x, y, z),
+							Lighting   = GetLightForBlock(x, y, z, neighbors),
 							Visibility = _visibiltiy[x, y, z]
 						});
 					}
@@ -709,6 +722,15 @@ namespace Voxels {
 			}
 			_mesher.StartAsyncMeshing();
 			NeedRebuildGeometry = false;
+			stopwatch.Stop();
+			AddTime(stopwatch.Elapsed.TotalMilliseconds);
+		}
+
+		static double totalTime = 0d;
+		public static int  GenCount = 0;
+		public static void AddTime(double time) {
+			GenCount++;
+			totalTime += time;
 		}
 
 		public void FinalizeMeshUpdate() {
@@ -841,11 +863,6 @@ namespace Voxels {
 				if ( _owner.Library.IsLightPassBlock(_blocks[x, y  + 1, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Up);
 				}				
-			} else {
-				var chunk = neighborChunks[0];
-				if ( chunk == null || _owner.Library.IsLightPassBlock(chunk._blocks[x, 0, z].Type) ) {
-					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Up);
-				}
 			}
 			//Down
 			if ( y > 0 ) {
@@ -907,22 +924,12 @@ namespace Voxels {
 				if ( !HasFullBlockAt(x, y + 1, z) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Up);
 				}
-			} else {
-				var chunk = neighborChunks[0];
-				if ( chunk == null || !chunk.HasFullBlockAt(x, 0, z) ) {
-					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Up);
-				}
 			}
 			//Down
 			if ( y > 0 ) {
 				if ( !HasFullBlockAt(x, y - 1, z) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Down);
 				}
-			} else {//TODO: this only needed if we have more than one chunk on Y (now we have only one)
-				/*var chunk = neighborChunks[1];
-				if ( chunk == null || !chunk.HasFullBlockAt(x, CHUNK_SIZE_Y - 1, z) ) {
-					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Down);
-				}*/
 			}
 			//Right
 			if ( x < CHUNK_SIZE_X - 1 ) {

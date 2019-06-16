@@ -19,10 +19,13 @@ namespace Voxels {
 			}
 		}
 
-		public static void AddBlock(GeneratableMesh meshInfo, BlockDescription desc, BlockData data, Vector3 rootPos, VisibilityFlags visibility, LightInfo light) {
+		public static void AddBlock(GeneratableMesh meshInfo, BlockDescription desc, ref Vector3 rootPos, ref MesherBlockInput input) {
 			if ( desc == null ) {
 				return;
 			}
+			var data       = input.Block;
+			var visibility = input.Visibility;
+			var light      = input.Lighting;
 			switch ( desc.ModelType ) {
 				case BlockModelType.None:
 					return;
@@ -56,15 +59,9 @@ namespace Voxels {
 			}
 		}
 
-		static Byte2     _lastTile = new Byte2(255,255);
-		static Vector2[] _lastPlaneUVs;
-
 		public static void GenerateCrossedVPlanes(GeneratableMesh meshInfo, BlockDescription desc, BlockData data, Vector3 rootPos, VisibilityFlags visibility) {
-			if ( visibility == VisibilityFlags.None ) {
-				return;
-			}
-			var pointer = meshInfo.Vertices.Count;
-			var tile    = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)].FaceTiles[0];
+			var pointer   = meshInfo.Vertices.Count;
+			var tile      = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)].FaceTiles[0];
 			var calcColor = new Color32(data.SunLevel, data.LightLevel, 0, 0);
 			AddPlane(meshInfo, _rotVertPlaneVerts_0, tile, rootPos, pointer, calcColor);
 			pointer += 4;
@@ -77,19 +74,10 @@ namespace Voxels {
 		}
 
 		public static void GenerateFullBlockSimple(GeneratableMesh meshInfo, BlockDescription desc, BlockData data, Vector3 rootPos, VisibilityFlags visibility, LightInfo light) {
-			if ( visibility == VisibilityFlags.None ) {
-				return;
-			}
-			var pointer    = meshInfo.Vertices.Count;
-			var tile = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)].FaceTiles[0];
+			var pointer = meshInfo.Vertices.Count;
+			var tile    = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)].FaceTiles[0];
+			var uvs     = GetCachedUVsForTile(tile);
 
-			var uvs = _lastPlaneUVs;
-			if ( !tile.Equals(_lastTile) ) {
-				uvs = GetCachedUVsForTile(tile);
-				_lastPlaneUVs = uvs;
-				_lastTile = tile;
-			}
-			
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Backward) ) {
 				var calcColor = new Color32(light.SunBackward, light.OBackward, 0, 0);
 				AddPlaneWithUVs(meshInfo, _fullBlockBackSide, uvs, rootPos, pointer, calcColor);
@@ -123,9 +111,6 @@ namespace Voxels {
 		}
 
 		public static void GenerateFullBlockComplex(GeneratableMesh meshInfo, BlockDescription desc, BlockData data, Vector3 rootPos, VisibilityFlags visibility, LightInfo light) {
-			if ( visibility == VisibilityFlags.None ) {
-				return;
-			}
 			var pointer = meshInfo.Vertices.Count;
 			var sub = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)];
 
@@ -162,9 +147,6 @@ namespace Voxels {
 		}
 
 		public static void GenerateHalfBlockDown(GeneratableMesh meshInfo, BlockDescription desc, BlockData data, Vector3 rootPos, VisibilityFlags visibility, LightInfo light) {
-			if ( visibility == VisibilityFlags.None ) {
-				return;
-			}
 			var pointer = meshInfo.Vertices.Count;
 			var sub = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)];
 

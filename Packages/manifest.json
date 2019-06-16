@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.burst": "1.0.4",
     "com.unity.memoryprofiler": "0.1.0-preview.6",
     "com.unity.package-manager-ui": "2.1.2",
     "com.unity.render-pipelines.lightweight": "5.7.2",

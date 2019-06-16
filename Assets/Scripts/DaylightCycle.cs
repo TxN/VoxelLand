@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace Voxels {
-	public class DaylightCycle : MonoBehaviour {
+	public sealed class DaylightCycle : MonoBehaviour {
 		public AnimationCurve LightIntensityCurve = null;
 		public Gradient SkyColor     = null;
 		public Gradient HorizonColor = null;
