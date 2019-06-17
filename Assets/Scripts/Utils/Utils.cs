@@ -46,6 +46,18 @@ namespace Voxels {
 			}
 		}
 
+		public static Int3 operator+ (Int3 a, Int3 b) {
+			return a.Add(b);
+		}
+
+		public Int3 Add(int x, int y, int z) {
+			return new Int3(X + x, Y + y, Z + z);
+		}
+
+		public Int3 Add(Int3 other) {
+			return new Int3(X + other.X, Y + other.Y, Z + other.Z);
+		}
+
 		public bool Equals(Int3 other) {
 			return X == other.X && Y == other.Y && Z == other.Z;
 		}

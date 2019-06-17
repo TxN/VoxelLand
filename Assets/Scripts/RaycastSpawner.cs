@@ -13,14 +13,15 @@ namespace Voxels {
 		Rect DebugOutBlock = new Rect(10, 60, 250, 40);
 
 		private void Update() {
+			var cm = ChunkManager.Instance;
+			cm.ViewPosition = transform.position;
 			var hitInfo = new RaycastHit();
 			var dir =  transform.TransformDirection(Vector3.forward);
 			if ( Physics.Raycast(transform.position, dir, out hitInfo, 100) ) {
 				Cursor.transform.position = hitInfo.point;
-				var cm = ChunkManager.Instance;
 				_pointIn  = hitInfo.point + dir * 0.03f;
 				_pointOut = hitInfo.point - dir * 0.015f;
-				var chunk = cm.GetChunkInCoords(_pointIn);
+				var chunk = cm.GetChunkInCoords(_pointIn);//Баг: если нет чанка, создается непрорегеннный чанк, который потом не заполнятеся.
 				if ( chunk != null ) {
 					var block = cm.GetBlockIn(_pointIn);
 					if ( !block.IsEmpty() ) {

@@ -12,7 +12,10 @@ namespace Voxels {
 		public TilesetHelper TilesetHelper { get; private set; } = null;
 
 		Dictionary<Int3, Chunk> _chunks = new Dictionary<Int3, Chunk>();
-		int _sizeY = 0; 
+		int _sizeY = 0;
+
+		List<Int3> _chunkLoadList = new List<Int3>(128);
+		public const int LOAD_RADIUS = 4;
 
 		public int GetWorldHeight {
 			get {
@@ -29,6 +32,8 @@ namespace Voxels {
 				return list;
 			}
 		}
+
+		public Vector3 ViewPosition = Vector3.zero;
 		
 		protected override void Awake() {
 			base.Awake();
@@ -72,24 +77,8 @@ namespace Voxels {
 			_chunks.Remove(index);
 		}
 
-		void LateUpdate() {
-			foreach ( var chunkPair in _chunks ) {
-				var chunk = chunkPair.Value;
-				if ( chunk != null && chunk.MesherWorkComplete ) {
-					chunk.FinalizeMeshUpdate();
-				}
-			}
-
-			foreach ( var chunkPair in _chunks ) {
-				var chunk = chunkPair.Value;
-				if ( chunk != null && chunk.NeedRebuildGeometry ) {
-					chunk.UpdateGeometry();
-				}
-			}
-
-		}
-
 		void Update() {
+
 			foreach ( var chunkPair in _chunks ) {
 				var chunk = chunkPair.Value;
 				if ( chunk != null && chunk.Dirty ) {
@@ -106,9 +95,48 @@ namespace Voxels {
 			}
 		}
 
+		void LateUpdate() {
+			RefreshChunkGenQueue();
+			foreach ( var chunkPair in _chunks ) {
+				var chunk = chunkPair.Value;
+				if ( chunk != null && chunk.MesherWorkComplete ) {
+					chunk.FinalizeMeshUpdate();
+				}
+			}
+
+			foreach ( var chunkPair in _chunks ) {
+				var chunk = chunkPair.Value;
+				if ( chunk != null && chunk.NeedRebuildGeometry ) {
+					chunk.UpdateGeometry();
+				}
+			}
+
+		}
+
+		void RefreshChunkGenQueue() {
+			_chunkLoadList.Clear();
+			ViewPosition.y = 0;
+			var originPos = GetChunkIdFromCoords(ViewPosition);
+			for ( int x = - LOAD_RADIUS; x <= LOAD_RADIUS; x++ ) {
+				for ( int z = -LOAD_RADIUS; z <= LOAD_RADIUS; z++ ) {
+					var newPos = originPos.Add(x, 0, z);
+					if ( GetChunk(newPos) == null ) {
+						_chunkLoadList.Add(originPos.Add(x, 0, z));
+					}
+				}
+			}
+
+			LandGenerator.Instance.RefreshQueue(_chunkLoadList);
+		}
+
 		public Chunk GetChunk(int x, int y, int z) {
 			var key = new Int3(x, y, z);
 			_chunks.TryGetValue(key, out var res);
+			return res;
+		}
+
+		public Chunk GetChunk(Int3 pos) {
+			_chunks.TryGetValue(pos, out var res);
 			return res;
 		}
 
@@ -127,9 +155,19 @@ namespace Voxels {
 			var fullChunksX = Mathf.FloorToInt( x / (float)Chunk.CHUNK_SIZE_X);
 			var fullChunksY = Mathf.FloorToInt( y / (float)Chunk.CHUNK_SIZE_Y);
 			var fullChunksZ = Mathf.FloorToInt( z / (float)Chunk.CHUNK_SIZE_Z);
-		//	Debug.Log(fullChunksX + " " + fullChunksY + " " + fullChunksZ);
 			return GetOrInitChunk(new Int3(fullChunksX, fullChunksY, fullChunksZ));
 		}
+
+		public Int3 GetChunkIdFromCoords(Vector3 pos) {
+			var posX = Mathf.FloorToInt(pos.x);
+			var posY = Mathf.FloorToInt(pos.y);
+			var posZ = Mathf.FloorToInt(pos.z);
+			var fullChunksX = Mathf.FloorToInt(posX / (float)Chunk.CHUNK_SIZE_X);
+			var fullChunksY = Mathf.FloorToInt(posY / (float)Chunk.CHUNK_SIZE_Y);
+			var fullChunksZ = Mathf.FloorToInt(posZ / (float)Chunk.CHUNK_SIZE_Z);
+			return new Int3(fullChunksX, fullChunksY, fullChunksZ);
+		}
+
 
 		public void PutBlock(Vector3 pos, BlockData block) {
 			var x = Mathf.FloorToInt(pos.x);

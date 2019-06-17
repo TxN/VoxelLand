@@ -1,33 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using EventSys;
 
 namespace Voxels {
-	public class ChunkRenderer : MonoBehaviour {
-		public MeshRenderer MeshRenderer = null;
-		public MeshFilter   MeshFilter   = null;
-		public MeshCollider Collider     = null;
+	public sealed class ChunkRenderer : MonoBehaviour {
+		public MeshRenderer MeshRenderer      = null;
+		public MeshFilter   MeshFilter        = null;
+		public MeshCollider Collider          = null;
 		public MeshFilter   TransparentFilter = null;
 		Chunk _targetChunk = null;
 
-		private void Start() {
-			EventManager.Subscribe<Event_ChunkMeshUpdate>(this, OnChunkUpdate);
-			UpdateRenderer();
-		}
-
 		public void Setup(Chunk targetChunk) {
+			EventManager.Subscribe<Event_ChunkMeshUpdate>(this, OnChunkUpdate);
 			_targetChunk = targetChunk;
 			UpdateRenderer();
+			gameObject.SetActive(true);
+		}
+
+		public void DeInit() {
+			EventManager.Unsubscribe<Event_ChunkMeshUpdate>(OnChunkUpdate);
+			DeInitRenderer();
+			_targetChunk = null;
+		}
+
+		void DeInitRenderer() {
+			MeshFilter.mesh        = null;
+			TransparentFilter.mesh = null;
+			Collider.sharedMesh    = null;
 		}
 
 		void UpdateRenderer() {
-			MeshFilter.mesh = null;
-			MeshFilter.mesh = _targetChunk.OpaqueCollidedMesh.Mesh;
-			TransparentFilter.mesh = null;
+			DeInitRenderer();
+			MeshFilter.mesh        = _targetChunk.OpaqueCollidedMesh.Mesh;
 			TransparentFilter.mesh = _targetChunk.TranslucentPassableMesh.Mesh;
-			Collider.sharedMesh = null;
-			Collider.sharedMesh = _targetChunk.OpaqueCollidedMesh.Mesh;
+			Collider.sharedMesh    = _targetChunk.OpaqueCollidedMesh.Mesh;
 		}
 
 		void OnChunkUpdate(Event_ChunkMeshUpdate e) {
@@ -41,4 +46,3 @@ namespace Voxels {
 		}
 	}
 }
-

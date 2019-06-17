@@ -457,6 +457,7 @@ MonoBehaviour:
   TranslucentMaterial: {fileID: 2100000, guid: 923864d8c47883b4ead13f52be9c02b3, type: 2}
   ChunkRenderer: {fileID: 4156905493256739379, guid: 8213b2638648bd448a71bf0e08b1f724,
     type: 3}
+  ViewPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &1456862423
 Transform:
   m_ObjectHideFlags: 0
