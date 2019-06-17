@@ -124,10 +124,10 @@ namespace Voxels {
 		}
 
 		public Chunk GetChunkInCoords(int x, int y, int z) {
-			var fullChunksX = x / Chunk.CHUNK_SIZE_X;
-			var fullChunksY = y / Chunk.CHUNK_SIZE_Y;
-			var fullChunksZ = z / Chunk.CHUNK_SIZE_Z;
-			//Debug.Log(fullChunksX + " " + fullChunksY + " " + fullChunksZ);
+			var fullChunksX = Mathf.FloorToInt( x / (float)Chunk.CHUNK_SIZE_X);
+			var fullChunksY = Mathf.FloorToInt( y / (float)Chunk.CHUNK_SIZE_Y);
+			var fullChunksZ = Mathf.FloorToInt( z / (float)Chunk.CHUNK_SIZE_Z);
+		//	Debug.Log(fullChunksX + " " + fullChunksY + " " + fullChunksZ);
 			return GetOrInitChunk(new Int3(fullChunksX, fullChunksY, fullChunksZ));
 		}
 
@@ -146,6 +146,12 @@ namespace Voxels {
 			var inChunkX = x % Chunk.CHUNK_SIZE_X;
 			var inChunkY = y % Chunk.CHUNK_SIZE_Y;
 			var inChunkZ = z % Chunk.CHUNK_SIZE_Z;
+			if ( inChunkX < 0 ) {
+				inChunkX = Chunk.CHUNK_SIZE_X + inChunkX;
+			}
+			if ( inChunkZ < 0 ) {
+				inChunkZ = Chunk.CHUNK_SIZE_Z + inChunkZ;
+			}
 			chunk.PutBlock(inChunkX, inChunkY, inChunkZ, block);
 		}
 
@@ -164,6 +170,12 @@ namespace Voxels {
 			var inChunkX = x % Chunk.CHUNK_SIZE_X;
 			var inChunkY = y % Chunk.CHUNK_SIZE_Y;
 			var inChunkZ = z % Chunk.CHUNK_SIZE_Z;
+			if ( inChunkX < 0 ) {
+				inChunkX = Chunk.CHUNK_SIZE_X + inChunkX;
+			}
+			if ( inChunkZ < 0 ) {
+				inChunkZ = Chunk.CHUNK_SIZE_Z + inChunkZ;
+			}
 			return chunk.GetBlock(inChunkX, inChunkY, inChunkZ);
 		}
 
