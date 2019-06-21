@@ -4,18 +4,19 @@ using EventSys;
 
 namespace Voxels {
 	public sealed class ChunkManager : MonoSingleton<ChunkManager> {
-		public ResourceLibrary Library             = null;
-		public Material        OpaqueMaterial      = null;
-		public Material        TranslucentMaterial = null;
-		public ChunkRenderer   ChunkRenderer       = null;
+		public ResourceLibrary   Library             = null;
+		public Material          OpaqueMaterial      = null;
+		public Material          TranslucentMaterial = null;
 
 		public TilesetHelper TilesetHelper { get; private set; } = null;
 
 		Dictionary<Int3, Chunk> _chunks = new Dictionary<Int3, Chunk>();
-		int _sizeY = 0;
+		int                     _sizeY  = 0;
 
-		List<Int3> _chunkLoadList = new List<Int3>(128);
-		public const int LOAD_RADIUS = 4;
+		List<Int3>        _chunkLoadList = new List<Int3>(128);
+		ChunkRendererPool _renderPool    = new ChunkRendererPool();
+		public const int LOAD_RADIUS   = 4;
+		public const int UNLOAD_RADIUS = 6;
 
 		public int GetWorldHeight {
 			get {
@@ -42,6 +43,7 @@ namespace Voxels {
 			TilesetHelper = new TilesetHelper(Library.TileSize, Library.TilesetSize);
 			BlockModelGenerator.PrepareGenerator(TilesetHelper);
 			Library.GenerateBlockDescDict();
+			_renderPool.Init();
 		}
 
 		public Chunk GetOrInitChunk(Int3 index) {
@@ -58,8 +60,8 @@ namespace Voxels {
 			var x = index.X;
 			var y = index.Y;
 			var z = index.Z;
-			var chunk = new Chunk(this, x, y, z, new Vector3(x * Chunk.CHUNK_SIZE_X, y * Chunk.CHUNK_SIZE_Y, z * Chunk.CHUNK_SIZE_Z));
-			var render = Instantiate(ChunkRenderer, chunk.OriginPos, Quaternion.identity).GetComponent<ChunkRenderer>(); //TODO:Pooling
+			var chunk  = new Chunk(this, x, y, z, new Vector3(x * Chunk.CHUNK_SIZE_X, y * Chunk.CHUNK_SIZE_Y, z * Chunk.CHUNK_SIZE_Z));
+			var render = _renderPool.Get();
 			render.name = string.Format("Chunk {0} {1}", x, z);
 			render.transform.position = Vector3.zero;
 			render.Setup(chunk);

@@ -2,7 +2,7 @@ using UnityEngine;
 using EventSys;
 
 namespace Voxels {
-	public sealed class ChunkRenderer : MonoBehaviour {
+	public sealed class ChunkRenderer : MonoBehaviour, IPoolItem {
 		public MeshRenderer MeshRenderer      = null;
 		public MeshFilter   MeshFilter        = null;
 		public MeshCollider Collider          = null;
