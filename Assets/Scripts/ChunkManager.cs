@@ -232,6 +232,12 @@ namespace Voxels {
 			var inChunkX = x % Chunk.CHUNK_SIZE_X;
 			var inChunkY = y % Chunk.CHUNK_SIZE_Y;
 			var inChunkZ = z % Chunk.CHUNK_SIZE_Z;
+			if ( inChunkX < 0 ) {
+				inChunkX = Chunk.CHUNK_SIZE_X + inChunkX;
+			}
+			if ( inChunkZ < 0 ) {
+				inChunkZ = Chunk.CHUNK_SIZE_Z + inChunkZ;
+			}
 			chunk.RemoveBlock(inChunkX, inChunkY, inChunkZ);
 		}
 	}
