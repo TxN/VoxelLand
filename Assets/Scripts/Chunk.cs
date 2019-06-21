@@ -118,6 +118,11 @@ namespace Voxels {
 			}
 		}
 
+		public float GetDistance(Vector3 pos) {
+			pos.y = 0;
+			return Vector3.Distance(pos, OriginPos);
+		}
+
 		public void EnqueueToLightAdd(Int3 node) {
 			Dirty = true;
 			_lightAddQueue.Enqueue(node);
@@ -141,15 +146,7 @@ namespace Voxels {
 		public void InitSunlight() {
 			_sunlightAddQueue.Clear();
 			_sunlightRemQueue.Clear();
-
-		/*	for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
-				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
-					for ( int y = CHUNK_SIZE_Y - 1; y >= _maxNonEmptyY; y-- ) {
-						_blocks[x, y, z].SunLevel = MAX_SUNLIGHT_VALUE;
-					}
-				}
-			}
-			*/
+			
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
 				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
 					_blocks[x, _maxNonEmptyY, z].SunLevel = MAX_SUNLIGHT_VALUE;
@@ -1117,9 +1114,7 @@ namespace Voxels {
 			var oldSunlight  = _blocks[x, y, z].SunLevel;
 			_blocks[x, y, z] = BlockData.Empty;
 			_blocks[x, y, z].LightLevel = (byte) Mathf.Clamp(Mathf.Max(nl.OBackward, nl.OForward, nl.OLeft, nl.ORight, nl.OUp, nl.ODown) - LIGHT_FALLOF_VALUE, 0, 255);
-			//_blocks[x, y, z].SunLevel   = (byte) Mathf.Clamp(Mathf.Max(nl.SunBackward, nl.SunForward, nl.SunLeft, nl.SunRight, nl.SunUp, nl.SunDown), 0, 255);
 			_lightAddQueue.Enqueue(new Int3(x, y, z));
-			//_sunlightAddQueue.Enqueue(new Int3(x, y, z));
 			_lightRemQueue.   Enqueue(new LightRemNode(x, y, z, oldLight));
 			_sunlightRemQueue.Enqueue(new LightRemNode(x, y, z, oldSunlight));
 			AddDirtyBlock(x, y, z);

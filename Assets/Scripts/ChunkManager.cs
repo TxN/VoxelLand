@@ -15,8 +15,8 @@ namespace Voxels {
 
 		List<Int3>        _chunkLoadList = new List<Int3>(128);
 		ChunkRendererPool _renderPool    = new ChunkRendererPool();
-		public const int LOAD_RADIUS   = 4;
-		public const int UNLOAD_RADIUS = 6;
+		public const int LOAD_RADIUS   = 5;
+		public const int UNLOAD_DISTANCE = 16 * 8;
 
 		public int GetWorldHeight {
 			get {
@@ -98,6 +98,7 @@ namespace Voxels {
 		}
 
 		void LateUpdate() {
+			UnloadFarChunks();
 			RefreshChunkGenQueue();
 			foreach ( var chunkPair in _chunks ) {
 				var chunk = chunkPair.Value;
@@ -129,6 +130,27 @@ namespace Voxels {
 			}
 
 			LandGenerator.Instance.RefreshQueue(_chunkLoadList);
+		}
+
+		void UnloadFarChunks() {
+			var unloadList = new List<Int3>();
+			foreach ( var chunkPair in _chunks ) {
+				var chunk = chunkPair.Value;
+				if ( chunk.GetDistance(ViewPosition) > UNLOAD_DISTANCE ) {
+					unloadList.Add(chunkPair.Key);
+				}
+			}
+
+			foreach ( var item in unloadList ) {
+				UnloadChunk(item);
+			}
+		}
+
+		void UnloadChunk(Int3 pos) {
+			var chunk = GetChunk(pos);
+			_renderPool.Return(chunk.Renderer);
+			chunk.Renderer = null;
+			_chunks.Remove(pos);
 		}
 
 		public Chunk GetChunk(int x, int y, int z) {
