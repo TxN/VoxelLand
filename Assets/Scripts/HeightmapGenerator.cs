@@ -33,6 +33,7 @@ namespace Voxels {
 		public int SizeH;
 		public int SizeY;
 		public int Seed;
+		public Unity.Mathematics.Random Random;
 
 		[ReadOnly]
 		public NativeArray<byte> HeightMap;
@@ -47,6 +48,9 @@ namespace Voxels {
 			var z = h / SizeH;
 			var height = HeightMap[(x) * SizeH + z];
 			var stoneHeight = (int)(height * 0.8f);
+
+			var rnd10pct = Random.NextUInt(0, 10) < 1 ? true : false;
+
 			if ( y == 0 ) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Bedrock, 0);
 				return;
@@ -59,7 +63,12 @@ namespace Voxels {
 				return;
 			} else if ( y == height ) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Grass, 0);
-			} else if ( y > height ) {
+			} else if ( y == height + 1 && rnd10pct ) {
+				Blocks[y * dh + z * SizeH + x] = new BlockData() {
+					Type = BlockType.Weed,
+					SunLevel = 255
+				};
+			} else if ( y > height + 1 || (!rnd10pct && y > height)) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData() {
 					SunLevel = 255
 				};

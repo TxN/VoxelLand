@@ -8,11 +8,14 @@ namespace Voxels {
 		Queue<Int3>  _chunkGenQueue = new Queue<Int3>(16);
 		Queue<Chunk> _visRegenQueue = new Queue<Chunk>(16);
 
+		Unity.Mathematics.Random _random;
+
 		private void Start() {
 			Resources.UnloadUnusedAssets();
 			System.GC.Collect();
 
 			Random.InitState(-26564);
+			_random.InitState(26564);
 			if ( !ChunkManager.Instance ) {
 				Debug.Log("Chunk manager isn't present");
 				return;
@@ -55,9 +58,9 @@ namespace Voxels {
 
 					var blockCount = Chunk.CHUNK_SIZE_X * Chunk.CHUNK_SIZE_Y * Chunk.CHUNK_SIZE_Z;
 					var fillJob = new ChunkGenJob() {
-						SizeH = Chunk.CHUNK_SIZE_X,
-						SizeY = Chunk.CHUNK_SIZE_Y,
-						Seed = 143,
+						SizeH   = Chunk.CHUNK_SIZE_X,
+						SizeY   = Chunk.CHUNK_SIZE_Y,
+						Random  = _random,
 						HeightMap = heightmapJob.Height,
 						Blocks = new Unity.Collections.NativeArray<BlockData>(blockCount, Unity.Collections.Allocator.Persistent)
 					};
