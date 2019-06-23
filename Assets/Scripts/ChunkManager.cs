@@ -124,15 +124,17 @@ namespace Voxels {
 			_chunkLoadList.Clear();
 			ViewPosition.y = 0;
 			var originPos = GetChunkIdFromCoords(ViewPosition);
-			for ( int x = - LOAD_RADIUS; x <= LOAD_RADIUS; x++ ) {
-				for ( int z = -LOAD_RADIUS; z <= LOAD_RADIUS; z++ ) {
-					var newPos = originPos.Add(x, 0, z);
-					if ( GetChunk(newPos) == null ) {
-						_chunkLoadList.Add(originPos.Add(x, 0, z));
+			//корявый способ, но пока так
+			for ( int r = 0; r < LOAD_RADIUS; r++ ) {
+				for ( int x = -r; x < r; x++ ) {
+					for ( int z = -r; z < r; z++ ) {
+						var newPos = originPos.Add(x, 0, z);
+						if ( GetChunk(newPos) == null ) {
+							_chunkLoadList.Add(originPos.Add(x, 0, z));
+						}
 					}
 				}
 			}
-
 			LandGenerator.Instance.RefreshQueue(_chunkLoadList);
 		}
 
