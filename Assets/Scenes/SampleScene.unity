@@ -256,9 +256,9 @@ GameObject:
   - component: {fileID: 534669905}
   - component: {fileID: 534669904}
   - component: {fileID: 534669903}
-  - component: {fileID: 534669906}
   - component: {fileID: 534669907}
   - component: {fileID: 534669908}
+  - component: {fileID: 534669906}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -340,7 +340,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 534669902}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc578f1f8043e594e9614e66107dc8b9, type: 3}
+  m_Script: {fileID: 11500000, guid: c53b6ab52dba9b8488f148faa68eb8c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 10
@@ -455,8 +455,6 @@ MonoBehaviour:
   Library: {fileID: 11400000, guid: 2d72ffce4fe1efc4fb0b41692f0eafa4, type: 2}
   OpaqueMaterial: {fileID: 2100000, guid: 923864d8c47883b4ead13f52be9c02b3, type: 2}
   TranslucentMaterial: {fileID: 2100000, guid: 923864d8c47883b4ead13f52be9c02b3, type: 2}
-  ChunkRenderer: {fileID: 4156905493256739379, guid: 8213b2638648bd448a71bf0e08b1f724,
-    type: 3}
   ViewPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &1456862423
 Transform:
