@@ -93,12 +93,16 @@ namespace Voxels {
 
 		public void SetAllBlocks(BlockData[] blocks, int maxY) {
 			_maxNonEmptyY = maxY;
-			for ( int i = 0; i < blocks.Length; i++ ) {
-				var y = i / (CHUNK_SIZE_X * CHUNK_SIZE_X);
-				var h = i % (CHUNK_SIZE_X * CHUNK_SIZE_X);
-				var x = h % CHUNK_SIZE_X;
-				var z = h / CHUNK_SIZE_X;
-				_blocks[x,y,z] = blocks[i];
+			var y = 0;
+			for ( int i = 0; i < blocks.Length; i += CHUNK_SIZE_X * CHUNK_SIZE_X ) {
+				var local = i;
+				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
+					for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
+						_blocks[x, y, z] = blocks[local];
+						local++;
+					}
+				}
+				y++;
 			}
 			InitSunlight();
 		}
@@ -723,7 +727,7 @@ namespace Voxels {
 			_mesher.StartAsyncMeshing();
 			NeedRebuildGeometry = false;
 			stopwatch.Stop();
-			AddTime(stopwatch.Elapsed.TotalMilliseconds);
+			//AddTime(stopwatch.Elapsed.TotalMilliseconds);
 		}
 
 		static double totalTime = 0d;
@@ -731,6 +735,7 @@ namespace Voxels {
 		public static void AddTime(double time) {
 			GenCount++;
 			totalTime += time;
+			Debug.Log(string.Format("Cur:{0}, Av:{1}", time, totalTime / GenCount));
 		}
 
 		public void FinalizeMeshUpdate() {
