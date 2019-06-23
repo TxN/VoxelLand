@@ -130,6 +130,11 @@ namespace Voxels {
 			return Vector3.Distance(pos, OriginPos);
 		}
 
+		public void UnloadChunk() {
+			Renderer = null;
+			_mesher.DeInit();
+		}
+
 		public void EnqueueToLightAdd(Int3 node) {
 			Dirty = true;
 			_lightAddQueue.Enqueue(node);

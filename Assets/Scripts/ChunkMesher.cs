@@ -52,6 +52,14 @@ namespace Voxels {
 			Blocks.Clear();
 		}
 
+		public void DeInit() {
+			if ( _curentThread != null && _curentThread.IsAlive ) {
+				_curentThread.Abort();
+			}
+			_opaqueCollidedMesh.Destroy();
+			_translucentPassableMesh.Destroy();
+		}
+
 		public void StartAsyncMeshing() {
 			if ( _curentThread != null && _curentThread.IsAlive ) {
 				_curentThread.Abort();

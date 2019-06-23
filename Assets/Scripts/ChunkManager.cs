@@ -153,7 +153,7 @@ namespace Voxels {
 		void UnloadChunk(Int3 pos) {
 			var chunk = GetChunk(pos);
 			_renderPool.Return(chunk.Renderer);
-			chunk.Renderer = null;
+			chunk.UnloadChunk();
 			_chunks.Remove(pos);
 		}
 
