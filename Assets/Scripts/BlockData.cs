@@ -16,7 +16,7 @@ namespace Voxels {
 			Metadata   = 0;
 			SunLevel   = 0;
 			LightLevel = 0;
-			AddColor   = 0;
+			AddColor   = 65535;
 		}
 
 		public BlockData(BlockType type, byte subtype) {
@@ -25,7 +25,7 @@ namespace Voxels {
 			Metadata   = 0;
 			SunLevel   = 0;
 			LightLevel = 0;
-			AddColor   = 0;
+			AddColor   = 65535;
 		}
 
 		public static BlockData Empty {

@@ -62,7 +62,7 @@ namespace Voxels {
 		public static void GenerateCrossedVPlanes(GeneratableMesh meshInfo, BlockDescription desc, BlockData data, Vector3 rootPos, VisibilityFlags visibility) {
 			var pointer   = meshInfo.Vertices.Count;
 			var tile      = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)].FaceTiles[0];
-			var calcColor = new Color32(data.SunLevel, data.LightLevel, 0, 0);
+			var calcColor = new Color32(data.SunLevel, data.LightLevel, (byte)(data.AddColor >> 8), (byte)(data.AddColor % 256));
 			AddPlane(meshInfo, _rotVertPlaneVerts_0, tile, rootPos, pointer, calcColor);
 			pointer += 4;
 			AddPlane(meshInfo, _rotVertPlaneVerts_1, tile, rootPos, pointer, calcColor);
@@ -77,34 +77,35 @@ namespace Voxels {
 			var pointer = meshInfo.Vertices.Count;
 			var tile    = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)].FaceTiles[0];
 			var uvs     = GetCachedUVsForTile(tile);
-
+			var h = (byte)(data.AddColor >> 8);
+			var l = (byte)(data.AddColor % 256);
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Backward) ) {
-				var calcColor = new Color32(light.SunBackward, light.OBackward, 0, 0);
+				var calcColor = new Color32(light.SunBackward, light.OBackward, h, l);
 				AddPlaneWithUVs(meshInfo, _fullBlockBackSide, uvs, rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Forward) ) {
-				var calcColor = new Color32(light.SunForward, light.OForward, 0, 0);
+				var calcColor = new Color32(light.SunForward, light.OForward, h, l);
 				AddPlaneWithUVs(meshInfo, _fullBlockFrontSide, uvs, rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Left) ) {
-				var calcColor = new Color32(light.SunLeft, light.OLeft, 0, 0);
+				var calcColor = new Color32(light.SunLeft, light.OLeft, h, l);
 				AddPlaneWithUVs(meshInfo, _fullBlockLeftSide, uvs, rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Right) ) {
-				var calcColor = new Color32(light.SunRight, light.ORight, 0, 0);
+				var calcColor = new Color32(light.SunRight, light.ORight, h, l);
 				AddPlaneWithUVs(meshInfo, _fullBlockRightSide, uvs, rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Up) ) {
-				var calcColor = new Color32(light.SunUp, light.OUp, 0, 0);
+				var calcColor = new Color32(light.SunUp, light.OUp, h, l);
 				AddPlaneWithUVs(meshInfo, _fullBlockUpSide, uvs, rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Down) ) {
-				var calcColor = new Color32(light.SunDown, light.ODown, 0, 0);
+				var calcColor = new Color32(light.SunDown, light.ODown, h, l);
 				AddPlaneWithUVs(meshInfo, _fullBlockDownSide, uvs, rootPos, pointer, calcColor);
 				pointer += 4;
 			}
@@ -113,34 +114,35 @@ namespace Voxels {
 		public static void GenerateFullBlockComplex(GeneratableMesh meshInfo, BlockDescription desc, BlockData data, Vector3 rootPos, VisibilityFlags visibility, LightInfo light) {
 			var pointer = meshInfo.Vertices.Count;
 			var sub = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)];
-
+			var h = (byte)(data.AddColor >> 8);
+			var l = (byte)(data.AddColor % 256);
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Backward) ) {
-				var calcColor = new Color32(light.SunBackward, light.OBackward, 0, 0);
+				var calcColor = new Color32(light.SunBackward, light.OBackward, h, l);
 				AddPlane(meshInfo, _fullBlockBackSide, sub.FaceTiles[0], rootPos,  pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Forward) ) {
-				var calcColor = new Color32(light.SunForward, light.OForward, 0, 0);
+				var calcColor = new Color32(light.SunForward, light.OForward, h, l);
 				AddPlane(meshInfo, _fullBlockFrontSide, sub.FaceTiles[1], rootPos,  pointer,calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Left) ) {
-				var calcColor = new Color32(light.SunLeft, light.OLeft, 0, 0);
+				var calcColor = new Color32(light.SunLeft, light.OLeft, h, l);
 				AddPlane(meshInfo, _fullBlockLeftSide, sub.FaceTiles[2], rootPos,  pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Right) ) {
-				var calcColor = new Color32(light.SunRight, light.ORight, 0, 0);
+				var calcColor = new Color32(light.SunRight, light.ORight, h, l);
 				AddPlane(meshInfo, _fullBlockRightSide, sub.FaceTiles[3], rootPos,  pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Up) ) {
-				var calcColor = new Color32(light.SunUp, light.OUp, 0, 0);
+				var calcColor = new Color32(light.SunUp, light.OUp, h, l);
 				AddPlane(meshInfo, _fullBlockUpSide, sub.FaceTiles[4], rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Down) ) {
-				var calcColor = new Color32(light.SunDown, light.ODown, 0, 0);
+				var calcColor = new Color32(light.SunDown, light.ODown, h, l);
 				AddPlane(meshInfo, _fullBlockDownSide, sub.FaceTiles[5], rootPos, pointer, calcColor);
 				pointer += 4;
 			}
@@ -149,35 +151,36 @@ namespace Voxels {
 		public static void GenerateHalfBlockDown(GeneratableMesh meshInfo, BlockDescription desc, BlockData data, Vector3 rootPos, VisibilityFlags visibility, LightInfo light) {
 			var pointer = meshInfo.Vertices.Count;
 			var sub = desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)];
-
+			var h = (byte)(data.AddColor >> 8);
+			var l = (byte)(data.AddColor % 256);
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Backward) ) {
-				var calcColor = new Color32(light.SunBackward, light.OBackward, 0, 0);
+				var calcColor = new Color32(light.SunBackward, light.OBackward, h, l);
 				AddPlane(meshInfo, _halfBlockDBackSide, sub.FaceTiles[0], rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Forward) ) {
-				var calcColor = new Color32(light.SunForward, light.OForward, 0, 0);
+				var calcColor = new Color32(light.SunForward, light.OForward, h, l);
 				AddPlane(meshInfo, _halfBlockDFrontSide, sub.FaceTiles[1], rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Left) ) {
-				var calcColor = new Color32(light.SunLeft, light.OLeft, 0, 0);
+				var calcColor = new Color32(light.SunLeft, light.OLeft, h, l);
 				AddPlane(meshInfo, _halfBlockDLeftSide, sub.FaceTiles[2], rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Right) ) {
-				var calcColor = new Color32(light.SunRight, light.ORight, 0, 0);
+				var calcColor = new Color32(light.SunRight, light.ORight, h, l);
 				AddPlane(meshInfo, _halfBlockDRightSide, sub.FaceTiles[3], rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Up) ) {
-				var calcColor = new Color32(light.SunUp, light.OUp, 0, 0);
+				var calcColor = new Color32(light.SunUp, light.OUp, h, l);
 				AddPlane(meshInfo, _halfBlockDUpside, sub.FaceTiles[4], rootPos, pointer, calcColor);
 				pointer += 4;
 			}
 			if ( VisibilityFlagsHelper.IsSet(visibility, VisibilityFlags.Down) ) {
-				var calcColor = new Color32(light.SunDown, light.ODown, 0, 0);
+				var calcColor = new Color32(light.SunDown, light.ODown, h, l);
 				AddPlane(meshInfo, _fullBlockDownSide, sub.FaceTiles[5], rootPos, pointer, calcColor);
 				pointer += 4;
 			}

@@ -41,6 +41,34 @@ namespace Voxels {
 						if ( Input.GetKeyUp(KeyCode.V) ) {
 							cm.PutBlock(_pointOut, new BlockData(BlockType.WaterStill, 0));
 						}
+						if ( Input.GetKeyUp(KeyCode.Alpha1) ) {
+							var blockIn = cm.GetBlockIn(_pointIn);
+							if ( !blockIn.IsEmpty() ) {
+								blockIn.AddColor = ColorUtils.ConvertTo565(new Color32(255, 0, 0, 1));
+								cm.PutBlock(_pointIn, blockIn);
+							}
+						}
+						if ( Input.GetKeyUp(KeyCode.Alpha2) ) {
+							var blockIn = cm.GetBlockIn(_pointIn);
+							if ( !blockIn.IsEmpty() ) {
+								blockIn.AddColor = ColorUtils.ConvertTo565(new Color32(0, 255, 0, 1));
+								cm.PutBlock(_pointIn, blockIn);
+							}
+						}
+						if ( Input.GetKeyUp(KeyCode.Alpha3) ) {
+							var blockIn = cm.GetBlockIn(_pointIn);
+							if ( !blockIn.IsEmpty() ) {
+								blockIn.AddColor = ColorUtils.ConvertTo565(new Color32(0, 0, 255, 1));
+								cm.PutBlock(_pointIn, blockIn);
+							}
+						}
+						if ( Input.GetKeyUp(KeyCode.Alpha4) ) {
+							var blockIn = cm.GetBlockIn(_pointIn);
+							if ( !blockIn.IsEmpty() ) {
+								blockIn.AddColor = ColorUtils.ConvertTo565(new Color32(0, 255, 255, 1));
+								cm.PutBlock(_pointIn, blockIn);
+							}
+						}
 					}
 				}
 			}

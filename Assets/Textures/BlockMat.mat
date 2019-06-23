@@ -24,12 +24,22 @@ Material:
         m_Texture: {fileID: 2800000, guid: e3f9040ebe2c2284b9117f62154a63ce, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ColorLUT:
+        m_Texture: {fileID: 2800000, guid: 5dc3136ef8cc13f44b4bcb8345aa939d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tileset:
+        m_Texture: {fileID: 2800000, guid: e3f9040ebe2c2284b9117f62154a63ce, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_114497C3: 0
     - Vector1_9ED5AA56: 0.3
     - _AlphaCutoff: 0.05
-    - _Daylight: 0.0035341287
+    - _Daylight: 0.99821055
     m_Colors:
     - Color_13C8A320: {r: 1, g: 0.8988529, b: 0.759434, a: 0}
     - Color_B3BEC4F6: {r: 1, g: 0.96672755, b: 0.8066038, a: 0}
     - Color_C90622FA: {r: 0.09803922, g: 0.105882354, b: 0.16078432, a: 0}
+    - _DarknessColor: {r: 0.01960784, g: 0.01960784, b: 0.07058824, a: 0}
+    - _Torchiligt: {r: 1, g: 0.8988529, b: 0.759434, a: 0}

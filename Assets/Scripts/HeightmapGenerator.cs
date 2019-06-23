@@ -66,7 +66,8 @@ namespace Voxels {
 			} else if ( y == height + 1 && rnd10pct ) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData() {
 					Type = BlockType.Weed,
-					SunLevel = 255
+					SunLevel = 255,
+					AddColor = 65535,
 				};
 			} else if ( y > height + 1 || (!rnd10pct && y > height)) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData() {
