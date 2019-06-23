@@ -1,0 +1,3 @@
+[submodule "Assets/LightGameCore"]
+	path = Assets/LightGameCore
+	url = https://github.com/TxN/LightGameCore.git
