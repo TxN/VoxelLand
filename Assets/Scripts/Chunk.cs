@@ -1,6 +1,9 @@
-using EventSys;
 using System.Collections.Generic;
+
 using UnityEngine;
+
+using SMGCore.EventSys;
+using Voxels.Events;
 
 namespace Voxels {
 	public enum DirIndex: byte { //for reference

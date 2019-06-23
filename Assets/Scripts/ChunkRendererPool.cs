@@ -1,3 +1,5 @@
+using SMGCore;
+
 namespace Voxels {
 	public sealed class ChunkRendererPool: PrefabPool<ChunkRenderer> {
 

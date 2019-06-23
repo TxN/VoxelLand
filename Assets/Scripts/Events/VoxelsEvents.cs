@@ -1,9 +1,4 @@
-using Voxels;
-
-namespace EventSys {
-	public struct Event_Sample {
-	}
-
+namespace Voxels.Events {
 	public struct Event_ChunkUpdate {
 		public Chunk UpdatedChunk;
 	}
