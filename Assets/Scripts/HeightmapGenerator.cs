@@ -33,6 +33,7 @@ namespace Voxels {
 		public int SizeH;
 		public int SizeY;
 		public int Seed;
+		public int SeaLevel;
 		public Unity.Mathematics.Random Random;
 
 		[ReadOnly]
@@ -57,19 +58,29 @@ namespace Voxels {
 			}
 			if ( y < stoneHeight ) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Stone, 0);
-			}
-			else if ( y < height ){
+			} else if ( y < height ){
 				Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Dirt, 0);
 				return;
 			} else if ( y == height ) {
-				Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Grass, 0);
-			} else if ( y == height + 1 && rnd10pct ) {
+				if ( y > SeaLevel ) {
+					Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Grass, 0);
+				} else {
+					Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Sand, 0);
+				}
+				
+			} else if ( y > height && y < SeaLevel ) {
+				Blocks[y * dh + z * SizeH + x] = new BlockData() {
+					Type = BlockType.WaterStill,
+					SunLevel = (byte) (225 - (SeaLevel - y) * 10),
+					AddColor = 65535,
+				};
+			} else if (y == height + 1 && rnd10pct && y > SeaLevel ) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData() {
 					Type = BlockType.Weed,
 					SunLevel = 255,
 					AddColor = 65535,
 				};
-			} else if ( y > height + 1 || (!rnd10pct && y > height)) {
+			} else if ( y > height  || (!rnd10pct && y > height)) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData() {
 					SunLevel = 255
 				};

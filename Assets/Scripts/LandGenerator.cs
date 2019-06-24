@@ -58,19 +58,20 @@ namespace Voxels {
 					};
 					var hHandle = heightmapJob.Schedule(256, 128);
 					hHandle.Complete();
-
+					var waterLevel = 35;
 					var blockCount = Chunk.CHUNK_SIZE_X * Chunk.CHUNK_SIZE_Y * Chunk.CHUNK_SIZE_Z;
 					var fillJob = new ChunkGenJob() {
 						SizeH   = Chunk.CHUNK_SIZE_X,
 						SizeY   = Chunk.CHUNK_SIZE_Y,
 						Random  = _random,
+						SeaLevel = waterLevel,
 						HeightMap = heightmapJob.Height,
 						Blocks = new Unity.Collections.NativeArray<BlockData>(blockCount, Unity.Collections.Allocator.Persistent)
 					};
 
 					var fillHandler = fillJob.Schedule(blockCount, 512);
 					var height = heightmapJob.Height.ToArray();
-					var maxY = 0;
+					var maxY = waterLevel;
 					for ( int i = 0; i < height.Length; i++ ) {
 						if ( height[i] > maxY ) {
 							maxY = height[i];
