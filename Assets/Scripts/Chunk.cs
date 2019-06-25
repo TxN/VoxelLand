@@ -931,57 +931,57 @@ namespace Voxels {
 			var flag = VisibilityFlags.None;
 			//Up
 			if ( y < CHUNK_SIZE_Y - 1 ) {
-				if ( !HasFullBlockAt(x, y + 1, z) ) {
+				if ( !_owner.Library.IsFullBlock(_blocks[x, y + 1, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Up);
 				}
 			}
 			//Down
 			if ( y > 0 ) {
-				if ( !HasFullBlockAt(x, y - 1, z) ) {
+				if ( !_owner.Library.IsFullBlock(_blocks[x, y - 1, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Down);
 				}
 			}
 			//Right
 			if ( x < CHUNK_SIZE_X - 1 ) {
-				if ( !HasFullBlockAt(x + 1, y, z) ) {
+				if ( !_owner.Library.IsFullBlock(_blocks[x + 1, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Right);
 				}
 			} else {
 				var chunk = neighborChunks[2];
-				if ( chunk == null || !chunk.HasFullBlockAt(0, y, z) ) {
+				if ( chunk == null || !_owner.Library.IsFullBlock(chunk._blocks[0, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Right);
 				}
 			}
 			//Left
 			if ( x > 0 ) {
-				if ( !HasFullBlockAt(x - 1, y, z) ) {
+				if ( !_owner.Library.IsFullBlock(_blocks[x - 1, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Left);
 				}
 			} else {
 				var chunk = neighborChunks[3];
-				if ( chunk == null || !chunk.HasFullBlockAt(CHUNK_SIZE_X - 1, y, z) ) {
+				if ( chunk == null || !_owner.Library.IsFullBlock(chunk._blocks[CHUNK_SIZE_X - 1, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Left);
 				}
 			}
 			//Forward
 			if ( z < CHUNK_SIZE_Z - 1 ) {
-				if ( !HasFullBlockAt(x, y, z + 1) ) {
+				if ( !_owner.Library.IsFullBlock(_blocks[x, y, z + 1].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Forward);
 				}
 			} else {
 				var chunk = neighborChunks[4];
-				if ( chunk == null || !chunk.HasFullBlockAt(x, y, 0) ) {
+				if ( chunk == null || !_owner.Library.IsFullBlock(chunk._blocks[x, y, 0].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Forward);
 				}
 			}
 			//Backwards
 			if ( z > 0 ) {
-				if ( !HasFullBlockAt(x, y, z - 1) ) {
+				if ( !_owner.Library.IsFullBlock(_blocks[x, y, z - 1].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Backward);
 				}
 			} else {
 				var chunk = neighborChunks[5];
-				if ( chunk == null || !chunk.HasFullBlockAt(x, y, CHUNK_SIZE_Z - 1) ) {
+				if ( chunk == null || !_owner.Library.IsFullBlock(chunk._blocks[x, y, CHUNK_SIZE_Z - 1].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Backward);
 				}
 			}
