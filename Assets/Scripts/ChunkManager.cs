@@ -19,8 +19,8 @@ namespace Voxels {
 
 		List<Int3>        _chunkLoadList = new List<Int3>(128);
 		ChunkRendererPool _renderPool    = new ChunkRendererPool();
-		public const int LOAD_RADIUS   = 5;
-		public const int UNLOAD_DISTANCE = 16 * 8;
+		public const int LOAD_RADIUS   = 6;
+		public const int UNLOAD_DISTANCE = 16 * 10;
 
 		public int GetWorldHeight {
 			get {
@@ -72,6 +72,26 @@ namespace Voxels {
 			chunk.Renderer = render;
 			_chunks[index] = chunk;
 			return chunk;
+		}
+
+		public int GatherNeighbors(Int3 index) {
+			var res = 0;
+			var x = index.X;
+			var y = index.Y;
+			var z = index.Z;
+			if ( GetChunk(x + 1, y, z) != null ) {
+				res += 4;
+			}
+			if ( GetChunk(x - 1, y, z) != null ) {
+				res += 8;
+			}
+			if ( GetChunk(x, y, z + 1) != null ) {
+				res += 1;
+			}
+			if ( GetChunk(x, y, z - 1) != null ) {
+				res += 2;
+			}
+			return res;
 		}
 
 		void DeInitChunk(Int3 index) {

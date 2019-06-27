@@ -9,7 +9,6 @@ using SMGCore;
 namespace Voxels {
 	public sealed class LandGenerator : MonoSingleton<LandGenerator> {
 		Queue<Int3>  _chunkGenQueue = new Queue<Int3>(16);
-		Queue<Chunk> _visRegenQueue = new Queue<Chunk>(16);
 
 		Unity.Mathematics.Random _random;
 
@@ -84,17 +83,11 @@ namespace Voxels {
 					if ( chunk != null ) {
 						chunk.SetAllBlocks(fillJob.Blocks.ToArray(), maxY + 1);
 						chunk.SetDirtyAll();
+						chunk.MarkAsLoaded();
 					}
 					heightmapJob.Height.Dispose();
 					fillJob.Blocks.Dispose();
-					_visRegenQueue.Enqueue(chunk);
-				} else if ( _visRegenQueue.Count > 0 ) {
-					var regenChunk = _visRegenQueue.Dequeue();
-					if ( regenChunk != null ) {
-						regenChunk.ForceUpdateChunk();
-					}
 				}
-
 				yield return new WaitForEndOfFrame();
 			}
 		}

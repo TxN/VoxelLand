@@ -70,8 +70,11 @@ namespace Voxels {
 		int     _indexX                      = 0;
 		int     _indexY                      = 0;
 		int     _indexZ                      = 0;
-		bool _needUpdateVisibilityAll     = true;
+		bool    _needUpdateVisibilityAll     = true;
 		int     _maxNonEmptyY                = 0;
+		int     _loadedNeighbors             = 0;
+		bool    _fullyInited                 = false;
+		
 
 		List<Int3> _dirtyBlocks = new List<Int3>(MAX_DIRTY_BLOCKS_BEFORE_FULL_REBUILD);
 
@@ -89,6 +92,15 @@ namespace Voxels {
 			_indexX          = x;
 			_indexY          = y;
 			_indexZ          = z;
+
+			var cm = ChunkManager.Instance;
+			_loadedNeighbors = cm.GatherNeighbors(new Int3(_indexX, _indexY, _indexZ));
+			if ( _loadedNeighbors == 15 ) {
+				ForceUpdateChunk();
+				_fullyInited = true;
+			}
+
+			EventManager.Subscribe<Event_ChunkLoaded>(this, OnChunkLoaded);
 		}
 
 		public void SetAllBlocks(BlockData[] blocks, int maxY) {
@@ -130,7 +142,40 @@ namespace Voxels {
 			return Vector3.Distance(pos, OriginPos);
 		}
 
+		void OnChunkLoaded(Event_ChunkLoaded e) {
+			if ( _fullyInited ) {
+				return;
+			}
+			var cm = ChunkManager.Instance;
+			_loadedNeighbors |= IsNeighbor(e.Coordinates);
+			if ( _loadedNeighbors == 15 ) {
+				ForceUpdateChunk();
+				_fullyInited = true;
+			}
+			
+		}
+
+		int IsNeighbor(Int3 coords) {
+			var x = coords.X;
+			var y = coords.Y;
+			var z = coords.Z;
+			if ( x == _indexX && _indexZ + 1 == z ) {
+				return 1;
+			}
+			if ( x == _indexX && _indexZ - 1 == z ) {
+				return 2;
+			}
+			if ( _indexX + 1 == x && z == _indexZ ) {
+				return 4;
+			}
+			if ( _indexX - 1 == x && z == _indexZ ) {
+				return 8;
+			}
+			return 0;
+		}
+
 		public void UnloadChunk() {
+			EventManager.Unsubscribe<Event_ChunkLoaded>(OnChunkLoaded);
 			Renderer = null;
 			_mesher.DeInit();
 		}
@@ -1151,6 +1196,10 @@ namespace Voxels {
 		public void SetDirtyAll() {
 			Dirty = true;
 			_needUpdateVisibilityAll = true;
+		}
+
+		public void MarkAsLoaded() {
+			EventManager.Fire(new Event_ChunkLoaded() { Coordinates = new Int3(_indexX, _indexY, _indexZ), LoadedChunk = this});
 		}
 
 		BlockDescription GetBlockDescription(BlockType type) {
