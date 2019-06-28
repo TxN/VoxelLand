@@ -205,6 +205,13 @@ namespace Voxels {
 			var fullChunksX = Mathf.FloorToInt( x / (float)Chunk.CHUNK_SIZE_X);
 			var fullChunksY = Mathf.FloorToInt( y / (float)Chunk.CHUNK_SIZE_Y);
 			var fullChunksZ = Mathf.FloorToInt( z / (float)Chunk.CHUNK_SIZE_Z);
+			return GetChunk(new Int3(fullChunksX, fullChunksY, fullChunksZ));
+		}
+
+		public Chunk GetOrInitChunkInCoords(int x, int y, int z) {
+			var fullChunksX = Mathf.FloorToInt(x / (float)Chunk.CHUNK_SIZE_X);
+			var fullChunksY = Mathf.FloorToInt(y / (float)Chunk.CHUNK_SIZE_Y);
+			var fullChunksZ = Mathf.FloorToInt(z / (float)Chunk.CHUNK_SIZE_Z);
 			return GetOrInitChunk(new Int3(fullChunksX, fullChunksY, fullChunksZ));
 		}
 

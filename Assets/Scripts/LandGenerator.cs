@@ -79,7 +79,7 @@ namespace Voxels {
 					yield return new WaitForEndOfFrame();
 					fillHandler.Complete();
 
-					var chunk = cm.GetChunkInCoords(x * Chunk.CHUNK_SIZE_X, 0, z * Chunk.CHUNK_SIZE_Z);
+					var chunk = cm.GetOrInitChunkInCoords(x * Chunk.CHUNK_SIZE_X, 0, z * Chunk.CHUNK_SIZE_Z);
 					if ( chunk != null ) {
 						chunk.SetAllBlocks(fillJob.Blocks.ToArray(), maxY + 1);
 						chunk.SetDirtyAll();
