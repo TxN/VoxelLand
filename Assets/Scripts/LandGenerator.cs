@@ -82,6 +82,7 @@ namespace Voxels {
 					var chunk = cm.GetOrInitChunkInCoords(x * Chunk.CHUNK_SIZE_X, 0, z * Chunk.CHUNK_SIZE_Z);
 					if ( chunk != null ) {
 						chunk.SetAllBlocks(fillJob.Blocks.ToArray(), maxY + 1);
+						PostProcessGeneration(chunk, heightmapJob.Height, waterLevel);
 						chunk.SetDirtyAll();
 						chunk.MarkAsLoaded();
 					}
@@ -94,6 +95,67 @@ namespace Voxels {
 
 		void OnDestroy() {
 			StopAllCoroutines();
+		}
+
+		void PostProcessGeneration(Chunk chunk, Unity.Collections.NativeArray<byte> heightMap, int waterLevel) {
+			var maxTreeSpawnAttempts = Random.Range(3,6);
+			for ( int i = 0; i < maxTreeSpawnAttempts; i++ ) {
+				var x = Random.Range(2, Chunk.CHUNK_SIZE_X - 3); // TODO: fix to support placing blocks in neighbor chunks
+				var z = Random.Range(2, Chunk.CHUNK_SIZE_Z - 3);
+
+				var pointer = x * Chunk.CHUNK_SIZE_X + z;
+				var h = heightMap[pointer] + 1;
+				if ( h > waterLevel ) {
+					SpawnTree(chunk, new Int3(x, h, z));
+				}
+				
+			}
+			
+		}
+
+		void SpawnTree(Chunk chunk, Int3 startPos) {
+			var x = startPos.X;
+			var y = startPos.Y;
+			var z = startPos.Z;
+
+			var cm = ChunkManager.Instance;
+			var trunkHeight = Random.Range(1, 5);
+			for ( int i = 0; i < trunkHeight; i++ ) {
+				chunk.PutBlock(x, y + i, z, new BlockData(BlockType.Log, 0));
+			}
+			chunk.PutBlock(x, y + trunkHeight, z, new BlockData(BlockType.Log, 0));
+			chunk.PutBlock(x, y + trunkHeight +1, z, new BlockData(BlockType.Log, 0));
+			chunk.PutBlock(x, y + trunkHeight +2, z, new BlockData(BlockType.Log, 0));
+			chunk.PutBlock(x, y + trunkHeight +3, z, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x, y + trunkHeight +4, z, new BlockData(BlockType.Leaves, 0));
+
+
+			chunk.PutBlock(x + 1, y + trunkHeight + 1, z, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x + 1, y + trunkHeight + 1, z + 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x + 1, y + trunkHeight + 1, z - 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x - 1, y + trunkHeight + 1, z, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x - 1, y + trunkHeight + 1, z + 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x - 1, y + trunkHeight + 1, z - 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x, y + trunkHeight + 1, z + 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x, y + trunkHeight + 1, z - 1, new BlockData(BlockType.Leaves, 0));
+
+			chunk.PutBlock(x + 1, y + trunkHeight + 2, z, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x + 1, y + trunkHeight + 2, z + 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x + 1, y + trunkHeight + 2, z - 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x - 1, y + trunkHeight + 2, z, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x - 1, y + trunkHeight + 2, z + 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x - 1, y + trunkHeight + 2, z - 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x, y + trunkHeight + 2, z + 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x, y + trunkHeight + 2, z - 1, new BlockData(BlockType.Leaves, 0));
+
+			chunk.PutBlock(x + 1, y + trunkHeight + 3, z, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x + 1, y + trunkHeight + 3, z + 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x + 1, y + trunkHeight + 3, z - 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x - 1, y + trunkHeight + 3, z, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x - 1, y + trunkHeight + 3, z + 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x - 1, y + trunkHeight + 3, z - 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x, y + trunkHeight + 3, z + 1, new BlockData(BlockType.Leaves, 0));
+			chunk.PutBlock(x, y + trunkHeight + 3, z - 1, new BlockData(BlockType.Leaves, 0));
 		}
 
 		void PlaceBlockFromTop(BlockData blockToPlace, int x, int z, params BlockType[]   allowedTypes) {

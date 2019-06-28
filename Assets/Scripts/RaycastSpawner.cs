@@ -41,6 +41,12 @@ namespace Voxels {
 						if ( Input.GetKeyUp(KeyCode.V) ) {
 							cm.PutBlock(_pointOut, new BlockData(BlockType.WaterStill, 0));
 						}
+						if ( Input.GetKeyUp(KeyCode.T) ) {
+							cm.PutBlock(_pointOut, new BlockData(BlockType.Leaves, 0));
+						}
+						if ( Input.GetKeyUp(KeyCode.Y) ) {
+							cm.PutBlock(_pointOut, new BlockData(BlockType.Log, 0));
+						}
 						if ( Input.GetKeyUp(KeyCode.Alpha1) ) {
 							var blockIn = cm.GetBlockIn(_pointIn);
 							if ( !blockIn.IsEmpty() ) {
