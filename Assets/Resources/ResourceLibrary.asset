@@ -269,10 +269,10 @@ MonoBehaviour:
     HarvestLevel: 0
     Hardness: 1
     LightLevel: 0
-    IsFull: 1
+    IsFull: 0
     IsPassable: 0
     IsColorable: 1
-    IsTranslucent: 1
+    IsTranslucent: 0
     HasMetadata: 0
     ExtraData: 0
     Subtypes:
