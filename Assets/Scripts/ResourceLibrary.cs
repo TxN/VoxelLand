@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using SMGCore.EventSys;
+using Voxels.Events;
+
 namespace Voxels {
 	public sealed class ResourceLibrary : ScriptableObject {
 		public Material OpaqueMaterial      = null;
@@ -16,6 +19,39 @@ namespace Voxels {
 		bool[]             _blockTranslucentFlags = null;
 		bool[]             _blockIllumFlags       = null;
 		bool[]             _blockLightPassFlags   = null;
+
+		Dictionary<int, Texture2D> _blockPreviews = new Dictionary<int, Texture2D>();
+		BlockPreviewGenerator _previewGenerator = null;
+
+		//TODO: Я знаю что так делать вообще не хорошо, и в этом объекте не должно быть зависимостей от внешних систем, но щас
+		// четвертый час ночи, а я хочу заставить работать превьюшки.
+		public void Init(BlockPreviewGenerator previewGen) {
+			GenerateBlockDescDict();
+			_previewGenerator = previewGen;
+			EventManager.Subscribe<Event_BlockPreviewUpdated>(this, OnPreviewUpdated);
+		}
+
+		public void DeInit() {
+			EventManager.Unsubscribe<Event_BlockPreviewUpdated>(OnPreviewUpdated);
+		}
+
+		void OnPreviewUpdated(Event_BlockPreviewUpdated e) {
+			var hash = (byte)e.Block.Type * 255 + e.Block.Subtype;
+			if ( _blockPreviews.ContainsKey(hash) ) {
+				_blockPreviews[hash] = e.Texture;
+			} else {
+				_blockPreviews.Add(hash, e.Texture);
+			}
+		}
+
+		public Texture2D GetBlockPreview(BlockData block) {
+			var hash = (byte)block.Type * 255 + block.Subtype;
+			if ( _blockPreviews.ContainsKey(hash) ) {
+				return _blockPreviews[hash];
+			}
+			_previewGenerator.RenderBlockPreview(block);
+			return null;
+		}
 
 		public BlockDescription GetBlockDescription(BlockType type) {
 			return _desc[(byte) type];
@@ -37,7 +73,7 @@ namespace Voxels {
 			return _blockIllumFlags[(ushort)type];
 		}
 
-		public void GenerateBlockDescDict() {
+		void GenerateBlockDescDict() {
 			var maxBlockValue = 0;
 			var typeValues = System.Enum.GetValues(typeof(BlockType));
 			foreach ( var t in  typeValues) {

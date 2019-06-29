@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Voxels.Events {
 	public struct Event_ChunkUpdate {
 		public Chunk UpdatedChunk;
@@ -10,5 +12,10 @@ namespace Voxels.Events {
 	public struct Event_ChunkLoaded {
 		public Chunk LoadedChunk;
 		public Int3  Coordinates;
+	}
+
+	public struct Event_BlockPreviewUpdated {
+		public BlockData Block;
+		public Texture2D Texture;
 	}
 }

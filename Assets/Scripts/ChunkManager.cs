@@ -8,9 +8,8 @@ using Voxels.Events;
 
 namespace Voxels {
 	public sealed class ChunkManager : MonoSingleton<ChunkManager> {
-		public ResourceLibrary   Library             = null;
-		public Material          OpaqueMaterial      = null;
-		public Material          TranslucentMaterial = null;
+		public ResourceLibrary       Library             = null;
+		public BlockPreviewGenerator PreviewGenerator    = null;
 
 		public TilesetHelper TilesetHelper { get; private set; } = null;
 
@@ -46,8 +45,14 @@ namespace Voxels {
 			_chunks = new Dictionary<Int3, Chunk>();
 			TilesetHelper = new TilesetHelper(Library.TileSize, Library.TilesetSize);
 			BlockModelGenerator.PrepareGenerator(TilesetHelper);
-			Library.GenerateBlockDescDict();
+			Library.Init(PreviewGenerator);
 			_renderPool.Init();
+		}
+
+		void OnDestroy() {
+			if ( Library ) {
+				Library.DeInit();
+			}
 		}
 
 		public Chunk GetOrInitChunk(Int3 index) {

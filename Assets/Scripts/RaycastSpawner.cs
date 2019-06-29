@@ -4,8 +4,6 @@ namespace Voxels {
 	public sealed class RaycastSpawner : MonoBehaviour {
 		public bool DrawDebugGUI = true;
 
-		public GameObject Cursor = null;
-
 		Vector3 _pointIn;
 		Vector3 _pointOut;
 
@@ -18,7 +16,6 @@ namespace Voxels {
 			var hitInfo = new RaycastHit();
 			var dir =  transform.TransformDirection(Vector3.forward);
 			if ( Physics.Raycast(transform.position, dir, out hitInfo, 100) ) {
-				Cursor.transform.position = hitInfo.point;
 				_pointIn  = hitInfo.point + dir * 0.03f;
 				_pointOut = hitInfo.point - dir * 0.015f;
 				var chunk = cm.GetChunkInCoords(_pointIn);//Баг: если нет чанка, создается непрорегеннный чанк, который потом не заполнятеся.
