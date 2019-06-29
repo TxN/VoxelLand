@@ -29,6 +29,22 @@ namespace Voxels {
 		public byte OLeft;
 		public byte OForward;
 		public byte OBackward;
+
+		public static LightInfo FullLit = new LightInfo {
+			SunUp       = Chunk.MAX_SUNLIGHT_VALUE,
+			SunDown     = Chunk.MAX_SUNLIGHT_VALUE,
+			SunRight    = Chunk.MAX_SUNLIGHT_VALUE,
+			SunLeft     = Chunk.MAX_SUNLIGHT_VALUE,
+			SunForward  = Chunk.MAX_SUNLIGHT_VALUE,
+			SunBackward = Chunk.MAX_SUNLIGHT_VALUE,
+
+			OUp       = Chunk.MAX_SUNLIGHT_VALUE,
+			ODown     = Chunk.MAX_SUNLIGHT_VALUE,
+			OBackward = Chunk.MAX_SUNLIGHT_VALUE,
+			OForward  = Chunk.MAX_SUNLIGHT_VALUE,
+			OLeft     = Chunk.MAX_SUNLIGHT_VALUE,
+			ORight    = Chunk.MAX_SUNLIGHT_VALUE
+		};
 	}
 
 	public struct LightRemNode {

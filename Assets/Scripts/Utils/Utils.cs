@@ -40,7 +40,7 @@ namespace Voxels {
 			Z = z;
 		}
 
-		public Int3 Zero {
+		public static Int3 Zero {
 			get {
 				return new Int3(0, 0, 0);
 			}
@@ -81,7 +81,7 @@ namespace Voxels {
 			Z = z;
 		}
 
-		public Byte3 Zero {
+		public static Byte3 Zero {
 			get {
 				return new Byte3(0, 0, 0);
 			}

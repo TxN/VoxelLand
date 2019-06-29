@@ -3,9 +3,11 @@ using UnityEngine;
 
 namespace Voxels {
 	public sealed class ResourceLibrary : ScriptableObject {
-		public Texture2D BlockTilest = null;
-		public int       TilesetSize = 512;
-		public int       TileSize    = 16;
+		public Material OpaqueMaterial      = null;
+		public Material TranslucentMaterial = null;
+		public Texture2D BlockTilest        = null;
+		public int       TilesetSize        = 512;
+		public int       TileSize           = 16;
 
 		public List<BlockDescription> BlockDescriptions = new List<BlockDescription>();
 

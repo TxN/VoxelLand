@@ -3,18 +3,20 @@ using UnityEngine;
 namespace Voxels {
 	public sealed class DaylightCycle : MonoBehaviour {
 		public AnimationCurve LightIntensityCurve = null;
-		public Gradient SkyColor     = null;
-		public Gradient HorizonColor = null;
-		public Gradient SunColor     = null;
+		public Gradient SkyColor       = null;
+		public Gradient HorizonColor   = null;
+		public Gradient SunColor       = null;
 		public Material SkyboxMaterial = null;
-		public Material TilesetOpaqueMaterial = null;
-		public Material TilesetTranslucentMaterial = null;
 
 		public float TimeScale = 1f;
-
 		public float DayLength = 1200f;
 
-		float _time = 0f;
+		float           _time    = 0f;
+		ResourceLibrary _library = null;
+
+		void Start() {
+			_library = ChunkManager.Instance.Library;
+		}
 
 		void Update() {
 			_time += TimeScale * Time.deltaTime;
@@ -34,8 +36,8 @@ namespace Voxels {
 			var sunVec = SunPosToVector(2f, sunAlt);
 			SkyboxMaterial.SetVector("_SunVector", sunVec);
 
-			TilesetOpaqueMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));
-			TilesetTranslucentMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));
+			_library.OpaqueMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));
+			_library.TranslucentMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));
 			
 		}
 
