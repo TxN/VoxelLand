@@ -296,3 +296,48 @@ MonoBehaviour:
     - FaceTiles:
       - X: 1
         Y: 2
+  - Type: 6
+    ModelType: 1
+    HarvestLevel: 0
+    Hardness: 3
+    LightLevel: 0
+    IsFull: 1
+    IsPassable: 0
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 4
+        Y: 0
+  - Type: 22
+    ModelType: 1
+    HarvestLevel: 0
+    Hardness: 1
+    LightLevel: 0
+    IsFull: 0
+    IsPassable: 0
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 1
+        Y: 3
+  - Type: 27
+    ModelType: 1
+    HarvestLevel: 1
+    Hardness: 2
+    LightLevel: 64
+    IsFull: 1
+    IsPassable: 0
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 10
+        Y: 1

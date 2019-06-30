@@ -82,6 +82,7 @@ namespace Voxels {
 					maxBlockValue = intVal;
 				}
 			}
+			maxBlockValue++;
 			_desc                  = new BlockDescription[byte.MaxValue];
 			_blockFullFlags        = new bool[maxBlockValue];
 			_blockTranslucentFlags = new bool[maxBlockValue];

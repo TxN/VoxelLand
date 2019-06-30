@@ -37,5 +37,20 @@ namespace Voxels {
 		public bool IsEmpty() {
 			return Type == BlockType.Air;
 		}
+
+		public override bool Equals(object obj) {
+			return base.Equals(obj);
+		}
+
+		public override int GetHashCode() {
+			return base.GetHashCode();
+		}
+
+		public static bool operator ==(BlockData a, BlockData b) {
+			return a.Type == b.Type && a.Subtype == b.Subtype && a.Metadata == b.Metadata && a.AddColor == b.AddColor && a.LightLevel == b.LightLevel && a.SunLevel == b.SunLevel;
+		}
+		public static bool operator !=(BlockData a, BlockData b) {
+			return a.Type != b.Type || a.Subtype != b.Subtype || a.Metadata != b.Metadata || a.AddColor != b.AddColor || a.SunLevel != b.SunLevel || a.LightLevel != b.LightLevel;
+		}
 	}
 }
