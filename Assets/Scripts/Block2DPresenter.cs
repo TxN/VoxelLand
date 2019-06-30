@@ -17,10 +17,6 @@ namespace Voxels {
 			EventManager.Subscribe<Event_BlockPreviewUpdated>(this, OnBlockPreviewUpdated);
 		}
 
-		void Start() {
-			ShowBlock(new BlockData(BlockType.Bedrock)); // TODO: testing only!
-		}
-
 		void OnDestroy() {
 			EventManager.Unsubscribe<Event_BlockPreviewUpdated>(OnBlockPreviewUpdated);
 		}

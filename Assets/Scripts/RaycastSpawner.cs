@@ -1,8 +1,15 @@
 using UnityEngine;
 
+using TMPro;
+
 namespace Voxels {
 	public sealed class RaycastSpawner : MonoBehaviour {
 		public bool DrawDebugGUI = true;
+
+		public GameObject       WailaHolder         = null;
+		public TMP_Text         BlockNameText       = null;
+		public TMP_Text         LightLevelText      = null;
+		public Block2DPresenter BlockImagePresenter = null;
 
 		Vector3 _pointIn;
 		Vector3 _pointOut;
@@ -15,13 +22,19 @@ namespace Voxels {
 			cm.ViewPosition = transform.position;
 			var hitInfo = new RaycastHit();
 			var dir =  transform.TransformDirection(Vector3.forward);
-			if ( Physics.Raycast(transform.position, dir, out hitInfo, 100) ) {
+			if ( Physics.Raycast(transform.position, dir, out hitInfo, 32) ) {
 				_pointIn  = hitInfo.point + dir * 0.03f;
 				_pointOut = hitInfo.point - dir * 0.015f;
-				var chunk = cm.GetChunkInCoords(_pointIn);//Баг: если нет чанка, создается непрорегеннный чанк, который потом не заполнятеся.
+				var chunk = cm.GetChunkInCoords(_pointIn);
 				if ( chunk != null ) {
 					var block = cm.GetBlockIn(_pointIn);
+					WailaHolder.SetActive(!block.IsEmpty());
+
 					if ( !block.IsEmpty() ) {
+						BlockNameText.text = block.Type.ToString();
+						LightLevelText.text = string.Format("Light: {0}", Mathf.Max(block.SunLevel, block.LightLevel));
+						BlockImagePresenter.ShowBlock(block);
+
 						if ( Input.GetMouseButtonUp(0) ) {
 							cm.DestroyBlock(_pointIn);
 						}
@@ -74,18 +87,9 @@ namespace Voxels {
 						}
 					}
 				}
+			} else {
+				WailaHolder.SetActive(false);
 			}
-		}
-
-		void OnGUI() {
-			if ( !DrawDebugGUI ) {
-				return;
-			}
-			var cm = ChunkManager.Instance;
-			var blockIn  = cm.GetBlockIn(_pointIn);
-			var blockOut = cm.GetBlockIn(_pointOut);
-			GUI.Label(DebugInBlock,  string.Format("Inner: {0}, ambient: {1} sun: {2}", blockIn.Type, blockIn.LightLevel, blockIn.SunLevel));
-			GUI.Label(DebugOutBlock, string.Format("Outer: {0}, ambient: {1} sun: {2}", blockOut.Type, blockOut.LightLevel, blockOut.SunLevel));
 		}
 	}
 
