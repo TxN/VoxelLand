@@ -25,6 +25,7 @@ namespace Voxels {
 		public List<MesherBlockInput> Blocks;
 
 		GeneratableMesh _opaqueCollidedMesh      = null;
+		GeneratableMesh _opaquePassableMesh      = null;
 		GeneratableMesh _translucentPassableMesh = null;
 		Vector3         _originPos               = Vector3.zero;
 		ResourceLibrary _library                 = null;
@@ -33,6 +34,7 @@ namespace Voxels {
 		public ChunkMesher(ResourceLibrary library, int chunkMeshCapacity, int capacity, Vector3 originPos) {
 			_opaqueCollidedMesh      = new GeneratableMesh(chunkMeshCapacity);
 			_translucentPassableMesh = new GeneratableMesh(chunkMeshCapacity / 8);
+			_opaquePassableMesh      = new GeneratableMesh(chunkMeshCapacity / 8);
 			_library                 = library;
 			_originPos               = originPos;
 			Blocks                   = new List<MesherBlockInput>(capacity);
@@ -42,6 +44,10 @@ namespace Voxels {
 			get { return _opaqueCollidedMesh; }
 		}
 
+		public GeneratableMesh OpaquePassableMesh {
+			get { return _opaquePassableMesh; }
+		}
+
 		public GeneratableMesh TranslucentPassableMesh {
 			get { return _translucentPassableMesh; }
 		}
@@ -49,6 +55,7 @@ namespace Voxels {
 		public void PrepareMesher() {
 			_opaqueCollidedMesh.ClearData();
 			_translucentPassableMesh.ClearData();
+			_opaquePassableMesh.ClearData();
 			Blocks.Clear();
 		}
 
@@ -58,6 +65,7 @@ namespace Voxels {
 			}
 			_opaqueCollidedMesh.Destroy();
 			_translucentPassableMesh.Destroy();
+			_opaquePassableMesh.Destroy();
 		}
 
 		public void StartAsyncMeshing() {
@@ -81,8 +89,10 @@ namespace Voxels {
 				var desc      = _library.GetBlockDescription(blockItem.Block.Type);
 				if ( desc.IsTranslucent ) {
 					BlockModelGenerator.AddBlock(_translucentPassableMesh, desc,ref pos, ref blockItem);
-				} else {
+				} else if ( !desc.IsPassable)  {
 					BlockModelGenerator.AddBlock(_opaqueCollidedMesh, desc, ref pos, ref blockItem);
+				} else {
+					BlockModelGenerator.AddBlock(_opaquePassableMesh, desc, ref pos, ref blockItem);
 				}
 			}
 			Ready = true;
@@ -94,8 +104,11 @@ namespace Voxels {
 		public void FinalizeBake() {
 			_opaqueCollidedMesh.ClearMesh();
 			_translucentPassableMesh.ClearMesh();
+			_opaquePassableMesh.ClearMesh();
 			_opaqueCollidedMesh.BakeMesh();
 			_translucentPassableMesh.BakeMesh();
+			_opaquePassableMesh.BakeMesh();
+
 			Ready = false;
 		}
 

@@ -6,10 +6,13 @@ using Voxels.Events;
 
 namespace Voxels {
 	public sealed class ChunkRenderer : MonoBehaviour, IPoolItem {
-		public MeshRenderer MeshRenderer      = null;
-		public MeshFilter   MeshFilter        = null;
-		public MeshCollider Collider          = null;
-		public MeshFilter   TransparentFilter = null;
+		public MeshRenderer MeshRenderer           = null;
+		public MeshFilter   MeshFilter             = null;
+		public MeshCollider Collider               = null;
+		public MeshFilter   TransparentFilter      = null;
+		public MeshFilter   OpaquePassableFilter   = null;
+		public MeshCollider OpaquePassableCollider = null;
+
 		Chunk _targetChunk = null;
 
 		public void Setup(Chunk targetChunk) {
@@ -29,13 +32,17 @@ namespace Voxels {
 			MeshFilter.mesh        = null;
 			TransparentFilter.mesh = null;
 			Collider.sharedMesh    = null;
+			OpaquePassableFilter.mesh = null;
+			OpaquePassableCollider.sharedMesh = null;
 		}
 
 		void UpdateRenderer() {
 			DeInitRenderer();
-			MeshFilter.mesh        = _targetChunk.OpaqueCollidedMesh.Mesh;
-			TransparentFilter.mesh = _targetChunk.TranslucentPassableMesh.Mesh;
-			Collider.sharedMesh    = _targetChunk.OpaqueCollidedMesh.Mesh;
+			MeshFilter.mesh           = _targetChunk.OpaqueCollidedMesh.Mesh;
+			TransparentFilter.mesh    = _targetChunk.TranslucentPassableMesh.Mesh;
+			Collider.sharedMesh       = _targetChunk.OpaqueCollidedMesh.Mesh;
+			OpaquePassableFilter.mesh = _targetChunk.OpaquePassableMesh.Mesh;
+			OpaquePassableCollider.sharedMesh = _targetChunk.OpaquePassableMesh.Mesh;
 		}
 
 		void OnChunkUpdate(Event_ChunkMeshUpdate e) {

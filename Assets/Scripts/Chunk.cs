@@ -147,6 +147,12 @@ namespace Voxels {
 			}
 		}
 
+		public GeneratableMesh OpaquePassableMesh {
+			get {
+				return _mesher.OpaquePassableMesh;
+			}
+		}
+
 		public GeneratableMesh TranslucentPassableMesh {
 			get {
 				return _mesher.TranslucentPassableMesh;
