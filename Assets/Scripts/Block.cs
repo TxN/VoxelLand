@@ -30,6 +30,8 @@ namespace Voxels {
 		LavaFlow    = 25,
 		TNT         = 26,
 		RedBlock    = 27,
+		StoneSlab   = 28,
+		Shrub       = 29,
 	}
 
 	public enum BlockModelType : byte {
