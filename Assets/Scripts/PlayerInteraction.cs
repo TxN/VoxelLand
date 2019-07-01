@@ -29,7 +29,10 @@ namespace Voxels {
 					if ( Input.GetMouseButtonUp(0) ) {
 						cm.DestroyBlock(CurrentInPos);
 					}
-					if ( Input.GetMouseButtonUp(1) ) {
+					if ( Input.GetKey(KeyCode.LeftShift)  && Input.GetMouseButtonUp(1) ) {
+						var blockIn = cm.GetBlockIn(CurrentInPos);
+						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString() ));
+					} else if ( Input.GetMouseButtonUp(1) ) {
 						cm.PutBlock(CurrentOutPos, new BlockData(Hotbar.SelectedBlock,0));
 					}
 				}

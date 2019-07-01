@@ -26,10 +26,25 @@ namespace Voxels.UI {
 		}
 
 		void Update() {
+			var scroll = Input.GetAxis("Mouse ScrollWheel");
+			if ( scroll < 0 ) {
+				_curSlot++;
+				if ( _curSlot > 8 ) {
+					_curSlot = 0;
+				}
+				SelectedSlotFrame.anchoredPosition = FirstSlotPos + new Vector2(SlotSizePixels * _curSlot, 0);
+			} else if ( scroll > 0 ) {
+				_curSlot--;
+				if ( _curSlot < 0 ) {
+					_curSlot = 8;
+				}
+				SelectedSlotFrame.anchoredPosition = FirstSlotPos + new Vector2(SlotSizePixels * _curSlot, 0);
+			}
+
 			for ( int i = 0; i < 9; i++ ) {
 				if ( Input.GetKeyDown((KeyCode) 49 + i) ) {
 					_curSlot = i;
-					SelectedSlotFrame.anchoredPosition = FirstSlotPos + new Vector2(SlotSizePixels * i, 0);
+					SelectedSlotFrame.anchoredPosition = FirstSlotPos + new Vector2(SlotSizePixels * _curSlot, 0);
 				}
 			}	
 		}
