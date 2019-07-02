@@ -50,7 +50,8 @@ namespace Voxels {
 			var height = HeightMap[(x) * SizeH + z];
 			var stoneHeight = (int)(height * 0.8f);
 
-			var rnd10pct = Random.NextUInt(0, 10) < 1 ? true : false;
+			var rnd8pct = Random.NextUInt(0, 12) < 1 ? true : false;
+			var rnd3pct = Random.NextUInt(0, 30) < 1 ? true : false;
 
 			if ( y == 0 ) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData(BlockType.Bedrock, 0);
@@ -74,13 +75,20 @@ namespace Voxels {
 					SunLevel = (byte) (225 - (SeaLevel - y) * 10),
 					AddColor = 65535,
 				};
-			} else if (y == height + 1 && rnd10pct && y > SeaLevel ) {
+			} else if (y == height + 1 && rnd8pct && y > SeaLevel ) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData() {
 					Type = BlockType.Weed,
 					SunLevel = 255,
 					AddColor = 65535,
 				};
-			} else if ( y > height  || (!rnd10pct && y > height)) {
+			} else if ( y == height + 1 && rnd3pct && y > SeaLevel ) {
+				Blocks[y * dh + z * SizeH + x] = new BlockData() {
+					Type = BlockType.Shrub,
+					Subtype  = (byte) Random.NextInt(0, 3),
+					SunLevel = 255,
+					AddColor = 65535,
+				};
+			} else if ( y > height  || (!rnd8pct && y > height)) {
 				Blocks[y * dh + z * SizeH + x] = new BlockData() {
 					SunLevel = 255
 				};

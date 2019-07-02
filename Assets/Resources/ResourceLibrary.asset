@@ -366,3 +366,24 @@ MonoBehaviour:
         Y: 0
       - X: 6
         Y: 0
+  - Type: 29
+    ModelType: 10
+    HarvestLevel: 0
+    Hardness: 1
+    LightLevel: 0
+    IsFull: 0
+    IsPassable: 1
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 7
+        Y: 2
+    - FaceTiles:
+      - X: 7
+        Y: 3
+    - FaceTiles:
+      - X: 8
+        Y: 3
