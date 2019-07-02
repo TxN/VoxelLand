@@ -18,8 +18,8 @@ namespace Voxels {
 
 		List<Int3>        _chunkLoadList = new List<Int3>(128);
 		ChunkRendererPool _renderPool    = new ChunkRendererPool();
-		public const int LOAD_RADIUS   = 6;
-		public const int UNLOAD_DISTANCE = 16 * 10;
+		public const int LOAD_RADIUS   = 7;
+		public const int UNLOAD_DISTANCE = 16 * 12;
 
 		public int GetWorldHeight {
 			get {
@@ -47,6 +47,41 @@ namespace Voxels {
 			BlockModelGenerator.PrepareGenerator(TilesetHelper);
 			Library.Init(PreviewGenerator);
 			_renderPool.Init();
+		}
+
+		void Update() {
+			foreach ( var chunkPair in _chunks ) {
+				var chunk = chunkPair.Value;
+				if ( chunk != null && chunk.Dirty ) {
+					chunk.UpdateChunk();
+					EventManager.Fire(new Event_ChunkUpdate() { UpdatedChunk = chunk });
+				}
+			}
+
+			foreach ( var chunkPair in _chunks ) { //second pass to spread light correctly
+				var chunk = chunkPair.Value;
+				if ( chunk != null ) {
+					chunk.UpdateLightLevel();
+				}
+			}
+		}
+
+		void LateUpdate() {
+			UnloadFarChunks();
+			RefreshChunkGenQueue();
+			foreach ( var chunkPair in _chunks ) {
+				var chunk = chunkPair.Value;
+				if ( chunk != null && chunk.MesherWorkComplete ) {
+					chunk.FinalizeMeshUpdate();
+				}
+			}
+
+			foreach ( var chunkPair in _chunks ) {
+				var chunk = chunkPair.Value;
+				if ( chunk != null && chunk.NeedRebuildGeometry ) {
+					chunk.UpdateGeometry();
+				}
+			}
 		}
 
 		void OnDestroy() {
@@ -108,43 +143,6 @@ namespace Voxels {
 			_chunks.Remove(index);
 		}
 
-		void Update() {
-
-			foreach ( var chunkPair in _chunks ) {
-				var chunk = chunkPair.Value;
-				if ( chunk != null && chunk.Dirty ) {
-					chunk.UpdateChunk();
-					EventManager.Fire(new Event_ChunkUpdate() { UpdatedChunk = chunk });
-				}
-			}
-
-			foreach ( var chunkPair in _chunks ) { //second pass to spread light correctly
-				var chunk = chunkPair.Value;
-				if ( chunk != null ) {
-					chunk.UpdateLightLevel();
-				}
-			}
-		}
-
-		void LateUpdate() {
-			UnloadFarChunks();
-			RefreshChunkGenQueue();
-			foreach ( var chunkPair in _chunks ) {
-				var chunk = chunkPair.Value;
-				if ( chunk != null && chunk.MesherWorkComplete ) {
-					chunk.FinalizeMeshUpdate();
-				}
-			}
-
-			foreach ( var chunkPair in _chunks ) {
-				var chunk = chunkPair.Value;
-				if ( chunk != null && chunk.NeedRebuildGeometry ) {
-					chunk.UpdateGeometry();
-				}
-			}
-
-		}
-
 		void RefreshChunkGenQueue() {
 			_chunkLoadList.Clear();
 			ViewPosition.y = 0;
@@ -193,10 +191,6 @@ namespace Voxels {
 		public Chunk GetChunk(Int3 pos) {
 			_chunks.TryGetValue(pos, out var res);
 			return res;
-		}
-
-		void UpdateVisibilityForChunk(Chunk chunk) {
-			chunk.UpdateVisibilityAll();
 		}
 
 		public Chunk GetChunkInCoords( Vector3 pos) {
