@@ -16,8 +16,10 @@ namespace Voxels {
 		Dictionary<Int3, Chunk> _chunks = new Dictionary<Int3, Chunk>();
 		int                     _sizeY  = 0;
 
-		List<Int3>        _chunkLoadList = new List<Int3>(128);
-		ChunkRendererPool _renderPool    = new ChunkRendererPool();
+		List<Int3>             _chunkLoadList     = new List<Int3>(128);
+		ChunkRendererPool      _renderPool        = new ChunkRendererPool();
+		DestroyBlockEffectPool _destroyEffectPool = new DestroyBlockEffectPool();
+
 		public const int LOAD_RADIUS   = 7;
 		public const int UNLOAD_DISTANCE = 16 * 12;
 
@@ -47,6 +49,7 @@ namespace Voxels {
 			BlockModelGenerator.PrepareGenerator(TilesetHelper);
 			Library.Init(PreviewGenerator);
 			_renderPool.Init();
+			_destroyEffectPool.Init();
 		}
 
 		void Update() {
@@ -294,7 +297,14 @@ namespace Voxels {
 			if ( inChunkZ < 0 ) {
 				inChunkZ = Chunk.CHUNK_SIZE_Z + inChunkZ;
 			}
+			var effect = _destroyEffectPool.Get();
+			var data = chunk.GetBlock(inChunkX, inChunkY, inChunkZ);
+			effect.transform.position = new Vector3(x + 0.5f, y, z + 0.5f);
+			effect.PlayEffect(data, _destroyEffectPool);
+
 			chunk.RemoveBlock(inChunkX, inChunkY, inChunkZ);
+
+
 		}
 	}
 }
