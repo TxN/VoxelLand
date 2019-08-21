@@ -299,7 +299,7 @@ namespace Voxels {
 			}
 			var effect = _destroyEffectPool.Get();
 			var data = chunk.GetBlock(inChunkX, inChunkY, inChunkZ);
-			effect.transform.position = new Vector3(x + 0.5f, y, z + 0.5f);
+			effect.transform.position = new Vector3(x + 0.5f, y + 0.2f, z + 0.5f);
 			effect.PlayEffect(data, _destroyEffectPool);
 
 			chunk.RemoveBlock(inChunkX, inChunkY, inChunkZ);

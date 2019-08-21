@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3514951074646686552}
   - component: {fileID: 8049579813116540791}
   - component: {fileID: 2525185072325089709}
+  - component: {fileID: 1160587748659469501}
   m_Layer: 0
   m_Name: BlockDestroyParticle
   m_TagString: Untagged
@@ -4776,6 +4777,7 @@ ParticleSystemRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -4821,5 +4823,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04b2da7086ba67141be0274b95e0edb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1160587748659469501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2495019875858250008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03c3a6926dabbbe4facbd88435102c0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
