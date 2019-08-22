@@ -566,6 +566,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b45b25e38333a564fa174f2cdc22e7de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AirVSpeedLimit: {x: 20, y: -50}
+  WaterVSpeedLimit: {x: 5, y: -5}
+  VertLook: {fileID: 0}
   m_WalkSpeed: 6
   m_RunSpeed: 11
   m_LimitDiagonalSpeed: 0
@@ -771,7 +774,13 @@ MonoBehaviour:
   m_BeforeStackBundles:
   - assemblyQualifiedName: LWRPAO, Post-processLWRPAO, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
-  m_AfterStackBundles: []
+  m_AfterStackBundles:
+  - assemblyQualifiedName: DitzelGames.PostProcessingTextureOverlay.ColorEffect, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  - assemblyQualifiedName: DitzelGames.PostProcessingTextureOverlay.HardLight, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  - assemblyQualifiedName: DitzelGames.PostProcessingTextureOverlay.TextureOverlay,
+      Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!114 &534669909
 MonoBehaviour:
   m_ObjectHideFlags: 0
