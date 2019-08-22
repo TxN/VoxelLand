@@ -77,6 +77,7 @@ namespace Voxels {
 		public BlockHarvestLevel        HarvestLevel  = BlockHarvestLevel.Any;
 		public byte                     Hardness      = 5;
 		public byte                     LightLevel    = 0;
+		public bool                     IsSwimmable   = false;
 		public bool                     IsFull        = true;
 		public bool                     IsPassable    = false;
 		public bool                     IsColorable   = true;
