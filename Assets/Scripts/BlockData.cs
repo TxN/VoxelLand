@@ -1,14 +1,28 @@
 namespace Voxels {
 	public struct BlockData {
-		public BlockDescription Info { get {
-				return ChunkManager.Instance.Library.GetBlockDescription(Type);
-		} }
 		public BlockType  Type;
 		public byte       Subtype;	
 		public byte       SunLevel;
 		public byte       LightLevel;
 		public ushort     AddColor;
-		public ushort     Metadata;		
+		public ushort     Metadata;
+
+		public BlockDescription Info {
+			get {
+				return ChunkManager.Instance.Library.GetBlockDescription(Type);
+			}
+		}
+
+		public static int StructSize {
+			get {
+				if ( _cachedSize == 0 ) {
+					_cachedSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BlockData));
+				}
+				return _cachedSize;
+			}
+		}
+
+		static int _cachedSize = 0;
 
 		public BlockData(BlockType type) {
 			Type       = type;

@@ -76,7 +76,7 @@ namespace Voxels {
 
 		public Vector3 OriginPos        { get; }
 		public bool Dirty               { get; private set; } = false;
-		public bool NeedRebuildGeometry { get; private set; } = false;
+		public bool NeedRebuildGeometry { get; set; } = false;
 
 		ChunkManager        _owner           = null;
 		ChunkMesher         _mesher          = null;
@@ -89,8 +89,7 @@ namespace Voxels {
 		bool    _needUpdateVisibilityAll     = true;
 		int     _maxNonEmptyY                = 0;
 		int     _loadedNeighbors             = 0;
-		bool    _fullyInited                 = false;
-		
+		bool    _fullyInited                 = false;	
 
 		List<Int3> _dirtyBlocks = new List<Int3>(MAX_DIRTY_BLOCKS_BEFORE_FULL_REBUILD);
 
@@ -99,15 +98,30 @@ namespace Voxels {
 		Queue<Int3>         _sunlightAddQueue = new Queue<Int3>        (CHUNK_SIZE_X * CHUNK_SIZE_Y);
 		Queue<LightRemNode> _sunlightRemQueue = new Queue<LightRemNode>(LIGHT_SOURCES_CAPACITY);
 
+		public Chunk(ChunkManager owner, ChunkData data) {
+			_owner = owner;
+			_visibiltiy = data.Visibiltiy;
+			_blocks     = data.Blocks;
+			OriginPos   = data.Origin;
+			_mesher     = new ChunkMesher(_owner.Library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, OriginPos);
+			_indexX     = data.IndexX;
+			_indexY     = data.IndexY;
+			_indexZ     = data.IndexZ;
+			_maxNonEmptyY = data.Height;
+			_fullyInited = true;
+
+			EventManager.Subscribe<Event_ChunkLoaded>(this, OnChunkLoaded);
+		}
+
 		public Chunk(ChunkManager owner, int x, int y, int z, Vector3 originPos) {
-			_owner           = owner;
-			_visibiltiy      = new VisibilityFlags[CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z];
-			_blocks          = new BlockData      [CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z];
-			_mesher          = new ChunkMesher(_owner.Library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, originPos);
-			OriginPos       = originPos;
-			_indexX          = x;
-			_indexY          = y;
-			_indexZ          = z;
+			_owner        = owner;
+			_visibiltiy   = new VisibilityFlags[CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z];
+			_blocks       = new BlockData      [CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z];
+			_mesher       = new ChunkMesher(_owner.Library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, originPos);
+			OriginPos     = originPos;
+			_indexX       = x;
+			_indexY       = y;
+			_indexZ       = z;
 
 			var cm = ChunkManager.Instance;
 			_loadedNeighbors = cm.GatherNeighbors(new Int3(_indexX, _indexY, _indexZ));
@@ -117,6 +131,10 @@ namespace Voxels {
 			}
 
 			EventManager.Subscribe<Event_ChunkLoaded>(this, OnChunkLoaded);
+		}
+
+		public ChunkData GetData() {
+			return new ChunkData() { Blocks = _blocks, Height = (byte)_maxNonEmptyY, IndexX = _indexX, IndexY = _indexY, IndexZ = _indexZ, Origin = OriginPos, Visibiltiy = _visibiltiy };
 		}
 
 		public void SetAllBlocks(BlockData[] blocks, int maxY) {

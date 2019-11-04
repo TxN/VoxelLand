@@ -4,9 +4,6 @@ using Voxels.UI;
 
 namespace Voxels {
 	public sealed class PlayerInteraction : MonoBehaviour {
-
-		public Hotbar Hotbar = null;
-
 		const int MAX_SIGHT_DISTANCE = 32;
 
 		public Vector3   CurrentInPos  { get; private set; } = Vector3.zero;
@@ -33,7 +30,7 @@ namespace Voxels {
 						var blockIn = cm.GetBlockIn(CurrentInPos);
 						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString() ));
 					} else if ( Input.GetMouseButtonUp(1) ) {
-						cm.PutBlock(CurrentOutPos, new BlockData(Hotbar.SelectedBlock,0));
+						cm.PutBlock(CurrentOutPos, new BlockData(GameManager.Instance.Hotbar.SelectedBlock,0));
 					}
 				}
 			} else {

@@ -61,6 +61,10 @@ namespace Voxels {
 		public bool Equals(Int3 other) {
 			return X == other.X && Y == other.Y && Z == other.Z;
 		}
+
+		public override string ToString() {
+			return string.Format("{0} {1} {2}", X, Y, Z);
+		}
 	}
 
 	[System.Serializable]

@@ -16,7 +16,12 @@ namespace Voxels.UI {
 		}
 
 		void Update() {
-			var selectedBlock = GameManager.Instance.LocalPlayer.BlockInSight;
+			var player = GameManager.Instance.LocalPlayer;
+			if ( !player ) {
+				MainHolder.SetActive(false);
+				return;
+			}
+			var selectedBlock = player.BlockInSight;
 			MainHolder.SetActive(selectedBlock.IsEmpty() ? false : true);
 			if ( selectedBlock.IsEmpty() || selectedBlock == _prevSelectedBlock ) {
 				return;
