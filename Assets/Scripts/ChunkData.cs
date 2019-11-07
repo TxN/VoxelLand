@@ -1,14 +1,24 @@
 using UnityEngine;
 
+using ZeroFormatter;
+
 namespace Voxels {
-	public sealed class ChunkData {
-		public int                 IndexX     = 0;
-		public int                 IndexY     = 0;
-		public int                 IndexZ     = 0;
-		public byte                Height     = 0;
-		public Vector3             Origin     = Vector3.zero;
-		public BlockData[,,]       Blocks     = null;
-		public VisibilityFlags[,,] Visibiltiy = null;
+	[ZeroFormattable]
+	public class ChunkData {
+		[Index(0)]
+		public virtual int IndexX { get; set; }
+		[Index(1)]
+		public virtual int IndexY { get; set; }
+		[Index(2)]
+		public virtual int IndexZ { get; set; }
+		[Index(3)]
+		public virtual int Height { get; set; }
+		[Index(4)]
+		public virtual Vector3 Origin { get; set; }
+		[Index(5)]
+		public virtual BlockDataHolder Blocks { get; set; }
+		[Index(6)]
+		public virtual VisibilityFlagsHolder Visibiltiy { get; set; }
 	}
 }
 

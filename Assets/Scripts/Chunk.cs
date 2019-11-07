@@ -81,8 +81,8 @@ namespace Voxels {
 		ChunkManager        _owner           = null;
 		ChunkMesher         _mesher          = null;
 
-		VisibilityFlags[,,] _visibiltiy      = null;
-		BlockData[,,]       _blocks          = null;
+		VisibilityFlagsHolder _visibiltiy      = null;
+		BlockDataHolder       _blocks          = null;
 		int     _indexX                      = 0;
 		int     _indexY                      = 0;
 		int     _indexZ                      = 0;
@@ -100,8 +100,10 @@ namespace Voxels {
 
 		public Chunk(ChunkManager owner, ChunkData data) {
 			_owner = owner;
-			_visibiltiy = data.Visibiltiy;
-			_blocks     = data.Blocks;
+			var v = data.Visibiltiy;
+			var b = data.Blocks;
+			_visibiltiy = new VisibilityFlagsHolder(v.SizeX, v.SizeY, v.SizeZ, v.Data);
+			_blocks     = new BlockDataHolder(b.SizeX, b.SizeY, b.SizeZ, b.Data);
 			OriginPos   = data.Origin;
 			_mesher     = new ChunkMesher(_owner.Library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, OriginPos);
 			_indexX     = data.IndexX;
@@ -115,8 +117,8 @@ namespace Voxels {
 
 		public Chunk(ChunkManager owner, int x, int y, int z, Vector3 originPos) {
 			_owner        = owner;
-			_visibiltiy   = new VisibilityFlags[CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z];
-			_blocks       = new BlockData      [CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z];
+			_visibiltiy   = new VisibilityFlagsHolder(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
+			_blocks       = new BlockDataHolder      (CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
 			_mesher       = new ChunkMesher(_owner.Library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, originPos);
 			OriginPos     = originPos;
 			_indexX       = x;
@@ -140,7 +142,8 @@ namespace Voxels {
 		public void SetAllBlocks(BlockData[] blocks, int maxY) {
 			_maxNonEmptyY = maxY;
 			var y = 0;
-			for ( int i = 0; i < blocks.Length; i += CHUNK_SIZE_X * CHUNK_SIZE_X ) {
+			_blocks.Data = blocks;
+			/*for ( int i = 0; i < blocks.Length; i += CHUNK_SIZE_X * CHUNK_SIZE_X ) {
 				var local = i;
 				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
 					for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
@@ -149,7 +152,7 @@ namespace Voxels {
 					}
 				}
 				y++;
-			}
+			}*/
 			InitSunlight();
 		}
 
@@ -245,8 +248,10 @@ namespace Voxels {
 			_sunlightRemQueue.Clear();
 			
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
-				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
-					_blocks[x, _maxNonEmptyY, z].SunLevel = MAX_SUNLIGHT_VALUE;
+				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {					
+					var block = _blocks[x, _maxNonEmptyY, z];
+					block.SunLevel = MAX_SUNLIGHT_VALUE;
+					_blocks[x, _maxNonEmptyY, z] = block;
 					_sunlightAddQueue.Enqueue(new Int3(x, _maxNonEmptyY, z));
 				}
 			}
@@ -291,7 +296,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y + 1, z) ) {
 					var blockLight = _blocks[x, y + 1, z].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x, y + 1, z].LightLevel = 0;
+						var block = _blocks[x, y + 1, z];
+						block.LightLevel = 0;
+						_blocks[x, y + 1, z] = block;
 						_lightRemQueue.Enqueue(new LightRemNode(x, y + 1, z, blockLight));
 					} else if ( blockLight >= l ) {
 						_lightAddQueue.Enqueue(new Int3(x, y + 1, z));
@@ -302,7 +309,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(x, 0, z) ) {
 					var blockLight = chunk._blocks[x, 0, z].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						chunk._blocks[x, 0, z].LightLevel = 0;
+						var block = chunk._blocks[x, 0, z];
+						block.LightLevel = 0;
+						chunk._blocks[x, 0, z] = block;
 						chunk.EnqueueToLightRem(new LightRemNode(x, 0, z, blockLight));
 					} else if ( blockLight >= l ) {
 						chunk.EnqueueToLightAdd(new Int3(x, 0, z));
@@ -314,7 +323,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y - 1, z) ) {
 					var blockLight = _blocks[x, y - 1, z].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x, y - 1, z].LightLevel = 0;
+						var block = _blocks[x, y - 1, z];
+						block.LightLevel = 0;
+						_blocks[x, y - 1, z] = block;
 						_lightRemQueue.Enqueue(new LightRemNode(x, y - 1, z, blockLight));
 					} else if ( blockLight >= l ) {
 						_lightAddQueue.Enqueue(new Int3(x, y - 1, z));
@@ -326,7 +337,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x + 1, y, z) ) {
 					var blockLight = _blocks[x + 1, y, z].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x + 1, y, z].LightLevel = 0;
+						var block = _blocks[x + 1, y, z];
+						block.LightLevel = 0;
+						_blocks[x + 1, y, z] = block;
 						_lightRemQueue.Enqueue(new LightRemNode(x + 1, y, z, blockLight));
 					} else if ( blockLight >= l ) {
 						_lightAddQueue.Enqueue(new Int3(x + 1, y, z));
@@ -337,7 +350,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(0, y, z) ) {
 					var blockLight = chunk._blocks[0, y, z].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						chunk._blocks[0, y, z].LightLevel = 0;
+						var block = chunk._blocks[0, y, z];
+						block.LightLevel = 0;
+						chunk._blocks[0, y, z] = block;
 						chunk.EnqueueToLightRem(new LightRemNode(0, y, z, blockLight));
 					} else if ( blockLight >= l ) {
 						chunk.EnqueueToLightAdd(new Int3(0, y, z));
@@ -349,7 +364,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x - 1, y, z) ) {
 					var blockLight = _blocks[x - 1, y, z].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x - 1, y, z].LightLevel = 0;
+						var block = _blocks[x - 1, y, z];
+						block.LightLevel = 0;
+						_blocks[x - 1, y, z] = block;
 						_lightRemQueue.Enqueue(new LightRemNode(x - 1, y, z, blockLight));
 					} else if ( blockLight >= l ) {
 						_lightAddQueue.Enqueue(new Int3(x - 1, y, z));
@@ -360,7 +377,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(CHUNK_SIZE_X - 1, y, z) ) {
 					var blockLight = chunk._blocks[CHUNK_SIZE_X - 1, y, z].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						chunk._blocks[CHUNK_SIZE_X - 1, y, z].LightLevel = 0;
+						var block = chunk._blocks[CHUNK_SIZE_X - 1, y, z];
+						block.LightLevel = 0;
+						chunk._blocks[CHUNK_SIZE_X - 1, y, z] = block;
 						chunk.EnqueueToLightRem(new LightRemNode(CHUNK_SIZE_X - 1, y, z, blockLight));
 					} else if ( blockLight >= l ) {
 						chunk.EnqueueToLightAdd(new Int3(CHUNK_SIZE_X - 1, y, z));
@@ -372,7 +391,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y, z + 1) ) {
 					var blockLight = _blocks[x, y, z + 1].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x, y, z + 1].LightLevel = 0;
+						var block = _blocks[x, y, z + 1];
+						block.LightLevel = 0;
+						_blocks[x, y, z + 1] = block;
 						_lightRemQueue.Enqueue(new LightRemNode(x, y, z + 1, blockLight));
 					} else if ( blockLight >= l ) {
 						_lightAddQueue.Enqueue(new Int3(x, y, z + 1));
@@ -383,7 +404,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(x, y, 0) ) {
 					var blockLight = chunk._blocks[x, y, 0].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						chunk._blocks[x, y, 0].LightLevel = 0;
+						var block = chunk._blocks[x, y, 0];
+						block.LightLevel = 0;
+						chunk._blocks[x, y, 0] = block;
 						chunk.EnqueueToLightRem(new LightRemNode(x, y, 0, blockLight));
 					} else if ( blockLight >= l ) {
 						chunk.EnqueueToLightAdd(new Int3(x, y, 0));
@@ -395,7 +418,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y, z - 1) ) {
 					var blockLight = _blocks[x, y, z - 1].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x, y, z - 1].LightLevel = 0;
+						var block = _blocks[x, y, z - 1];
+						block.LightLevel = 0;
+						_blocks[x, y, z - 1] = block;
 						_lightRemQueue.Enqueue(new LightRemNode(x, y, z - 1, blockLight));
 					} else if ( blockLight >= l ) {
 						_lightAddQueue.Enqueue(new Int3(x, y, z - 1));
@@ -406,7 +431,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(x, y, CHUNK_SIZE_Z - 1) ) {
 					var blockLight = chunk._blocks[x, y, CHUNK_SIZE_Z - 1].LightLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						chunk._blocks[x, y, CHUNK_SIZE_Z - 1].LightLevel = 0;
+						var block = chunk._blocks[x, y, CHUNK_SIZE_Z - 1];
+						block.LightLevel = 0;
+						chunk._blocks[x, y, CHUNK_SIZE_Z - 1] = block;
 						chunk.EnqueueToLightRem(new LightRemNode(x, y, CHUNK_SIZE_Z - 1, blockLight));
 					} else if ( blockLight >= l ) {
 						chunk.EnqueueToLightAdd(new Int3(x, y, CHUNK_SIZE_Z - 1));
@@ -429,7 +456,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y+1,z) ) {
 					var blockLight = _blocks[x, y + 1, z].LightLevel;
 					if ( l > blockLight ) {
-						_blocks[x, y + 1, z].LightLevel = l;
+						var block = _blocks[x, y + 1, z];
+						block.LightLevel = l;
+						_blocks[x, y + 1, z] = block;
 						_lightAddQueue.Enqueue(new Int3(x, y + 1, z));
 					}
 				}
@@ -438,7 +467,9 @@ namespace Voxels {
 				if ( chunk != null  && !chunk.HasFullOpaqueBlockAt(x, 0, z)) {
 					var blockLight = chunk._blocks[x, 0, z].LightLevel;
 					if ( l > blockLight ) {
-						chunk._blocks[x, 0, z].LightLevel = l;
+						var block = chunk._blocks[x, 0, z];
+						block.LightLevel = l;
+						chunk._blocks[x, 0, z] = block;
 						chunk.EnqueueToLightAdd(new Int3(x, 0, z));
 					}	
 				}
@@ -448,7 +479,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y - 1, z) ) {
 					var blockLight = _blocks[x, y - 1, z].LightLevel;
 					if ( l > blockLight ) {
-						_blocks[x, y - 1, z].LightLevel = l;
+						var block = _blocks[x, y - 1, z];
+						block.LightLevel = l;
+						_blocks[x, y - 1, z] = block;
 						_lightAddQueue.Enqueue(new Int3(x, y - 1, z));
 					}
 				}
@@ -458,7 +491,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x + 1, y, z) ) {
 					var blockLight = _blocks[x + 1, y, z].LightLevel;
 					if (l > blockLight ) {
-						_blocks[x + 1, y, z].LightLevel = l;
+						var block = _blocks[x + 1, y, z];
+						block.LightLevel = l;
+						_blocks[x + 1, y, z] = block;
 						_lightAddQueue.Enqueue(new Int3(x + 1, y, z));
 					}
 				}
@@ -467,7 +502,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(0, y, z) ) {
 					var blockLight = chunk._blocks[0, y, z].LightLevel;
 					if ( l> blockLight ) {
-						chunk._blocks[0, y, z].LightLevel = l;
+						var block = chunk._blocks[0, y, z];
+						block.LightLevel = l;
+						chunk._blocks[0, y, z] = block;
 						chunk.EnqueueToLightAdd(new Int3(0, y, z));
 					}
 				}
@@ -477,7 +514,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x - 1, y, z) ) {
 					var blockLight = _blocks[x - 1, y, z].LightLevel;
 					if ( l > blockLight ) {
-						_blocks[x - 1, y, z].LightLevel = l;
+						var block = _blocks[x - 1, y, z];
+						block.LightLevel = l;
+						_blocks[x - 1, y, z] = block;
 						_lightAddQueue.Enqueue(new Int3(x - 1, y, z));
 					}
 				}
@@ -486,7 +525,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(CHUNK_SIZE_X - 1, y, z) ) {
 					var blockLight = chunk._blocks[CHUNK_SIZE_X - 1, y, z].LightLevel;
 					if ( l > blockLight ) {
-						chunk._blocks[CHUNK_SIZE_X - 1, y, z].LightLevel = l;
+						var block = chunk._blocks[CHUNK_SIZE_X - 1, y, z];
+						block.LightLevel = l;
+						chunk._blocks[CHUNK_SIZE_X - 1, y, z] = block;
 						chunk.EnqueueToLightAdd(new Int3(CHUNK_SIZE_X - 1, y, z));
 					}
 				}
@@ -496,7 +537,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y, z + 1) ) {
 					var blockLight = _blocks[x, y, z + 1].LightLevel;
 					if ( l > blockLight ) {
-						_blocks[x, y, z + 1].LightLevel = l;
+						var block = _blocks[x, y, z + 1];
+						block.LightLevel = l;
+						_blocks[x, y, z + 1] = block;
 						_lightAddQueue.Enqueue(new Int3(x, y, z + 1));
 					}
 				}
@@ -505,7 +548,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(x, y, 0) ) {
 					var blockLight = chunk._blocks[x, y, 0].LightLevel;
 					if ( l > blockLight ) {
-						chunk._blocks[x, y, 0].LightLevel = l;
+						var block = chunk._blocks[x, y, 0];
+						block.LightLevel = l;
+						chunk._blocks[x, y, 0] = block;
 						chunk.EnqueueToLightAdd(new Int3(x, y, 0));
 					}	
 				}
@@ -515,7 +560,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y, z - 1) ) {
 					var blockLight = _blocks[x, y, z - 1].LightLevel;
 					if ( l > blockLight ) {
-						_blocks[x, y, z - 1].LightLevel = l;
+						var block = _blocks[x, y, z - 1];
+						block.LightLevel = l;
+						_blocks[x, y, z - 1] = block;
 						_lightAddQueue.Enqueue(new Int3(x, y, z - 1));
 					}
 				}
@@ -524,7 +571,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(x, y, CHUNK_SIZE_Z - 1) ) {
 					var blockLight = chunk._blocks[x, y, CHUNK_SIZE_Z - 1].LightLevel;
 					if ( l > blockLight ) {
-						chunk._blocks[x, y, CHUNK_SIZE_Z - 1].LightLevel = l;
+						var block = chunk._blocks[x, y, CHUNK_SIZE_Z - 1];
+						block.LightLevel = l;
+						chunk._blocks[x, y, CHUNK_SIZE_Z - 1] = block;
 						chunk.EnqueueToLightAdd(new Int3(x, y, CHUNK_SIZE_Z - 1));
 					}
 				}
@@ -545,7 +594,9 @@ namespace Voxels {
 				if ( _owner.Library.IsLightPassBlock(_blocks[x, y + 1, z].Type) ) {
 					var blockLight = _blocks[x, y + 1, z].SunLevel;
 					if ( l > blockLight ) {
-						_blocks[x, y + 1, z].SunLevel = l;
+						var block = _blocks[x, y + 1, z];
+						block.SunLevel = l;
+						_blocks[x, y + 1, z] = block;
 						_sunlightAddQueue.Enqueue(new Int3(x, y + 1, z));
 					}
 				}
@@ -554,7 +605,9 @@ namespace Voxels {
 				if ( chunk != null && _owner.Library.IsLightPassBlock(chunk._blocks[x, 0, z].Type) ) {
 					var blockLight = chunk._blocks[x, 0, z].SunLevel;
 					if ( l > blockLight ) {
-						chunk._blocks[x, 0, z].SunLevel = l;
+						var block = chunk._blocks[x, 0, z];
+						block.SunLevel = l;
+						chunk._blocks[x, 0, z] = block;
 						chunk.EnqueueToSunlightAdd(new Int3(x, 0, z));
 					}
 				}
@@ -565,7 +618,9 @@ namespace Voxels {
 					var blockLight = _blocks[x, y - 1, z].SunLevel;
 					if ( l > blockLight ) {
 						var nLight = oLight == MAX_SUNLIGHT_VALUE ? oLight : l;
-						_blocks[x, y - 1, z].SunLevel = nLight;
+						var block = _blocks[x, y - 1, z];
+						block.SunLevel = nLight;
+						_blocks[x, y - 1, z] = block;
 						_sunlightAddQueue.Enqueue(new Int3(x, y - 1, z));
 					}
 				}
@@ -575,7 +630,10 @@ namespace Voxels {
 				if ( _owner.Library.IsLightPassBlock(_blocks[x + 1, y, z].Type) ) {
 					var blockLight = _blocks[x + 1, y, z].SunLevel;
 					if ( l > blockLight ) {
-						_blocks[x + 1, y, z].SunLevel = l;
+
+						var block = _blocks[x + 1, y, z];
+						block.SunLevel = l;
+						_blocks[x + 1, y, z] = block;
 						_sunlightAddQueue.Enqueue(new Int3(x + 1, y, z));
 					}
 				}
@@ -584,7 +642,9 @@ namespace Voxels {
 				if ( chunk != null && _owner.Library.IsLightPassBlock(chunk._blocks[0, y, z].Type) ) {
 					var blockLight = chunk._blocks[0, y, z].SunLevel;
 					if ( l > blockLight ) {
-						chunk._blocks[0, y, z].SunLevel = l;
+						var block = chunk._blocks[0, y, z];
+						block.SunLevel = l;
+						chunk._blocks[0, y, z] = block;
 						chunk.EnqueueToSunlightAdd(new Int3(0, y, z));
 					}
 				}
@@ -594,7 +654,9 @@ namespace Voxels {
 				if ( _owner.Library.IsLightPassBlock(_blocks[x - 1, y, z].Type) ) {
 					var blockLight = _blocks[x - 1, y, z].SunLevel;
 					if ( l > blockLight ) {
-						_blocks[x - 1, y, z].SunLevel = l;
+						var block =_blocks[x - 1, y, z];
+						block.SunLevel = l;
+						_blocks[x - 1, y, z] = block;
 						_sunlightAddQueue.Enqueue(new Int3(x - 1, y, z));
 					}
 				}
@@ -603,7 +665,9 @@ namespace Voxels {
 				if ( chunk != null && _owner.Library.IsLightPassBlock(chunk._blocks[CHUNK_SIZE_X - 1, y, z].Type) ) {
 					var blockLight = chunk._blocks[CHUNK_SIZE_X - 1, y, z].SunLevel;
 					if ( l > blockLight ) {
-						chunk._blocks[CHUNK_SIZE_X - 1, y, z].SunLevel = l;
+						var block = chunk._blocks[CHUNK_SIZE_X - 1, y, z];
+						block.SunLevel = l;
+						chunk._blocks[CHUNK_SIZE_X - 1, y, z] = block;
 						chunk.EnqueueToSunlightAdd(new Int3(CHUNK_SIZE_X - 1, y, z));
 					}
 				}
@@ -613,7 +677,9 @@ namespace Voxels {
 				if ( _owner.Library.IsLightPassBlock(_blocks[x, y, z + 1].Type) ) {
 					var blockLight = _blocks[x, y, z + 1].SunLevel;
 					if ( l > blockLight ) {
-						_blocks[x, y, z + 1].SunLevel = l;
+						var block = _blocks[x, y, z + 1];
+						block.SunLevel = l;
+						_blocks[x, y, z + 1] = block;
 						_sunlightAddQueue.Enqueue(new Int3(x, y, z + 1));
 					}
 				}
@@ -622,7 +688,9 @@ namespace Voxels {
 				if ( chunk != null && _owner.Library.IsLightPassBlock(chunk._blocks[x, y, 0].Type) ) {
 					var blockLight = chunk._blocks[x, y, 0].SunLevel;
 					if ( l > blockLight ) {
-						chunk._blocks[x, y, 0].SunLevel = l;
+						var block = chunk._blocks[x, y, 0];
+						block.SunLevel = l;
+						chunk._blocks[x, y, 0] = block;
 						chunk.EnqueueToSunlightAdd(new Int3(x, y, 0));
 					}
 				}
@@ -632,7 +700,9 @@ namespace Voxels {
 				if ( _owner.Library.IsLightPassBlock(_blocks[x, y, z - 1].Type) ) {
 					var blockLight = _blocks[x, y, z - 1].SunLevel;
 					if ( l > blockLight ) {
-						_blocks[x, y, z - 1].SunLevel = l;
+						var block =_blocks[x, y, z - 1];
+						block.SunLevel = l;
+						_blocks[x, y, z - 1] = block;
 						_sunlightAddQueue.Enqueue(new Int3(x, y, z - 1));
 					}
 				}
@@ -641,7 +711,9 @@ namespace Voxels {
 				if ( chunk != null && _owner.Library.IsLightPassBlock(chunk._blocks[x, y, CHUNK_SIZE_Z - 1].Type) ) {
 					var blockLight = chunk._blocks[x, y, CHUNK_SIZE_Z - 1].SunLevel;
 					if ( l > blockLight ) {
-						chunk._blocks[x, y, CHUNK_SIZE_Z - 1].SunLevel = l;
+						var block = chunk._blocks[x, y, CHUNK_SIZE_Z - 1];
+						block.SunLevel = l;
+						chunk._blocks[x, y, CHUNK_SIZE_Z - 1] = block;
 						chunk.EnqueueToSunlightAdd(new Int3(x, y, CHUNK_SIZE_Z - 1));
 					}
 				}
@@ -658,7 +730,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y + 1, z) ) {
 					var blockLight = _blocks[x, y + 1, z].SunLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x, y + 1, z].SunLevel = 0;
+						var block = _blocks[x, y + 1, z];
+						block.SunLevel = 0;
+						_blocks[x, y + 1, z] = block;
 						_sunlightRemQueue.Enqueue(new LightRemNode(x, y + 1, z, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -670,7 +744,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(x, 0, z) ) {
 					var blockLight = chunk._blocks[x, 0, z].SunLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						chunk._blocks[x, 0, z].SunLevel = 0;
+						var block = chunk._blocks[x, 0, z];
+						block.SunLevel = 0;
+						chunk._blocks[x, 0, z] = block;
 						chunk.EnqueueToSunlightRem(new LightRemNode(x, 0, z, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -683,7 +759,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y - 1, z) ) {
 					var blockLight = _blocks[x, y - 1, z].SunLevel;
 					if ( blockLight > 0 && blockLight < l  || blockLight == MAX_SUNLIGHT_VALUE ) {
-						_blocks[x, y - 1, z].SunLevel = 0;
+						var block = _blocks[x, y - 1, z];
+						block.SunLevel = 0;
+						_blocks[x, y - 1, z] = block;
 						_sunlightRemQueue.Enqueue(new LightRemNode(x, y - 1, z, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -696,7 +774,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x + 1, y, z) ) {
 					var blockLight = _blocks[x + 1, y, z].SunLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x + 1, y, z].SunLevel = 0;
+						var block =_blocks[x + 1, y, z];
+						block.SunLevel = 0;
+						_blocks[x + 1, y, z] = block;
 						_sunlightRemQueue.Enqueue(new LightRemNode(x + 1, y, z, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -708,7 +788,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(0, y, z) ) {
 					var blockLight = chunk._blocks[0, y, z].SunLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						chunk._blocks[0, y, z].SunLevel = 0;
+						var block = chunk._blocks[0, y, z];
+						block.SunLevel = 0;
+						chunk._blocks[0, y, z] = block;
 						chunk.EnqueueToSunlightRem(new LightRemNode(0, y, z, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -721,7 +803,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x - 1, y, z) ) {
 					var blockLight = _blocks[x - 1, y, z].SunLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x - 1, y, z].SunLevel = 0;
+						var block = _blocks[x - 1, y, z];
+						block.SunLevel = 0;
+						_blocks[x - 1, y, z] = block;
 						_sunlightRemQueue.Enqueue(new LightRemNode(x - 1, y, z, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -733,7 +817,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(CHUNK_SIZE_X - 1, y, z) ) {
 					var blockLight = chunk._blocks[CHUNK_SIZE_X - 1, y, z].SunLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						chunk._blocks[CHUNK_SIZE_X - 1, y, z].SunLevel = 0;
+						var block = chunk._blocks[CHUNK_SIZE_X - 1, y, z];
+						block.SunLevel = 0;
+						chunk._blocks[CHUNK_SIZE_X - 1, y, z] = block;
 						chunk.EnqueueToSunlightRem(new LightRemNode(CHUNK_SIZE_X - 1, y, z, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -746,7 +832,9 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y, z + 1) ) {
 					var blockLight = _blocks[x, y, z + 1].SunLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x, y, z + 1].SunLevel = 0;
+						var block =_blocks[x, y, z + 1];
+						block.SunLevel = 0;
+						_blocks[x, y, z + 1] = block;
 						_sunlightRemQueue.Enqueue(new LightRemNode(x, y, z + 1, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -758,7 +846,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(x, y, 0) ) {
 					var blockLight = chunk._blocks[x, y, 0].SunLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						chunk._blocks[x, y, 0].SunLevel = 0;
+						var block = chunk._blocks[x, y, 0];
+						block.SunLevel = 0;
+						chunk._blocks[x, y, 0] = block;
 						chunk.EnqueueToSunlightRem(new LightRemNode(x, y, 0, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -771,7 +861,8 @@ namespace Voxels {
 				if ( !HasFullOpaqueBlockAt(x, y, z - 1) ) {
 					var blockLight = _blocks[x, y, z - 1].SunLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						_blocks[x, y, z - 1].SunLevel = 0;
+						var block = _blocks[x, y, z - 1];
+						block.SunLevel = 0;
 						_sunlightRemQueue.Enqueue(new LightRemNode(x, y, z - 1, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -783,7 +874,9 @@ namespace Voxels {
 				if ( chunk != null && !chunk.HasFullOpaqueBlockAt(x, y, CHUNK_SIZE_Z - 1) ) {
 					var blockLight = chunk._blocks[x, y, CHUNK_SIZE_Z - 1].SunLevel;
 					if ( blockLight > 0 && blockLight < l ) {
-						chunk._blocks[x, y, CHUNK_SIZE_Z - 1].SunLevel = 0;
+						var block = chunk._blocks[x, y, CHUNK_SIZE_Z - 1];
+						block.SunLevel = 0;
+						chunk._blocks[x, y, CHUNK_SIZE_Z - 1] = block;
 						chunk.EnqueueToSunlightRem(new LightRemNode(x, y, CHUNK_SIZE_Z - 1, blockLight));
 					}
 					else if ( blockLight >= l ) {
@@ -1211,7 +1304,9 @@ namespace Voxels {
 			var oldLight     = _blocks[x, y, z].LightLevel;
 			var oldSunlight  = _blocks[x, y, z].SunLevel;
 			_blocks[x, y, z] = BlockData.Empty;
-			_blocks[x, y, z].LightLevel = (byte) Mathf.Clamp(Mathf.Max(nl.OBackward, nl.OForward, nl.OLeft, nl.ORight, nl.OUp, nl.ODown) - LIGHT_FALLOF_VALUE, 0, 255);
+			var block = _blocks[x, y, z];
+			block.LightLevel = (byte) Mathf.Clamp(Mathf.Max(nl.OBackward, nl.OForward, nl.OLeft, nl.ORight, nl.OUp, nl.ODown) - LIGHT_FALLOF_VALUE, 0, 255);
+			_blocks[x, y, z] = block;
 			_lightAddQueue.Enqueue(new Int3(x, y, z));
 			_lightRemQueue.   Enqueue(new LightRemNode(x, y, z, oldLight));
 			_sunlightRemQueue.Enqueue(new LightRemNode(x, y, z, oldSunlight));

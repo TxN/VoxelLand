@@ -3,6 +3,8 @@ using UnityEngine;
 using Voxels.UI;
 using SMGCore;
 
+using ZeroFormatter;
+
 namespace Voxels {
 	public sealed class GameManager : MonoSingleton<GameManager> {
 		public PlayerInteraction LocalPlayer = null;
@@ -20,6 +22,7 @@ namespace Voxels {
 		}
 
 		void Start() {
+			ZeroFormatterInitializer.Register();
 			SaveLoad = new SaveLoadManager();
 			SaveLoad.Load();
 			SpawnPlayer();

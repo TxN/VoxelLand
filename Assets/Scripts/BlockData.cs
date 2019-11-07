@@ -1,18 +1,29 @@
+using ZeroFormatter;
+
 namespace Voxels {
+	[ZeroFormattable]
 	public struct BlockData {
+		[Index(0)]
 		public BlockType  Type;
-		public byte       Subtype;	
+		[Index(1)]
+		public byte       Subtype;
+		[Index(2)]
 		public byte       SunLevel;
+		[Index(3)]
 		public byte       LightLevel;
+		[Index(4)]
 		public ushort     AddColor;
+		[Index(5)]
 		public ushort     Metadata;
 
+		[IgnoreFormat]
 		public BlockDescription Info {
 			get {
 				return ChunkManager.Instance.Library.GetBlockDescription(Type);
 			}
 		}
 
+		[IgnoreFormat]
 		public static int StructSize {
 			get {
 				if ( _cachedSize == 0 ) {
@@ -40,6 +51,15 @@ namespace Voxels {
 			SunLevel   = 0;
 			LightLevel = 0;
 			AddColor   = 65535;
+		}
+
+		public BlockData(BlockType type, byte subtype, byte sunLevel, byte lightLevel, ushort addColor, ushort metadata) {
+			Type       = type;
+			Subtype    = subtype;
+			Metadata   = metadata;
+			SunLevel   = sunLevel;
+			LightLevel = lightLevel;
+			AddColor   = addColor;
 		}
 
 		public static BlockData Empty {

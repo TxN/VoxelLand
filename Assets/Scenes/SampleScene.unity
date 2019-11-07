@@ -1435,6 +1435,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LocalPlayer: {fileID: 0}
   Hotbar: {fileID: 2017912837}
+  SpawnPos: {x: 0, y: 60, z: 0}
 --- !u!1 &1475712104
 GameObject:
   m_ObjectHideFlags: 0

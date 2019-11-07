@@ -133,20 +133,23 @@ namespace Voxels {
 
 		void SaveChunk(Int3 pos, Chunk chunk) {
 			var savePath = GameManager.Instance.SaveLoad.SavePath;
-			var file = File.Create(savePath + pos.ToString());
-			var chunkWriter = new BinaryWriter(file);
-			ChunkSerializer.Serialize(chunk.GetData(), chunkWriter);
-			file.Close();
+			using ( var file = File.Create(savePath + pos.ToString()) ) {
+				using ( var chunkWriter = new BinaryWriter(file) ) {
+					ChunkSerializer.Serialize(chunk.GetData(), chunkWriter, true);
+				}
+			}
 		}
 
 		void LoadChunk(Int3 pos) {
-			var savePath = GameManager.Instance.SaveLoad.SavePath;
-			var file = File.OpenRead(savePath + pos.ToString());
-			var reader = new BinaryReader(file);
-			var data = ChunkSerializer.Deserialize(reader);
-			var chunk = InitializeChunk(pos, data);
-			chunk.NeedRebuildGeometry = true;
-			chunk.MarkAsLoaded();
+			var savePath = GameManager.Instance.SaveLoad.SavePath;	
+			using ( var file = File.OpenRead(savePath + pos.ToString()) ) {
+				using ( var reader = new BinaryReader(file) ) {
+					var data = ChunkSerializer.Deserialize(reader);
+					var chunk = InitializeChunk(pos, data);
+					chunk.NeedRebuildGeometry = true;
+					chunk.MarkAsLoaded();
+				}
+			}
 		}
 
 		Chunk InitializeChunk(Int3 index, ChunkData data = null) {
@@ -239,6 +242,7 @@ namespace Voxels {
 
 		void UnloadChunk(Int3 pos) {
 			var chunk = GetChunk(pos);
+			GameManager.Instance.SaveLoad.CheckSaveDir();
 			SaveChunk(pos, chunk);
 			_renderPool.Return(chunk.Renderer);
 			chunk.UnloadChunk();
