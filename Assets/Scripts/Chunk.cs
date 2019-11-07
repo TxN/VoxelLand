@@ -141,18 +141,7 @@ namespace Voxels {
 
 		public void SetAllBlocks(BlockData[] blocks, int maxY) {
 			_maxNonEmptyY = maxY;
-			var y = 0;
 			_blocks.Data = blocks;
-			/*for ( int i = 0; i < blocks.Length; i += CHUNK_SIZE_X * CHUNK_SIZE_X ) {
-				var local = i;
-				for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
-					for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
-						_blocks[x, y, z] = blocks[local];
-						local++;
-					}
-				}
-				y++;
-			}*/
 			InitSunlight();
 		}
 
