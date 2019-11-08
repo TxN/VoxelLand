@@ -4,7 +4,9 @@ namespace Voxels.Networking {
 	public enum ServerPacketID : byte {
 		Identification,
 		Ping,
-		Message,
+		JoinSuccess,
+		ForceDisconnect,
+		ChatMessage,
 		None = 255
 	}
 
@@ -12,7 +14,7 @@ namespace Voxels.Networking {
 	public enum ClientPacketID : byte {
 		Identification,
 		Pong,
-		Message,
+		ChatMessage,
 		None = 255
 	}
 }

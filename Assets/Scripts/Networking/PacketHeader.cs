@@ -16,6 +16,19 @@ namespace Voxels.Networking {
 			}
 		}
 
+		public PacketHeader(byte packetId, bool compressed, ushort contentLength) {
+			PacketID      = packetId;
+			Compressed    = compressed;
+			ContentLength = contentLength;
+		}
+
+		public void ToBytes(byte[] buffer) {
+			buffer[0] = PacketID;
+			buffer[1] =  Compressed ? (byte) 1 : (byte) 0;
+			buffer[2] = (byte) (ContentLength % 256);
+			buffer[3] = (byte) (ContentLength / 256);
+		}
+
 		public static int MinPacketLength {
 			get { return MIN_PACKET_LENGTH; }
 		}

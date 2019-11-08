@@ -8,4 +8,9 @@ namespace Voxels.Networking.Events {
 		public int ConnectionId;
 		public ClientState State;
 	}
+
+	public struct OnServerReceivedChatMessage {
+		public ClientState Sender;
+		public string      Message;
+	}
 }

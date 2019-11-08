@@ -6,6 +6,8 @@ namespace Voxels.Networking {
 		public int    ConnectionID = 0;
 		public string UserName     = string.Empty;
 		public string IpAdress     = string.Empty;
+		public float  LastPingTime = 0f;
+		public float  LastPongTime = 0;
 
 	}
 
