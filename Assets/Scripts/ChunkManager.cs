@@ -1,5 +1,6 @@
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 
@@ -18,12 +19,12 @@ namespace Voxels {
 		HashSet<Int3>           _library = new HashSet<Int3>();
 		int                     _sizeY  = 0;
 
-		List<Int3>             _chunkLoadList     = new List<Int3>(128);
-		Queue<Int3>             _saveLoadList      = new Queue<Int3>(128);
+		HashSet<Int3>          _chunkLoadList     = new HashSet<Int3>();
+		Queue<Int3>            _saveLoadList      = new Queue<Int3>(128);
 		ChunkRendererPool      _renderPool        = new ChunkRendererPool();
 		DestroyBlockEffectPool _destroyEffectPool = new DestroyBlockEffectPool();
 
-		public const int LOAD_RADIUS   = 7;
+		public const int LOAD_RADIUS   = 10;
 		public const int UNLOAD_DISTANCE = 16 * 12;
 
 		public int GetWorldHeight {
@@ -55,7 +56,16 @@ namespace Voxels {
 			_destroyEffectPool.Init();
 		}
 
+		void Start() {
+			LoadGenWorld();
+		}
+
 		void Update() {
+
+			if ( _saveLoadList.Count > 0 ) {
+				LoadChunk(_saveLoadList.Dequeue());
+			}
+
 			foreach ( var chunkPair in _chunks ) {
 				var chunk = chunkPair.Value;
 				if ( chunk != null && chunk.Dirty ) {
@@ -73,12 +83,8 @@ namespace Voxels {
 		}
 
 		void LateUpdate() {
-			UnloadFarChunks();
-			RefreshChunkGenQueue();
-
-			if ( _saveLoadList.Count > 0 ) {
-				LoadChunk(_saveLoadList.Dequeue());
-			}
+			//UnloadFarChunks();
+			//RefreshChunkGenQueue();
 			
 			foreach ( var chunkPair in _chunks ) {
 				var chunk = chunkPair.Value;
@@ -120,8 +126,6 @@ namespace Voxels {
 			for ( int i = 0; i < chunkLibCount; i++ ) {
 				_library.Add(new Int3(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32()));
 			}
-
-
 		}
 
 		public Chunk GetOrInitChunk(Int3 index) {
@@ -223,7 +227,28 @@ namespace Voxels {
 					}
 				}
 			}
-			LandGenerator.Instance.RefreshQueue(_chunkLoadList);
+			LandGenerator.Instance.RefreshQueue(_chunkLoadList.ToList());
+		}
+
+		void LoadGenWorld() {
+			_chunkLoadList.Clear();
+			var originPos = Int3.Zero;
+			for ( int r = 0; r < LOAD_RADIUS; r++ ) {
+				for ( int x = -r; x < r; x++ ) {
+					for ( int z = -r; z < r; z++ ) {
+						var newPos = originPos.Add(x, 0, z);
+						if ( GetChunk(newPos) == null ) {
+							if ( !_library.Contains(newPos) ) {
+								_chunkLoadList.Add(originPos.Add(x, 0, z));
+							} else {
+								_saveLoadList.Enqueue(originPos.Add(x, 0, z));
+							}
+						}
+
+					}
+				}
+			}
+			LandGenerator.Instance.RefreshQueue(_chunkLoadList.ToList());
 		}
 
 		void UnloadFarChunks() {
