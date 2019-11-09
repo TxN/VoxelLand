@@ -10,7 +10,8 @@ public sealed class CameraVerticalLook : MonoBehaviour {
 
 	
 	void Update() {
-		if ( GameManager.Instance.PlayerControlEnabled ) {
+	//	if ( GameManager.Instance.PlayerControlEnabled ) {
+		if ( true ) {
 			_rotation.x -= Input.GetAxis("Mouse Y") * Sensivity;
 			_rotation.x = Mathf.Clamp(_rotation.x, Limits.x, Limits.y);
 			transform.localEulerAngles = _rotation ;

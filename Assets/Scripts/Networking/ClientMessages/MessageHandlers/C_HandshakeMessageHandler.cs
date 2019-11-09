@@ -1,3 +1,5 @@
+using System;
+
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
 
@@ -13,7 +15,10 @@ namespace Voxels.Networking {
 				ServerController.Instance.ForceDisconnectClient(client, string.Format("Wrong protocol version. Server: {0}, yours: {1}", ServerController.ProtocolVersion, command.ProtocolVersion));
 				return;
 			}
+			client.ConnectionTime = DateTime.Now;
+			client.CurrentState = CState.Connected;
 			EventManager.Fire(new OnClientConnected { ConnectionId = client.ConnectionID });
+			UnityEngine.Debug.LogFormat("Server: client with name {0} connected.", client.UserName);
 		}
 	}
 }

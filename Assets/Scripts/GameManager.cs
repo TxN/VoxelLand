@@ -1,42 +1,50 @@
 using UnityEngine;
 
-using Voxels.UI;
+using Voxels.Networking;
 using SMGCore;
-
-using ZeroFormatter;
 
 namespace Voxels {
 	public sealed class GameManager : MonoSingleton<GameManager> {
-		public PlayerInteraction LocalPlayer = null;
-		public Hotbar            Hotbar      = null;
 
-		const string   PlayerPrefabPath = "Player";
-		public Vector3 SpawnPos = new Vector3(0, 60, 0);
+		public bool IsServer { get; private set; }
+		public bool IsClient { get; private set; }
 
-		public SaveLoadManager SaveLoad = null;
-
-		public bool PlayerControlEnabled {
-			get {
-				return true;
-			}
-		}
+		ServerGameManager _serverManager = null;
+		ClientGameManager _clientManager = null;
 
 		void Start() {
-			ZeroFormatterInitializer.Register();
-			SaveLoad = new SaveLoadManager();
-			SaveLoad.Load();
-			SpawnPlayer();
+			//TODO: получать настройки отуда-то еще, например из стартового меню.
+			IsServer = true;
+			IsClient = true;
+
+			if ( IsServer ) {
+				_serverManager = new ServerGameManager();
+				_serverManager.Create();
+				_serverManager.Init();
+				_serverManager.PostInit();
+				_serverManager.Load();
+				_serverManager.PostLoad();
+			}
+			System.Threading.Thread.Sleep(100);
+			if ( IsClient ) {
+				//TODO
+				_clientManager = new ClientGameManager();
+				_clientManager.Create();
+				_clientManager.Init();
+				_clientManager.PostInit();
+				_clientManager.Load();
+				_clientManager.PostLoad();
+			}
 		}
 
 		void Update() {
-			if (Input.GetKeyDown(KeyCode.U)) {
-				SaveLoad.Save();
+			if ( IsServer ) {
+				_serverManager.UpdateControllers();
 			}
-		}
 
-		void SpawnPlayer() {
-			var ply = Resources.Load<GameObject>(PlayerPrefabPath);
-			LocalPlayer = Instantiate(ply, SpawnPos, Quaternion.identity, null).GetComponent<PlayerInteraction>();
+			if ( IsClient ) {
+				_clientManager.UpdateControllers();
+			}
 		}
 	}
 }

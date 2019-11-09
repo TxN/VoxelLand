@@ -11,33 +11,44 @@ using Telepathy;
 using ZeroFormatter;
 
 namespace Voxels.Networking {
-	public class ServerController : MonoSingleton<ServerController> {
-		const int PROTOCOL_VERSION = 1;
+	public class ServerController : ServerSideController<ServerController> {
+		const int   PROTOCOL_VERSION = 1;
+		const float PING_INTERVAL    = 10;
+		
+		public string ServerName = "Untitled";
+		public string MOTD       = "Greetings!";
 
-		Dictionary<int,ClientState> _clients = new Dictionary<int, ClientState>();
+		Dictionary<int,ClientState>                          _clients  = new Dictionary<int, ClientState>();
 		Dictionary<ClientPacketID, BaseClientMessageHandler> _handlers = new Dictionary<ClientPacketID, BaseClientMessageHandler>();
 
-		string ServerName = "Untitled";
-		string MOTD = "Greetings!";
-		int _port = 1337;
-		
-		Telepathy.Server _server = null;
-
-		public bool IsStarted { get; private set; }
+		int    _port            = 0;
+		Server _server          = null;
+		long   _packetsReceived = 0;
+		long   _packetsSent     = 0;
 
 		public static int ProtocolVersion {
 			get { return PROTOCOL_VERSION; }
 		}
 
-		void Start() {
-			StartServer();			
+		public bool IsStarted { get; private set; }
+
+		public Dictionary<int,ClientState> Clients {
+			get { return _clients; }
 		}
 
-		void Update() {
+		public ServerController(ServerGameManager owner) : base(owner) {
+		}
+
+		public override void PostLoad() {
+			base.PostLoad();
+			StartServer(1337);
+		}
+
+		public override void Update() {
 			MainCycle();
 		}
 
-		public void StartServer() {
+		public void StartServer(int port) {
 			if ( IsStarted ) {
 				return;
 			}
@@ -48,9 +59,11 @@ namespace Voxels.Networking {
 			_handlers.Add(ClientPacketID.Pong,           new C_PongMessageHandler());
 			_handlers.Add(ClientPacketID.ChatMessage,    new C_ChatMessageHandler());
 
-
+			_packetsReceived = 0;
+			_packetsSent     = 0;
 			_server = new Server();
-			_server.Start(_port);
+			_server.Start(port);
+			_port = port;
 			IsStarted = true;
 		}
 
@@ -64,8 +77,21 @@ namespace Voxels.Networking {
 		}
 
 		public void ForceDisconnectClient(ClientState client, string message) {
-			//TODO: send disconnect message
+			SendNetMessage(client, ServerPacketID.ForceDisconnect, new S_ForceDisconnectMessage { Reason = message });
+			Debug.LogFormat("Client with id {0} force disconnected with reason: '{1}'", client.ConnectionID, message);
 			_server.Disconnect(client.ConnectionID);
+		}
+
+		public void SendNetMessage<T>(ClientState client, ServerPacketID id, T message, bool compress = false) where T : BaseMessage {
+			var body = ZeroFormatterSerializer.Serialize(message);
+			var header = new PacketHeader((byte)id, compress, (ushort)body.Length);
+			if ( compress ) {
+				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, CLZF2.Compress(body)));
+			}
+			else {
+				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, body));
+			}
+			_packetsSent++;
 		}
 
 		void MainCycle() {
@@ -87,6 +113,20 @@ namespace Voxels.Networking {
 						break;
 				}
 			}
+			SendPing();
+		}
+
+		void SendPing() {
+			var now = System.DateTime.Now;
+			foreach ( var pair in _clients ) {
+				var cli = pair.Value;
+				if ( cli.CurrentState == CState.Connected ) {
+					if ( (now - cli.LastPingTime).TotalSeconds > PING_INTERVAL ) {
+						cli.LastPingTime = now;
+						SendNetMessage(cli, ServerPacketID.Ping, new S_PingMessage());
+					}
+				}
+			}
 		}
 
 		void OnNewConnection(Message msg) {
@@ -97,13 +137,12 @@ namespace Voxels.Networking {
 			};
 			_clients.Add(msg.connectionId, state);
 
-			var body   = ZeroFormatterSerializer.Serialize(new S_HandshakeMessage { CommandID = (byte)ServerPacketID.Identification, MOTD = MOTD, ProtocolVersion = PROTOCOL_VERSION, ServerName = ServerName });
-			var header = new PacketHeader((byte)ServerPacketID.Identification, false, (ushort) body.Length);
-			_server.Send(msg.connectionId, CreateMessageBytes(header, body));
-			Debug.LogFormat("Client with id {0} connecting. Sending handshake command.");
+			SendNetMessage(state, ServerPacketID.Identification, new S_HandshakeMessage { CommandID = (byte)ServerPacketID.Identification, MOTD = MOTD, ProtocolVersion = PROTOCOL_VERSION, ServerName = ServerName });
+			Debug.LogFormat("Client with id {0} connecting. Sending handshake command.", msg.connectionId);
 		}
 
 		void OnDataReceived(Message msg) {
+			_packetsReceived++;
 			if ( msg.data.Length < PacketHeader.MinPacketLength ) {
 				return;
 			}
@@ -111,7 +150,8 @@ namespace Voxels.Networking {
 			using ( var str = new MemoryStream(msg.data)) {
 				var header = new PacketHeader(msg.data);
 				var data = new byte[header.ContentLength];
-				str.Read(data, PacketHeader.MinPacketLength, header.ContentLength);
+				str.Seek(PacketHeader.MinPacketLength, SeekOrigin.Begin);
+				str.Read(data, 0, header.ContentLength);
 				if ( header.Compressed ) {	
 					ProcessReceivedMessage(client, (ClientPacketID) header.PacketID, CLZF2.Decompress(data));
 				} else {
@@ -136,20 +176,8 @@ namespace Voxels.Networking {
 				ConnectionId = msg.connectionId,
 				State = client
 			});
-			Debug.LogFormat("Player '{0}' with id '{1}' disconnected.");
+			Debug.LogFormat("Player '{0}' with id '{1}' disconnected.", client.UserName, msg.connectionId);
 			_clients.Remove(msg.connectionId);
 		}
-
-
-
-		byte[] CreateMessageBytes(PacketHeader header, byte[] body) {
-			var msg = new byte[header.ContentLength + body.Length];
-			header.ToBytes(msg);
-			body.CopyTo(msg, header.ContentLength);
-			return msg;
-		}
-
 	}
 }
-
-

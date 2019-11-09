@@ -30,7 +30,7 @@ namespace Voxels {
 						var blockIn = cm.GetBlockIn(CurrentInPos);
 						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString() ));
 					} else if ( Input.GetMouseButtonUp(1) ) {
-						cm.PutBlock(CurrentOutPos, new BlockData(GameManager.Instance.Hotbar.SelectedBlock,0));
+						//cm.PutBlock(CurrentOutPos, new BlockData(GameManager.Instance.Hotbar.SelectedBlock,0));
 					}
 				}
 			} else {

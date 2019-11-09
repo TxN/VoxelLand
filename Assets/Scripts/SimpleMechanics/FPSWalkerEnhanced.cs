@@ -103,7 +103,8 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 		if ( m_ToggleRun && m_Grounded && Input.GetButtonDown("Run") ) {
 			m_Speed = (m_Speed == m_WalkSpeed ? m_RunSpeed : m_WalkSpeed);
 		}
-		if ( GameManager.Instance.PlayerControlEnabled ) {
+		//if ( GameManager.Instance.PlayerControlEnabled ) {
+		if (true) {
 			_rotation.y += Input.GetAxis("Mouse X");
 			transform.eulerAngles = _rotation * m_RotationSensivity;
 		}
@@ -114,7 +115,8 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 		float inputX = Input.GetAxis("Horizontal");
 		float inputY = Input.GetAxis("Vertical");
 
-		if ( !GameManager.Instance.PlayerControlEnabled ) {
+		//if ( !GameManager.Instance.PlayerControlEnabled ) {
+		if (true ) {
 			inputX = 0;
 			inputY = 0;
 		}

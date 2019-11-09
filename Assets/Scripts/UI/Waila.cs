@@ -16,7 +16,7 @@ namespace Voxels.UI {
 		}
 
 		void Update() {
-			var player = GameManager.Instance.LocalPlayer;
+		/*	var player = GameManager.Instance.LocalPlayer;
 			if ( !player ) {
 				MainHolder.SetActive(false);
 				return;
@@ -32,7 +32,9 @@ namespace Voxels.UI {
 			BlockNameText.text  = selectedBlock.Type.ToString();
 			LightLevelText.text = string.Format("Light level: {0}", selectedBlock.LightLevel);
 			_prevSelectedBlock = selectedBlock;
+			*/
 		}
+		
 	}
 }
 
