@@ -7,6 +7,9 @@ namespace Voxels.Networking {
 		JoinSuccess,
 		ForceDisconnect,
 		ChatMessage,
+		PlayerSpawn,
+		PlayerDespawn,
+		PlayerUpdate,
 		None = 255
 	}
 
@@ -15,6 +18,7 @@ namespace Voxels.Networking {
 		Identification,
 		Pong,
 		ChatMessage,
+		PlayerUpdate,
 		None = 255
 	}
 }

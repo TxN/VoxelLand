@@ -10,8 +10,9 @@ namespace Voxels.Networking {
 		Dictionary<string, BaseClientsideController> _controllers = new Dictionary<string, BaseClientsideController>();
 
 		public void Create() {
-			_controllers.Add("client", new ClientController(this));
-			_controllers.Add("chat",   new ClientChatManager(this));
+			_controllers.Add("client",  new ClientController(this));
+			_controllers.Add("chat",    new ClientChatManager(this));
+			_controllers.Add("players", new ClientPlayerEntityManager(this));
 		}
 
 		void Reset() {

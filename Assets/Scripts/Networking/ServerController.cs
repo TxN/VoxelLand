@@ -58,6 +58,7 @@ namespace Voxels.Networking {
 			_handlers.Add(ClientPacketID.Identification, new C_HandshakeMessageHandler());
 			_handlers.Add(ClientPacketID.Pong,           new C_PongMessageHandler());
 			_handlers.Add(ClientPacketID.ChatMessage,    new C_ChatMessageHandler());
+			_handlers.Add(ClientPacketID.PlayerUpdate,   new C_PlayerUpdateMessageHandler());
 
 			_packetsReceived = 0;
 			_packetsSent     = 0;
@@ -92,6 +93,12 @@ namespace Voxels.Networking {
 				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, body));
 			}
 			_packetsSent++;
+		}
+
+		public void SendToAll<T>(ServerPacketID id, T message, bool compress = false) where T : BaseMessage {
+			foreach ( var client in Clients ) {
+				SendNetMessage(client.Value, id, message, compress);
+			}
 		}
 
 		void MainCycle() {

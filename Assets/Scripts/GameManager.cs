@@ -12,6 +12,18 @@ namespace Voxels {
 		ServerGameManager _serverManager = null;
 		ClientGameManager _clientManager = null;
 
+		public ServerGameManager Server {
+			get {
+				return _serverManager;
+			}
+		}
+
+		public ClientGameManager Client {
+			get {
+				return _clientManager;
+			}
+		}
+
 		void Start() {
 			//TODO: получать настройки отуда-то еще, например из стартового меню.
 			IsServer = true;

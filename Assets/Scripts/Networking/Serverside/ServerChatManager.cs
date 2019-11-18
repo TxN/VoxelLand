@@ -32,11 +32,7 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		void SendToAll(string senderName, string message) {
-			var clients = ServerController.Instance.Clients;
-			foreach ( var pair in clients ) {
-				var cli = pair.Value;
-				SendToClient(cli, senderName, message);
-			}
+			ServerController.Instance.SendToAll(ServerPacketID.ChatMessage, new S_ChatMessage { SenderName = senderName, MessageText = message });
 		}
 
 		void OnChatMessageReceived(OnServerReceivedChatMessage e) {
@@ -46,4 +42,3 @@ namespace Voxels.Networking.Serverside {
 		}
 	}
 }
-
