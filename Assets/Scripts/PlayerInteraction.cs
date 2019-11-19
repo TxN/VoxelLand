@@ -11,6 +11,7 @@ namespace Voxels {
         public BlockData BlockInSight  { get; private set; } = BlockData.Empty;
 
 		void Update() {
+			return;
 			var cm = ChunkManager.Instance;
 			cm.ViewPosition = transform.position;
 			var hitInfo = new RaycastHit();

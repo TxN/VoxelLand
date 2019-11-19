@@ -6,7 +6,9 @@ namespace Voxels.Networking {
 	[ZeroFormattable]
 	public class PlayerEntity {
 		[IgnoreFormat]
-		public ClientState Owner = null;
+		public ClientState   Owner = null;
+		[IgnoreFormat]
+		public PlayerMovement View = null;
 		[Index(0)]
 		public virtual string  PlayerName { get; set; }
 		[Index(1)]

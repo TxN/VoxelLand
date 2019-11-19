@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using Voxels;
+using Voxels.Networking.Clientside;
 
 [RequireComponent(typeof(CharacterController))]
 public sealed class FPSWalkerEnhanced : MonoBehaviour {
@@ -116,15 +117,18 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 		float inputY = Input.GetAxis("Vertical");
 
 		//if ( !GameManager.Instance.PlayerControlEnabled ) {
-		if (true ) {
+		if ( !ClientPlayerEntityManager.Instance.IsPlayerControlEnabled ) {
 			inputX = 0;
 			inputY = 0;
 		}
-		var cm = ChunkManager.Instance;
+
+		/*var cm = ChunkManager.Instance;
 		var playerBlock = cm.GetBlockIn(transform.position);
 
 		var blockDesc = cm.Library.GetBlockDescription(playerBlock.Type);
-		_inWater = blockDesc.IsSwimmable;
+		*/
+		//_inWater = blockDesc.IsSwimmable;
+		_inWater = false;
 
 
 		// If both horizontal and vertical are used simultaneously, limit speed (if allowed), so the total doesn't exceed normal move speed

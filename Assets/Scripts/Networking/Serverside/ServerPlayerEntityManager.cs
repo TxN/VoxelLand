@@ -13,7 +13,7 @@ namespace Voxels.Networking.Serverside {
 		//TODO: Get spawn points from worldgen
 		public Vector3 DefaultSpawnPoint = new Vector3(0, 60, 0);
 
-		public List<PlayerEntity> _players = new List<PlayerEntity>();
+		public List<PlayerEntity> Players = new List<PlayerEntity>();
 
 		//TODO: load player list and spawn points
 		public override void Load() {
@@ -22,10 +22,14 @@ namespace Voxels.Networking.Serverside {
 
 		public override void PostLoad() {
 			base.PostLoad();
+			EventManager.Subscribe<OnClientConnected>   (this, OnClientJoin);
+			EventManager.Subscribe<OnClientDisconnected>(this, OnClientDisconnect);
 		}
 
 		public override void Reset() {
 			base.Reset();
+			EventManager.Unsubscribe<OnClientConnected>   (OnClientJoin);
+			EventManager.Unsubscribe<OnClientDisconnected>(OnClientDisconnect);
 		}
 
 		public void BroadcastPlayerUpdate(ClientState client, PlayerEntity newInfo) {
@@ -39,7 +43,7 @@ namespace Voxels.Networking.Serverside {
 
 		[CanBeNull]
 		PlayerEntity GetPlayerByOwner(ClientState owner) {
-			foreach ( var player in _players ) {
+			foreach ( var player in Players ) {
 				if ( player.Owner == owner ) {
 					return player;
 				}
@@ -49,7 +53,9 @@ namespace Voxels.Networking.Serverside {
 
 		void SpawnPlayer(ClientState client) {
 			var player = new PlayerEntity { Owner = client, PlayerName = client.UserName, Position = DefaultSpawnPoint };
-			_players.Add(player);
+			Players.Add(player);
+			var server = ServerController.Instance;
+			server.SendToAll(ServerPacketID.PlayerSpawn, new S_SpawnPlayerMessage { PlayerToSpawn = player });
 			EventManager.Fire<OnServerPlayerSpawn>(new OnServerPlayerSpawn { Player = player });
 		}
 
@@ -61,12 +67,12 @@ namespace Voxels.Networking.Serverside {
 			EventManager.Fire<OnServerPlayerDespawn>(new OnServerPlayerDespawn { Player = toDespawn });
 			var server = ServerController.Instance;
 			server.SendToAll(ServerPacketID.PlayerDespawn, new S_DespawnPlayerMessage { PlayerToDespawn = toDespawn });
-			_players.Remove(toDespawn);
+			Players.Remove(toDespawn);
 		}
 
 		void SendAllPlayers(ClientState receiver) {
 			var server = ServerController.Instance;
-			foreach ( var player in _players ) {
+			foreach ( var player in Players ) {
 				server.SendNetMessage(player.Owner, ServerPacketID.PlayerSpawn, new S_SpawnPlayerMessage { PlayerToSpawn = player });
 			}
 		}

@@ -36,6 +36,14 @@ namespace Voxels.Networking {
 			get { return _clients; }
 		}
 
+		public long PacketsSent {
+			get { return _packetsSent; }
+		}
+
+		public long PacketsReceived {
+			get { return _packetsReceived; }
+		}
+
 		public ServerController(ServerGameManager owner) : base(owner) {
 		}
 

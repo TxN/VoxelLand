@@ -56,12 +56,15 @@ namespace Voxels.Networking {
 			_handlers.Add(ServerPacketID.JoinSuccess,     new S_JoinSuccessMessageHandler());
 			_handlers.Add(ServerPacketID.Ping,            new S_PingMessageHandler());
 			_handlers.Add(ServerPacketID.ChatMessage,     new S_ChatMessageHandler());
+			_handlers.Add(ServerPacketID.PlayerSpawn,     new S_SpawnPlayerMessageHandler());
+			_handlers.Add(ServerPacketID.PlayerDespawn,   new S_DespawnPlayerMessageHandler());
+			_handlers.Add(ServerPacketID.PlayerUpdate,    new S_PlayerUpdateMessageHandler());
 
 			ClientName = name;
 			Password = password;
 
-			_serverInfo = new ServerInfo();
-			_serverInfo.Ip = ip;
+			_serverInfo      = new ServerInfo();
+			_serverInfo.Ip   = ip;
 			_packetsReceived = 0;
 			_packetsSent = 0;
 			_client = new Client();

@@ -1,6 +1,7 @@
 using System;
 
 namespace Voxels.Networking {
+	[Serializable]
 	public class ClientState {
 		public CState CurrentState = CState.Disconneted;
 		public int      ConnectionID   = 0;
