@@ -15,7 +15,7 @@ namespace Voxels.Networking {
 			_controllers.Add("players", new ClientPlayerEntityManager(this));
 		}
 
-		void Reset() {
+		public void Reset() {
 			foreach ( var pair in _controllers ) {
 				try {
 					pair.Value.Reset();

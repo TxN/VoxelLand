@@ -73,11 +73,12 @@ namespace Voxels.Networking.Serverside {
 		void SendAllPlayers(ClientState receiver) {
 			var server = ServerController.Instance;
 			foreach ( var player in Players ) {
-				server.SendNetMessage(player.Owner, ServerPacketID.PlayerSpawn, new S_SpawnPlayerMessage { PlayerToSpawn = player });
+				server.SendNetMessage(receiver, ServerPacketID.PlayerSpawn, new S_SpawnPlayerMessage { PlayerToSpawn = player });
 			}
 		}
 
 		void OnClientJoin(OnClientConnected e) {
+			Debug.LogFormat("Sending to {0} all player spawn", e.State.UserName);
 			//send all live players to client
 			SendAllPlayers(e.State);
 			//spawn new player

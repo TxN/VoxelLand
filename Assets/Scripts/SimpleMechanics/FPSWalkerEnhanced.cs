@@ -84,6 +84,8 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 
 	Vector2 _rotation = Vector2.zero;
 
+	PlayerMovement _owner = null;
+
 	private void Start() {
 		VertLook = GetComponentInChildren<CameraVerticalLook>();
 		// Saving component references to improve performance.
@@ -95,17 +97,21 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 		m_RayDistance = m_Controller.height * .5f + m_Controller.radius;
 		m_SlideLimit = m_Controller.slopeLimit - .1f;
 		m_JumpTimer = m_AntiBunnyHopFactor;
+		_owner = GetComponent<PlayerMovement>();
 	}
 
 
 	private void Update() {
+		if ( !_owner.HasAutority ) {
+			return;
+		}
 		// If the run button is set to toggle, then switch between walk/run speed. (We use Update for this...
 		// FixedUpdate is a poor place to use GetButtonDown, since it doesn't necessarily run every frame and can miss the event)
 		if ( m_ToggleRun && m_Grounded && Input.GetButtonDown("Run") ) {
 			m_Speed = (m_Speed == m_WalkSpeed ? m_RunSpeed : m_WalkSpeed);
 		}
-		//if ( GameManager.Instance.PlayerControlEnabled ) {
-		if (true) {
+
+		if ( ClientPlayerEntityManager.Instance.IsPlayerControlEnabled ) {
 			_rotation.y += Input.GetAxis("Mouse X");
 			transform.eulerAngles = _rotation * m_RotationSensivity;
 		}
@@ -113,10 +119,12 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 
 
 	private void FixedUpdate() {
+		if ( !_owner.HasAutority ) {
+			return;
+		}
 		float inputX = Input.GetAxis("Horizontal");
 		float inputY = Input.GetAxis("Vertical");
 
-		//if ( !GameManager.Instance.PlayerControlEnabled ) {
 		if ( !ClientPlayerEntityManager.Instance.IsPlayerControlEnabled ) {
 			inputX = 0;
 			inputY = 0;

@@ -3,8 +3,11 @@ using UnityEngine;
 using Voxels.Networking;
 using SMGCore;
 
+using Voxels.Networking.Utils;
+using UnityEngine.SceneManagement;
+
 namespace Voxels {
-	public sealed class GameManager : MonoSingleton<GameManager> {
+	public sealed class GameManager : ManualSingleton<GameManager> {
 
 		public bool IsServer { get; private set; }
 		public bool IsClient { get; private set; }
@@ -25,9 +28,8 @@ namespace Voxels {
 		}
 
 		void Start() {
-			//TODO: получать настройки отуда-то еще, например из стартового меню.
-			IsServer = true;
-			IsClient = true;
+			IsServer = NetworkOptions.StartServer;
+			IsClient = NetworkOptions.StartClient;
 
 			if ( IsServer ) {
 				_serverManager = new ServerGameManager();
@@ -57,6 +59,17 @@ namespace Voxels {
 			if ( IsClient ) {
 				_clientManager.UpdateControllers();
 			}
+		}
+
+		public void GoToMainMenu() {
+			//TODO: quit more properly.
+			if ( IsServer ) {
+				_serverManager.Reset();
+			}
+			if ( IsClient ) {
+				_clientManager.Reset();
+			}
+			SceneManager.LoadScene("MainMenu");
 		}
 	}
 }

@@ -67,12 +67,12 @@ namespace Voxels.Networking.Clientside {
 		}
 
 		public void DespawnPlayer(PlayerEntity toDespawn) {
+			Debug.LogFormat("Client: despawn command received for {0}", toDespawn.PlayerName);
 			var localEntity = GetPlayer(toDespawn.PlayerName);
 			if ( localEntity == null ) {
 				return;
 			}
 			EventManager.Fire(new OnClientPlayerDespawn { Player = localEntity });
-			Object.Destroy(localEntity.View.gameObject);
 			_players.Remove(localEntity);
 		}
 

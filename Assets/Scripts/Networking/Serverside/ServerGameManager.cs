@@ -18,7 +18,7 @@ namespace Voxels.Networking {
 
 		}
 
-		void Reset() {
+		public void Reset() {
 			foreach ( var pair in _controllers ) {
 				try {
 					pair.Value.Reset();

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 using SMGCore.EventSys;
 using Voxels.Networking;
@@ -35,7 +36,12 @@ namespace Voxels {
 			_isLocalAutority = ClientPlayerEntityManager.Instance.IsLocalPlayer(info);
 			_lastSentPos = info.Position;
 			_lastSentDir = info.LookDir;
-			_lastUpdateTime = Time.time;	
+			_lastUpdateTime = Time.time;
+			if ( !_isLocalAutority ) {
+				Destroy(GetComponentInChildren<PostProcessLayer>());
+				Destroy(GetComponentInChildren<Camera>());
+				Destroy(GetComponentInChildren<AudioListener>());
+			}
 		}
 
 		public bool IsSamePlayer(PlayerEntity player) {
@@ -76,6 +82,9 @@ namespace Voxels {
 		}
 
 		void OnDespawn(OnClientPlayerDespawn e) {
+			if ( !IsSamePlayer(e.Player) ) {
+				return;
+			}
 			Destroy(gameObject);
 		}
 

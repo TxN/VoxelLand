@@ -2,10 +2,12 @@ using System.IO;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using SMGCore;
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
+using Voxels.Networking.Utils;
 
 using Telepathy;
 using ZeroFormatter;
@@ -38,7 +40,7 @@ namespace Voxels.Networking {
 
 		public override void PostLoad() {
 			base.PostLoad();
-			StartClient("TestClient", "" ,"localhost",1337);
+			StartClient(NetworkOptions.PlayerName, "" ,NetworkOptions.ServerIP,1337);
 		}
 
 		public override void Update() {
@@ -151,6 +153,8 @@ namespace Voxels.Networking {
 			Debug.LogFormat("Disconnect from server.");
 			EventManager.Fire(new OnDisconnectedFromServer() {
 			});
+
+			GameManager.Instance.GoToMainMenu();
 		}
 	}
 }

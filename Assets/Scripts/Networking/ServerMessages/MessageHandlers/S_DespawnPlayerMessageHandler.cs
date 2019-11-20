@@ -8,7 +8,7 @@ namespace Voxels.Networking {
 			base.ProcessMessage(rawCommand);
 			var command = ZeroFormatterSerializer.Deserialize<S_DespawnPlayerMessage>(rawCommand);
 
-			ClientPlayerEntityManager.Instance.SpawnPlayer(command.PlayerToDespawn);
+			ClientPlayerEntityManager.Instance.DespawnPlayer(command.PlayerToDespawn);
 		}
 	}
 }
