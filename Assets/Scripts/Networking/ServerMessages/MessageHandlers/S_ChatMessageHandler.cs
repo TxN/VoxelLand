@@ -1,5 +1,6 @@
 using SMGCore.EventSys;
-using Voxels.Networking.Events;
+using Voxels.Networking.Clientside;
+
 
 using ZeroFormatter;
 
@@ -9,7 +10,7 @@ namespace Voxels.Networking {
 			base.ProcessMessage(rawCommand);
 			var command = ZeroFormatterSerializer.Deserialize<S_ChatMessage>(rawCommand);
 
-			EventManager.Fire(new OnClientReceivedChatMessage { Sender = command.SenderName, Message = command.MessageText });
+			ClientChatManager.Instance.AddReceivedMessage(command.SenderName, command.MessageText);
 		}
 	}
 }

@@ -19,6 +19,7 @@ namespace Voxels.UI {
 		}
 
 		void Start() {
+			return;
 			for ( int i = 0; i < 9; i++ ) {
 				Slots[i].ShowBlock(new BlockData(SlotsContent[i],0));
 			}
