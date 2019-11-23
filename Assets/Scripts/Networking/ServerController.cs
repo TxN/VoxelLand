@@ -6,6 +6,7 @@ using UnityEngine;
 using SMGCore;
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
+using Voxels.Networking.Serverside;
 
 using Telepathy;
 using ZeroFormatter;
@@ -192,6 +193,7 @@ namespace Voxels.Networking {
 				State = client
 			});
 			Debug.LogFormat("Player '{0}' with id '{1}' disconnected.", client.UserName, msg.connectionId);
+			ServerChatManager.Instance.BroadcastFromServer(ChatMessageType.Info, string.Format("{0} connected to the server.", client.UserName));
 			_clients.Remove(msg.connectionId);
 		}
 	}

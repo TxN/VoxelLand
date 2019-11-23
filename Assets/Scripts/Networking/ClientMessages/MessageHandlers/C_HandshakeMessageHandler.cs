@@ -2,6 +2,7 @@ using System;
 
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
+using Voxels.Networking.Serverside;
 
 using ZeroFormatter;
 
@@ -27,6 +28,8 @@ namespace Voxels.Networking {
 			client.CurrentState = CState.Connected;
 			EventManager.Fire(new OnClientConnected { ConnectionId = client.ConnectionID, State = client });
 			UnityEngine.Debug.LogFormat("Server: client with name {0} connected.", client.UserName);
+			ServerChatManager.Instance.BroadcastFromServer(ChatMessageType.Info, string.Format("{0} connected to the server.", command.ClientName));
+			
 		}
 	}
 }

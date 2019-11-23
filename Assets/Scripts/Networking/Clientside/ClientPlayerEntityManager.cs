@@ -12,6 +12,7 @@ namespace Voxels.Networking.Clientside {
 		public ClientPlayerEntityManager(ClientGameManager owner) : base(owner) { }
 
 		const string PLAYER_PREFAB_PATH = "Player";
+		const string PROXY_PREFAB_PATH  = "PlayerProxy";
 
 		List<PlayerEntity> _players = new List<PlayerEntity>();
 
@@ -56,9 +57,9 @@ namespace Voxels.Networking.Clientside {
 
 		public void SpawnPlayer(PlayerEntity newPlayer) {
 			_players.Add(newPlayer);
-
-			var playerGo = Object.Instantiate(Resources.Load(PLAYER_PREFAB_PATH), newPlayer.Position, Quaternion.identity) as GameObject;
-			playerGo.name = newPlayer.PlayerName;
+			var prefabPath = IsLocalPlayer(newPlayer) ? PLAYER_PREFAB_PATH : PROXY_PREFAB_PATH;
+			var playerGo   = Object.Instantiate(Resources.Load(prefabPath), newPlayer.Position, Quaternion.identity) as GameObject;
+			playerGo.name  = newPlayer.PlayerName;
 			var playerView = playerGo.GetComponent<PlayerMovement>();
 			newPlayer.View = playerView;
 			playerView.Setup(newPlayer);

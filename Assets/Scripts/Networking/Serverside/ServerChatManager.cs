@@ -25,20 +25,20 @@ namespace Voxels.Networking.Serverside {
 			server.SendNetMessage(client, ServerPacketID.ChatMessage, new S_ChatMessage { SenderName = senderName, MessageText = message });
 		}
 
-		public void BroadcastFromServer(string message) {
+		public void BroadcastFromServer(ChatMessageType type, string message) {
 			var serverName = "Server";
-			_messages.Add(new ChatMessage(serverName, message, DateTime.Now));
-			SendToAll(serverName, message);
+			_messages.Add(new ChatMessage(serverName, message, type, DateTime.Now));
+			SendToAll(serverName, message, type);
 		}
 
-		void SendToAll(string senderName, string message) {
-			ServerController.Instance.SendToAll(ServerPacketID.ChatMessage, new S_ChatMessage { SenderName = senderName, MessageText = message });
+		void SendToAll(string senderName, string message, ChatMessageType type) {
+			ServerController.Instance.SendToAll(ServerPacketID.ChatMessage, new S_ChatMessage { SenderName = senderName, MessageText = message, Type = type });
 		}
 
 		void OnChatMessageReceived(OnServerReceivedChatMessage e) {
-			var msg = new ChatMessage(e.Sender.UserName, e.Message, DateTime.Now);
+			var msg = new ChatMessage(e.Sender.UserName, e.Message, ChatMessageType.Player, DateTime.Now);
 			_messages.Add(msg);
-			SendToAll(msg.PlayerName, msg.Message);
+			SendToAll(msg.PlayerName, msg.Message, ChatMessageType.Player);
 		}
 	}
 }

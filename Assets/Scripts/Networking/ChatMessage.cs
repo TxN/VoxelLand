@@ -1,21 +1,31 @@
 using System;
 
 namespace Voxels.Networking {
-	public sealed class ChatMessage {
-		const string SIMPLE_FORMAT = "{0} {1}: {2}";
-		const string CHAT_FORMAT   = "<<color=\"green\">{0}</color>> {1}";
+	public enum ChatMessageType: byte {
+		Raw,
+		Info,
+		Player
+	}
 
-		public readonly string   PlayerName = string.Empty;
-		public readonly string   Message    = string.Empty;
-		public readonly DateTime Time       = DateTime.MinValue;
+	public sealed class ChatMessage {
+		const string SIMPLE_FORMAT        = "{0} {1}: {2}";
+		const string PLAYER_CHAT_FORMAT   = "<<color=\"green\">{0}</color>> {1}";
+		const string INFO_CHAT_FORMAT     = "<color=\"green\">{0}</color>";
+		const string RAW_CHAT_FORMAT      = "{0}";
+
+		public readonly string          PlayerName  = string.Empty;
+		public readonly string          Message     = string.Empty;
+		public readonly DateTime        Time        = DateTime.MinValue;
+		public readonly ChatMessageType Type        = ChatMessageType.Raw;
 
 		string _cachedString = string.Empty;
 		string _cachedChatString = string.Empty;
 
-		public ChatMessage(string playerName, string message, DateTime time) {
+		public ChatMessage(string playerName, string message, ChatMessageType type, DateTime time) {
 			PlayerName = playerName;
 			Message    = message;
 			Time       = time;
+			Type       = type;
 		}
 
 		public override string ToString() {
@@ -30,7 +40,20 @@ namespace Voxels.Networking {
 			if ( !string.IsNullOrEmpty(_cachedChatString) ) {
 				return _cachedChatString;
 			}
-			_cachedChatString = string.Format(CHAT_FORMAT, PlayerName, Message);
+			switch ( Type ) {
+				case ChatMessageType.Raw:
+					_cachedChatString = string.Format(RAW_CHAT_FORMAT, Message);
+					break;
+				case ChatMessageType.Info:
+					_cachedChatString = string.Format(INFO_CHAT_FORMAT, Message);
+					break;
+				case ChatMessageType.Player:
+					_cachedChatString = string.Format(PLAYER_CHAT_FORMAT, PlayerName, Message);
+					break;
+				default:
+					break;
+			}
+			
 			return _cachedChatString;
 		}
 	}

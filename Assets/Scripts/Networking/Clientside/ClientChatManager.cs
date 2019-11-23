@@ -18,8 +18,8 @@ namespace Voxels.Networking.Clientside {
 			base.Reset();
 		}
 
-		public void AddReceivedMessage(string sender, string message) {
-			var msg = new ChatMessage(sender, message, DateTime.Now);
+		public void AddReceivedMessage(string sender, string message, ChatMessageType type) {
+			var msg = new ChatMessage(sender, message, type, DateTime.Now);
 			Messages.Add(msg);
 
 			EventManager.Fire(new OnClientReceivedChatMessage { Sender = sender, Message = message });

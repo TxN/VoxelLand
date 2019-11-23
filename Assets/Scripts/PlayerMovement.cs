@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
 
 using SMGCore.EventSys;
 using Voxels.Networking;
@@ -11,17 +10,35 @@ namespace Voxels {
 
 		public Transform CameraTransform = null;
 
-		PlayerEntity _info            = null;
-		bool         _isLocalAutority = false;
+
 
 		const float POS_UPDATE_DELAY = 0.1f;
 		const float POS_MIN_DELTA    = 0.1f;
 		const float ANG_MIN_DELTA    = 1f;
 
+		PlayerEntity         _info            = null;
+		MovementInterpolator _interpolator    = null;
+		bool                 _isLocalAutority = false;
+		float                _lastUpdateTime  = 0f;
+		Vector3              _lastSentPos     = Vector3.zero;
+		Vector2              _lastSentDir     = Vector2.zero;
 
-		float   _lastUpdateTime = 0f;
-		Vector3 _lastSentPos    = Vector3.zero;
-		Vector2 _lastSentDir    = Vector2.zero;
+		float _lastReceivedHeadPitch = 0f;
+
+		public float HeadPitch {
+			get {
+				if ( _isLocalAutority ) {
+					return CameraTransform.rotation.eulerAngles.x;
+				}
+				return _lastReceivedHeadPitch;
+			}
+		}
+
+		public string PlayerName {
+			get {
+				return _info.PlayerName;
+			}
+		}
 
 		public bool HasAutority {
 			get {
@@ -38,9 +55,7 @@ namespace Voxels {
 			_lastSentDir = info.LookDir;
 			_lastUpdateTime = Time.time;
 			if ( !_isLocalAutority ) {
-				Destroy(GetComponentInChildren<PostProcessLayer>());
-				Destroy(GetComponentInChildren<Camera>());
-				Destroy(GetComponentInChildren<AudioListener>());
+				_interpolator = GetComponent<MovementInterpolator>();
 			}
 		}
 
@@ -67,13 +82,17 @@ namespace Voxels {
 				return;
 			}
 			var moveDelta = transform.position - _lastSentPos;
-			// TODO: look delta calculation
-			//var lookDelta = 
-			if ( moveDelta.magnitude < POS_MIN_DELTA ) {
+
+			var yaw = transform.rotation.eulerAngles.y;
+			var currentLook = new Vector2(HeadPitch, yaw);
+
+			var lookDelta = Vector2.Distance(_lastSentDir, currentLook);
+			if ( moveDelta.magnitude < POS_MIN_DELTA && lookDelta < ANG_MIN_DELTA ) {
 				return;
 			}
 			_lastSentPos = transform.position;
-			//_lastSentDir = new Vector2(;
+
+			_lastSentDir = currentLook;
 			_lastUpdateTime = Time.time;
 
 			_info.Position = _lastSentPos;
@@ -92,9 +111,12 @@ namespace Voxels {
 			if ( HasAutority || !IsSamePlayer(e.Player) ) {
 				return;
 			}
-			transform.position = e.Player.Position;
-			var curRot = transform.rotation;
-			transform.rotation = Quaternion.Euler(curRot.eulerAngles.x, e.Player.LookDir.y, curRot.eulerAngles.z);
+			if ( _interpolator == null ) {
+				return;
+			}
+			var rot = Quaternion.Euler(0, e.Player.LookDir.y, 0);
+			_interpolator.UpdatePosition(e.Player.Position, rot);
+			_lastReceivedHeadPitch = e.Player.LookDir.x;
 		}
 	}
 }
