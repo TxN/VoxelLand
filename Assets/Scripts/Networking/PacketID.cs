@@ -10,6 +10,10 @@ namespace Voxels.Networking {
 		PlayerSpawn,
 		PlayerDespawn,
 		PlayerUpdate,
+		WorldOptions,
+		ChunkInit,
+		LoadFinalize,
+		PutBlock,
 		None = 255
 	}
 
@@ -19,6 +23,7 @@ namespace Voxels.Networking {
 		Pong,
 		ChatMessage,
 		PlayerUpdate,
+		PutBlock,
 		None = 255
 	}
 }

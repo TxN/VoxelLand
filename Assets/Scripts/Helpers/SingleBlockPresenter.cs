@@ -9,7 +9,8 @@ namespace Voxels {
 		MeshRenderer    _renderer = null;
 		MeshFilter      _filter   = null;
 		GeneratableMesh _genMesh  = null;
-			
+		bool            _inited   = false;
+
 		private void Start() {
 			Init();
 		}
@@ -17,7 +18,8 @@ namespace Voxels {
 		public void Init() {
 			_renderer = GetComponent<MeshRenderer>();
 			_filter   = GetComponent<MeshFilter>();
-			_genMesh = new GeneratableMesh(64);
+			_genMesh  = new GeneratableMesh(64);
+			_inited   = true;
 		}
 
 		public void DrawBlock(BlockData data) {
@@ -32,6 +34,9 @@ namespace Voxels {
 		}
 
 		private void OnDestroy() {
+			if ( !_inited ) {
+				return;
+			}
 			_filter.mesh = null;
 			_genMesh.Destroy();
 		}

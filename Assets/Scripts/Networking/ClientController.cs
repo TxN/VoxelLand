@@ -2,7 +2,6 @@ using System.IO;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 using SMGCore;
 using SMGCore.EventSys;
@@ -14,14 +13,13 @@ using ZeroFormatter;
 
 namespace Voxels.Networking {
 	public class ClientController : ClientsideController<ClientController> {
-		const int PROTOCOL_VERSION = 1;
-		string _serverIp       = string.Empty;
-		int    _port           = 0;
-		Client _client         = null;
-		long _packetsReceived  = 0;
-		long _packetsSent      = 0;
-		ServerInfo _serverInfo = null;
-
+		const int PROTOCOL_VERSION   = 1;
+		string     _serverIp         = string.Empty;
+		int        _port             = 0;
+		Client     _client           = null;
+		long       _packetsReceived  = 0;
+		long       _packetsSent      = 0;
+		ServerInfo _serverInfo       = null;
 
 		Dictionary<ServerPacketID, BaseServerMessageHandler> _handlers = new Dictionary<ServerPacketID, BaseServerMessageHandler>();
 
@@ -61,6 +59,10 @@ namespace Voxels.Networking {
 			_handlers.Add(ServerPacketID.PlayerSpawn,     new S_SpawnPlayerMessageHandler());
 			_handlers.Add(ServerPacketID.PlayerDespawn,   new S_DespawnPlayerMessageHandler());
 			_handlers.Add(ServerPacketID.PlayerUpdate,    new S_PlayerUpdateMessageHandler());
+			_handlers.Add(ServerPacketID.ChunkInit,       new S_InitChunkMessageHandler());
+			_handlers.Add(ServerPacketID.LoadFinalize,    new S_LoadFinalizeMessageHandler());
+			_handlers.Add(ServerPacketID.WorldOptions,    new S_WorldOptionsMessageHandler());
+			_handlers.Add(ServerPacketID.PutBlock,        new S_PutBlockMessageHandler());
 
 			ClientName = name;
 			Password = password;
@@ -70,6 +72,7 @@ namespace Voxels.Networking {
 			_packetsReceived = 0;
 			_packetsSent = 0;
 			_client = new Client();
+			_client.MaxMessageSize = 32768;
 			_client.Connect(ip, port);
 			_port = port;
 			IsStarted = true;
@@ -88,7 +91,9 @@ namespace Voxels.Networking {
 			var body = ZeroFormatterSerializer.Serialize(message);
 			var header = new PacketHeader((byte)id, compress, (ushort)body.Length);
 			if ( compress ) {
-				_client.Send(NetworkUtils.CreateMessageBytes(header, CLZF2.Compress(body)));
+				var compressedBody   = CLZF2.Compress(body);
+				header.ContentLength = (ushort) compressedBody.Length;
+				_client.Send(NetworkUtils.CreateMessageBytes(header, compressedBody));
 			} else {
 				_client.Send(NetworkUtils.CreateMessageBytes(header, body));
 			}

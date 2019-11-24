@@ -19,6 +19,7 @@ namespace Voxels.Networking {
 		public virtual void Save() { }
 
 		public virtual void Update() { }
+		public virtual void LateUpdate() { }
 		public virtual void Reset() { }
 	}
 

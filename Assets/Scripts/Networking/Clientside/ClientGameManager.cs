@@ -10,9 +10,11 @@ namespace Voxels.Networking {
 		Dictionary<string, BaseClientsideController> _controllers = new Dictionary<string, BaseClientsideController>();
 
 		public void Create() {
-			_controllers.Add("client",  new ClientController(this));
-			_controllers.Add("chat",    new ClientChatManager(this));
-			_controllers.Add("players", new ClientPlayerEntityManager(this));
+			_controllers.Add("client",         new ClientController(this));
+			_controllers.Add("chat-client",    new ClientChatManager(this));
+			_controllers.Add("players-client", new ClientPlayerEntityManager(this));
+			_controllers.Add("chunks-client",  new ClientChunkManager(this));
+			_controllers.Add("ui-client",      new ClientUIManager(this));
 		}
 
 		public void Reset() {
@@ -71,6 +73,12 @@ namespace Voxels.Networking {
 		public void UpdateControllers() {
 			foreach ( var pair in _controllers ) {
 				pair.Value.Update();
+			}
+		}
+
+		public void LateUpdateControllers() {
+			foreach ( var pair in _controllers ) {
+				pair.Value.LateUpdate();
 			}
 		}
 

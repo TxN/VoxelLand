@@ -37,6 +37,15 @@ namespace Voxels.Networking.Events {
 
 	}
 
+	public struct OnServerInitializationFinished {
+
+	}
+
+	public struct OnServerReadyToSpawnNewPlayer {
+		public int         ConnectionId;
+		public ClientState State;
+	}
+
 	/// <summary>
 	/// Client Events
 	/// </summary>
@@ -67,5 +76,9 @@ namespace Voxels.Networking.Events {
 
 	public struct OnClientPlayerDespawn {
 		public PlayerEntity Player;
+	}
+
+	public struct OnClientReceiveChunk {
+		public ChunkData Data;
 	}
 }

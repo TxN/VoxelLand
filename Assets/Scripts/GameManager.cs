@@ -1,7 +1,9 @@
 using UnityEngine;
 
-using Voxels.Networking;
 using SMGCore;
+using SMGCore.EventSys;
+using Voxels.Networking.Events;
+using Voxels.Networking;
 
 using Voxels.Networking.Utils;
 using UnityEngine.SceneManagement;
@@ -27,6 +29,17 @@ namespace Voxels {
 			}
 		}
 
+		public void GoToMainMenu() {
+			//TODO: quit more properly.
+			if ( IsServer ) {
+				_serverManager.Reset();
+			}
+			if ( IsClient ) {
+				_clientManager.Reset();
+			}
+			SceneManager.LoadScene("MainMenu");
+		}
+
 		void Start() {
 			IsServer = NetworkOptions.StartServer;
 			IsClient = NetworkOptions.StartClient;
@@ -38,17 +51,13 @@ namespace Voxels {
 				_serverManager.PostInit();
 				_serverManager.Load();
 				_serverManager.PostLoad();
+				if ( !_serverManager.Initialized ) {
+					EventManager.Subscribe<OnServerInitializationFinished>(this, OnServerInitializationFinished);
+					return;
+				}
 			}
-			System.Threading.Thread.Sleep(100);
-			if ( IsClient ) {
-				//TODO
-				_clientManager = new ClientGameManager();
-				_clientManager.Create();
-				_clientManager.Init();
-				_clientManager.PostInit();
-				_clientManager.Load();
-				_clientManager.PostLoad();
-			}
+			System.Threading.Thread.Sleep(50);
+			TryStartClient();
 		}
 
 		void Update() {
@@ -61,15 +70,34 @@ namespace Voxels {
 			}
 		}
 
-		public void GoToMainMenu() {
-			//TODO: quit more properly.
+		void LateUpdate() {
 			if ( IsServer ) {
-				_serverManager.Reset();
+				_serverManager.LateUpdateControllers();
 			}
+
 			if ( IsClient ) {
-				_clientManager.Reset();
+				_clientManager.LateUpdateControllers();
 			}
-			SceneManager.LoadScene("MainMenu");
+		}
+
+		void OnDestroy() {
+			EventManager.Unsubscribe<OnServerInitializationFinished>(OnServerInitializationFinished);
+		}
+
+		void TryStartClient() {
+			if ( !IsClient ) {
+				return;
+			}
+			_clientManager = new ClientGameManager();
+			_clientManager.Create();
+			_clientManager.Init();
+			_clientManager.PostInit();
+			_clientManager.Load();
+			_clientManager.PostLoad();
+		}
+
+		void OnServerInitializationFinished(OnServerInitializationFinished e) {
+			TryStartClient();
 		}
 	}
 }

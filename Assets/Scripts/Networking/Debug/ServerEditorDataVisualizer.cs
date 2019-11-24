@@ -9,12 +9,18 @@ using UnityEditor;
 
 using Voxels.Networking.Serverside;
 
+using NaughtyAttributes;
+
 namespace Voxels.Networking.NetDebug {
 	public sealed class ServerEditorDataVisualizer : MonoBehaviour {
-		
-		public long ReceivedCommands = 0;
-		public long SentCommands = 0;
-		public List<ClientState> Clients = null;
+
+		public SingleBlockPresenter Presenter = null;
+
+		public long              ReceivedCommands = 0;
+		public long              SentCommands     = 0;
+		public List<ClientState> Clients          = null;
+		[Header("Block preview")]
+		public Vector3           BlockPos         = Vector3.zero;
 
 		void Start() {
 			if ( !GameManager.Instance.IsServer ) {
@@ -39,6 +45,14 @@ namespace Voxels.Networking.NetDebug {
 			}
 		}
 #endif
+
+		[Button]
+		void DrawBlock() {
+			var block = ServerChunkManager.Instance.GetBlockIn(BlockPos);
+			Presenter.gameObject.SetActive(!block.IsEmpty());
+			Presenter.transform.position = BlockPos;
+			Presenter.DrawBlock(block);
+		}
 
 		IEnumerator UpdateValues() {
 		//	yield return new WaitForSeconds(0.5f);

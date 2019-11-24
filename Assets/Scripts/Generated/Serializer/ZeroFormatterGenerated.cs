@@ -22,11 +22,6 @@ namespace ZeroFormatter
             if(registered) return;
             registered = true;
             // Enums
-            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.DirIndex>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.DirIndexFormatter<ZeroFormatter.Formatters.DefaultResolver>());
-            ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.DirIndex>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.DirIndexEqualityComparer());
-            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.DirIndex?>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.NullableDirIndexFormatter<ZeroFormatter.Formatters.DefaultResolver>());
-            ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.DirIndex?>.Register(new NullableEqualityComparer<global::Voxels.DirIndex>());
-            
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.BlockType>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.BlockTypeFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.BlockType>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.BlockTypeEqualityComparer());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.BlockType?>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.NullableBlockTypeFormatter<ZeroFormatter.Formatters.DefaultResolver>());
@@ -46,6 +41,11 @@ namespace ZeroFormatter
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.VisibilityFlags>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.VisibilityFlagsEqualityComparer());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.VisibilityFlags?>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.NullableVisibilityFlagsFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.VisibilityFlags?>.Register(new NullableEqualityComparer<global::Voxels.VisibilityFlags>());
+            
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.DirIndex>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.DirIndexFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.DirIndex>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.DirIndexEqualityComparer());
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.DirIndex?>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.NullableDirIndexFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.DirIndex?>.Register(new NullableEqualityComparer<global::Voxels.DirIndex>());
             
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.BlockMeshType>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.BlockMeshTypeFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.BlockMeshType>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.BlockMeshTypeEqualityComparer());
@@ -83,21 +83,26 @@ namespace ZeroFormatter
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.PlayerEntity>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.PlayerEntityFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.C_PlayerUpdateMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.C_PlayerUpdateMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.C_PongMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.C_PongMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.C_PutBlockMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.C_PutBlockMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.NetworkedEntity>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.NetworkedEntityFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.BaseMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.BaseMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_ChatMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_ChatMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_DespawnPlayerMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_DespawnPlayerMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_ForceDisconnectMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_ForceDisconnectMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_HandshakeMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_HandshakeMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_InitChunkMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_InitChunkMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_JoinSuccessMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_JoinSuccessMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_LoadFinalizeMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_LoadFinalizeMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_PingMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_PingMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_PlayerUpdateMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_PlayerUpdateMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_PutBlockMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_PutBlockMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_SpawnPlayerMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_SpawnPlayerMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.S_WorldOptionsMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.S_WorldOptionsMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.BlockDataHolder>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.BlockDataHolderFormatter<ZeroFormatter.Formatters.DefaultResolver>());
-            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.BlockDataArrayHint>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.BlockDataArrayHintFormatter<ZeroFormatter.Formatters.DefaultResolver>());
-            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.VisibilityFlagsArrayHint>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.VisibilityFlagsArrayHintFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.VisibilityFlagsHolder>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.VisibilityFlagsHolderFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.ChunkData>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.ChunkDataFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.BlockDataArrayHint>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.BlockDataArrayHintFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.VisibilityFlagsArrayHint>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.VisibilityFlagsArrayHintFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             // Structs
             {
                 var structFormatter = new ZeroFormatter.DynamicObjectSegments.UnityEngine.Vector3Formatter<ZeroFormatter.Formatters.DefaultResolver>();
@@ -788,6 +793,191 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels.Networking
                 offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, byte>(ref targetBytes, startOffset, offset, 0, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
 
                 return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 0);
+            }
+            else
+            {
+                return ObjectSegmentHelper.DirectCopyAll(__originalBytes, ref targetBytes, offset);
+            }
+        }
+    }
+
+    public class C_PutBlockMessageFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.C_PutBlockMessage>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return null;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.Networking.C_PutBlockMessage value)
+        {
+            var segment = value as IZeroFormatterSegment;
+            if (segment != null)
+            {
+                return segment.Serialize(ref bytes, offset);
+            }
+            else if (value == null)
+            {
+                BinaryUtil.WriteInt32(ref bytes, offset, -1);
+                return 4;
+            }
+            else
+            {
+                var startOffset = offset;
+
+                offset += (8 + 4 * (5 + 1));
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, byte>(ref bytes, startOffset, offset, 0, value.CommandID);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, global::Voxels.BlockData>(ref bytes, startOffset, offset, 1, value.Block);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, int>(ref bytes, startOffset, offset, 2, value.X);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, int>(ref bytes, startOffset, offset, 3, value.Y);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, int>(ref bytes, startOffset, offset, 4, value.Z);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, bool>(ref bytes, startOffset, offset, 5, value.Put);
+
+                return ObjectSegmentHelper.WriteSize(ref bytes, startOffset, offset, 5);
+            }
+        }
+
+        public override global::Voxels.Networking.C_PutBlockMessage Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = BinaryUtil.ReadInt32(ref bytes, offset);
+            if (byteSize == -1)
+            {
+                byteSize = 4;
+                return null;
+            }
+            return new C_PutBlockMessageObjectSegment<TTypeResolver>(tracker, new ArraySegment<byte>(bytes, offset, byteSize));
+        }
+    }
+
+    public class C_PutBlockMessageObjectSegment<TTypeResolver> : global::Voxels.Networking.C_PutBlockMessage, IZeroFormatterSegment
+        where TTypeResolver : ITypeResolver, new()
+    {
+        static readonly int[] __elementSizes = new int[]{ 1, 0, 4, 4, 4, 1 };
+
+        readonly ArraySegment<byte> __originalBytes;
+        readonly global::ZeroFormatter.DirtyTracker __tracker;
+        readonly int __binaryLastIndex;
+        readonly byte[] __extraFixedBytes;
+
+        CacheSegment<TTypeResolver, global::Voxels.BlockData> _Block;
+
+        // 0
+        public override byte CommandID
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, byte>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, byte>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 1
+        public override global::Voxels.BlockData Block
+        {
+            get
+            {
+                return _Block.Value;
+            }
+            set
+            {
+                _Block.Value = value;
+            }
+        }
+
+        // 2
+        public override int X
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, int>(__originalBytes, 2, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, int>(__originalBytes, 2, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 3
+        public override int Y
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, int>(__originalBytes, 3, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, int>(__originalBytes, 3, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 4
+        public override int Z
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, int>(__originalBytes, 4, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, int>(__originalBytes, 4, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 5
+        public override bool Put
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, bool>(__originalBytes, 5, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, bool>(__originalBytes, 5, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+
+        public C_PutBlockMessageObjectSegment(global::ZeroFormatter.DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
+        {
+            var __array = originalBytes.Array;
+
+            this.__originalBytes = originalBytes;
+            this.__tracker = dirtyTracker = dirtyTracker.CreateChild();
+            this.__binaryLastIndex = BinaryUtil.ReadInt32(ref __array, originalBytes.Offset + 4);
+
+            this.__extraFixedBytes = ObjectSegmentHelper.CreateExtraFixedBytes(this.__binaryLastIndex, 5, __elementSizes);
+
+            _Block = new CacheSegment<TTypeResolver, global::Voxels.BlockData>(__tracker, ObjectSegmentHelper.GetSegment(originalBytes, 1, __binaryLastIndex, __tracker));
+        }
+
+        public bool CanDirectCopy()
+        {
+            return !__tracker.IsDirty;
+        }
+
+        public ArraySegment<byte> GetBufferReference()
+        {
+            return __originalBytes;
+        }
+
+        public int Serialize(ref byte[] targetBytes, int offset)
+        {
+            if (__extraFixedBytes != null || __tracker.IsDirty)
+            {
+                var startOffset = offset;
+                offset += (8 + 4 * (5 + 1));
+
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, byte>(ref targetBytes, startOffset, offset, 0, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeCacheSegment<TTypeResolver, global::Voxels.BlockData>(ref targetBytes, startOffset, offset, 1, ref _Block);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, int>(ref targetBytes, startOffset, offset, 2, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, int>(ref targetBytes, startOffset, offset, 3, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, int>(ref targetBytes, startOffset, offset, 4, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, bool>(ref targetBytes, startOffset, offset, 5, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+
+                return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 5);
             }
             else
             {
@@ -1577,6 +1767,132 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels.Networking
         }
     }
 
+    public class S_InitChunkMessageFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.S_InitChunkMessage>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return null;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.Networking.S_InitChunkMessage value)
+        {
+            var segment = value as IZeroFormatterSegment;
+            if (segment != null)
+            {
+                return segment.Serialize(ref bytes, offset);
+            }
+            else if (value == null)
+            {
+                BinaryUtil.WriteInt32(ref bytes, offset, -1);
+                return 4;
+            }
+            else
+            {
+                var startOffset = offset;
+
+                offset += (8 + 4 * (1 + 1));
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, byte>(ref bytes, startOffset, offset, 0, value.CommandID);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, global::Voxels.ChunkData>(ref bytes, startOffset, offset, 1, value.Chunk);
+
+                return ObjectSegmentHelper.WriteSize(ref bytes, startOffset, offset, 1);
+            }
+        }
+
+        public override global::Voxels.Networking.S_InitChunkMessage Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = BinaryUtil.ReadInt32(ref bytes, offset);
+            if (byteSize == -1)
+            {
+                byteSize = 4;
+                return null;
+            }
+            return new S_InitChunkMessageObjectSegment<TTypeResolver>(tracker, new ArraySegment<byte>(bytes, offset, byteSize));
+        }
+    }
+
+    public class S_InitChunkMessageObjectSegment<TTypeResolver> : global::Voxels.Networking.S_InitChunkMessage, IZeroFormatterSegment
+        where TTypeResolver : ITypeResolver, new()
+    {
+        static readonly int[] __elementSizes = new int[]{ 1, 0 };
+
+        readonly ArraySegment<byte> __originalBytes;
+        readonly global::ZeroFormatter.DirtyTracker __tracker;
+        readonly int __binaryLastIndex;
+        readonly byte[] __extraFixedBytes;
+
+        global::Voxels.ChunkData _Chunk;
+
+        // 0
+        public override byte CommandID
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, byte>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, byte>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 1
+        public override global::Voxels.ChunkData Chunk
+        {
+            get
+            {
+                return _Chunk;
+            }
+            set
+            {
+                __tracker.Dirty();
+                _Chunk = value;
+            }
+        }
+
+
+        public S_InitChunkMessageObjectSegment(global::ZeroFormatter.DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
+        {
+            var __array = originalBytes.Array;
+
+            this.__originalBytes = originalBytes;
+            this.__tracker = dirtyTracker = dirtyTracker.CreateChild();
+            this.__binaryLastIndex = BinaryUtil.ReadInt32(ref __array, originalBytes.Offset + 4);
+
+            this.__extraFixedBytes = ObjectSegmentHelper.CreateExtraFixedBytes(this.__binaryLastIndex, 1, __elementSizes);
+
+            _Chunk = ObjectSegmentHelper.DeserializeSegment<TTypeResolver, global::Voxels.ChunkData>(originalBytes, 1, __binaryLastIndex, __tracker);
+        }
+
+        public bool CanDirectCopy()
+        {
+            return !__tracker.IsDirty;
+        }
+
+        public ArraySegment<byte> GetBufferReference()
+        {
+            return __originalBytes;
+        }
+
+        public int Serialize(ref byte[] targetBytes, int offset)
+        {
+            if (__extraFixedBytes != null || __tracker.IsDirty)
+            {
+                var startOffset = offset;
+                offset += (8 + 4 * (1 + 1));
+
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, byte>(ref targetBytes, startOffset, offset, 0, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeSegment<TTypeResolver, global::Voxels.ChunkData>(ref targetBytes, startOffset, offset, 1, _Chunk);
+
+                return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 1);
+            }
+            else
+            {
+                return ObjectSegmentHelper.DirectCopyAll(__originalBytes, ref targetBytes, offset);
+            }
+        }
+    }
+
     public class S_JoinSuccessMessageFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.S_JoinSuccessMessage>
         where TTypeResolver : ITypeResolver, new()
     {
@@ -1646,6 +1962,114 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels.Networking
 
 
         public S_JoinSuccessMessageObjectSegment(global::ZeroFormatter.DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
+        {
+            var __array = originalBytes.Array;
+
+            this.__originalBytes = originalBytes;
+            this.__tracker = dirtyTracker = dirtyTracker.CreateChild();
+            this.__binaryLastIndex = BinaryUtil.ReadInt32(ref __array, originalBytes.Offset + 4);
+
+            this.__extraFixedBytes = ObjectSegmentHelper.CreateExtraFixedBytes(this.__binaryLastIndex, 0, __elementSizes);
+
+        }
+
+        public bool CanDirectCopy()
+        {
+            return !__tracker.IsDirty;
+        }
+
+        public ArraySegment<byte> GetBufferReference()
+        {
+            return __originalBytes;
+        }
+
+        public int Serialize(ref byte[] targetBytes, int offset)
+        {
+            if (__extraFixedBytes != null || __tracker.IsDirty)
+            {
+                var startOffset = offset;
+                offset += (8 + 4 * (0 + 1));
+
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, byte>(ref targetBytes, startOffset, offset, 0, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+
+                return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 0);
+            }
+            else
+            {
+                return ObjectSegmentHelper.DirectCopyAll(__originalBytes, ref targetBytes, offset);
+            }
+        }
+    }
+
+    public class S_LoadFinalizeMessageFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.S_LoadFinalizeMessage>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return null;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.Networking.S_LoadFinalizeMessage value)
+        {
+            var segment = value as IZeroFormatterSegment;
+            if (segment != null)
+            {
+                return segment.Serialize(ref bytes, offset);
+            }
+            else if (value == null)
+            {
+                BinaryUtil.WriteInt32(ref bytes, offset, -1);
+                return 4;
+            }
+            else
+            {
+                var startOffset = offset;
+
+                offset += (8 + 4 * (0 + 1));
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, byte>(ref bytes, startOffset, offset, 0, value.CommandID);
+
+                return ObjectSegmentHelper.WriteSize(ref bytes, startOffset, offset, 0);
+            }
+        }
+
+        public override global::Voxels.Networking.S_LoadFinalizeMessage Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = BinaryUtil.ReadInt32(ref bytes, offset);
+            if (byteSize == -1)
+            {
+                byteSize = 4;
+                return null;
+            }
+            return new S_LoadFinalizeMessageObjectSegment<TTypeResolver>(tracker, new ArraySegment<byte>(bytes, offset, byteSize));
+        }
+    }
+
+    public class S_LoadFinalizeMessageObjectSegment<TTypeResolver> : global::Voxels.Networking.S_LoadFinalizeMessage, IZeroFormatterSegment
+        where TTypeResolver : ITypeResolver, new()
+    {
+        static readonly int[] __elementSizes = new int[]{ 1 };
+
+        readonly ArraySegment<byte> __originalBytes;
+        readonly global::ZeroFormatter.DirtyTracker __tracker;
+        readonly int __binaryLastIndex;
+        readonly byte[] __extraFixedBytes;
+
+
+        // 0
+        public override byte CommandID
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, byte>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, byte>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+
+        public S_LoadFinalizeMessageObjectSegment(global::ZeroFormatter.DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
         {
             var __array = originalBytes.Array;
 
@@ -1934,6 +2358,191 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels.Networking
         }
     }
 
+    public class S_PutBlockMessageFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.S_PutBlockMessage>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return null;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.Networking.S_PutBlockMessage value)
+        {
+            var segment = value as IZeroFormatterSegment;
+            if (segment != null)
+            {
+                return segment.Serialize(ref bytes, offset);
+            }
+            else if (value == null)
+            {
+                BinaryUtil.WriteInt32(ref bytes, offset, -1);
+                return 4;
+            }
+            else
+            {
+                var startOffset = offset;
+
+                offset += (8 + 4 * (5 + 1));
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, byte>(ref bytes, startOffset, offset, 0, value.CommandID);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, global::Voxels.BlockData>(ref bytes, startOffset, offset, 1, value.Block);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, int>(ref bytes, startOffset, offset, 2, value.X);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, int>(ref bytes, startOffset, offset, 3, value.Y);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, int>(ref bytes, startOffset, offset, 4, value.Z);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, bool>(ref bytes, startOffset, offset, 5, value.Put);
+
+                return ObjectSegmentHelper.WriteSize(ref bytes, startOffset, offset, 5);
+            }
+        }
+
+        public override global::Voxels.Networking.S_PutBlockMessage Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = BinaryUtil.ReadInt32(ref bytes, offset);
+            if (byteSize == -1)
+            {
+                byteSize = 4;
+                return null;
+            }
+            return new S_PutBlockMessageObjectSegment<TTypeResolver>(tracker, new ArraySegment<byte>(bytes, offset, byteSize));
+        }
+    }
+
+    public class S_PutBlockMessageObjectSegment<TTypeResolver> : global::Voxels.Networking.S_PutBlockMessage, IZeroFormatterSegment
+        where TTypeResolver : ITypeResolver, new()
+    {
+        static readonly int[] __elementSizes = new int[]{ 1, 0, 4, 4, 4, 1 };
+
+        readonly ArraySegment<byte> __originalBytes;
+        readonly global::ZeroFormatter.DirtyTracker __tracker;
+        readonly int __binaryLastIndex;
+        readonly byte[] __extraFixedBytes;
+
+        CacheSegment<TTypeResolver, global::Voxels.BlockData> _Block;
+
+        // 0
+        public override byte CommandID
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, byte>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, byte>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 1
+        public override global::Voxels.BlockData Block
+        {
+            get
+            {
+                return _Block.Value;
+            }
+            set
+            {
+                _Block.Value = value;
+            }
+        }
+
+        // 2
+        public override int X
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, int>(__originalBytes, 2, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, int>(__originalBytes, 2, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 3
+        public override int Y
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, int>(__originalBytes, 3, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, int>(__originalBytes, 3, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 4
+        public override int Z
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, int>(__originalBytes, 4, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, int>(__originalBytes, 4, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 5
+        public override bool Put
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, bool>(__originalBytes, 5, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, bool>(__originalBytes, 5, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+
+        public S_PutBlockMessageObjectSegment(global::ZeroFormatter.DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
+        {
+            var __array = originalBytes.Array;
+
+            this.__originalBytes = originalBytes;
+            this.__tracker = dirtyTracker = dirtyTracker.CreateChild();
+            this.__binaryLastIndex = BinaryUtil.ReadInt32(ref __array, originalBytes.Offset + 4);
+
+            this.__extraFixedBytes = ObjectSegmentHelper.CreateExtraFixedBytes(this.__binaryLastIndex, 5, __elementSizes);
+
+            _Block = new CacheSegment<TTypeResolver, global::Voxels.BlockData>(__tracker, ObjectSegmentHelper.GetSegment(originalBytes, 1, __binaryLastIndex, __tracker));
+        }
+
+        public bool CanDirectCopy()
+        {
+            return !__tracker.IsDirty;
+        }
+
+        public ArraySegment<byte> GetBufferReference()
+        {
+            return __originalBytes;
+        }
+
+        public int Serialize(ref byte[] targetBytes, int offset)
+        {
+            if (__extraFixedBytes != null || __tracker.IsDirty)
+            {
+                var startOffset = offset;
+                offset += (8 + 4 * (5 + 1));
+
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, byte>(ref targetBytes, startOffset, offset, 0, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeCacheSegment<TTypeResolver, global::Voxels.BlockData>(ref targetBytes, startOffset, offset, 1, ref _Block);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, int>(ref targetBytes, startOffset, offset, 2, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, int>(ref targetBytes, startOffset, offset, 3, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, int>(ref targetBytes, startOffset, offset, 4, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, bool>(ref targetBytes, startOffset, offset, 5, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+
+                return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 5);
+            }
+            else
+            {
+                return ObjectSegmentHelper.DirectCopyAll(__originalBytes, ref targetBytes, offset);
+            }
+        }
+    }
+
     public class S_SpawnPlayerMessageFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.S_SpawnPlayerMessage>
         where TTypeResolver : ITypeResolver, new()
     {
@@ -2052,6 +2661,159 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels.Networking
                 offset += ObjectSegmentHelper.SerializeSegment<TTypeResolver, global::Voxels.Networking.PlayerEntity>(ref targetBytes, startOffset, offset, 1, _PlayerToSpawn);
 
                 return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 1);
+            }
+            else
+            {
+                return ObjectSegmentHelper.DirectCopyAll(__originalBytes, ref targetBytes, offset);
+            }
+        }
+    }
+
+    public class S_WorldOptionsMessageFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.S_WorldOptionsMessage>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return null;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.Networking.S_WorldOptionsMessage value)
+        {
+            var segment = value as IZeroFormatterSegment;
+            if (segment != null)
+            {
+                return segment.Serialize(ref bytes, offset);
+            }
+            else if (value == null)
+            {
+                BinaryUtil.WriteInt32(ref bytes, offset, -1);
+                return 4;
+            }
+            else
+            {
+                var startOffset = offset;
+
+                offset += (8 + 4 * (3 + 1));
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, byte>(ref bytes, startOffset, offset, 0, value.CommandID);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, int>(ref bytes, startOffset, offset, 1, value.Seed);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, int>(ref bytes, startOffset, offset, 2, value.Time);
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, int>(ref bytes, startOffset, offset, 3, value.TimeMultiplier);
+
+                return ObjectSegmentHelper.WriteSize(ref bytes, startOffset, offset, 3);
+            }
+        }
+
+        public override global::Voxels.Networking.S_WorldOptionsMessage Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = BinaryUtil.ReadInt32(ref bytes, offset);
+            if (byteSize == -1)
+            {
+                byteSize = 4;
+                return null;
+            }
+            return new S_WorldOptionsMessageObjectSegment<TTypeResolver>(tracker, new ArraySegment<byte>(bytes, offset, byteSize));
+        }
+    }
+
+    public class S_WorldOptionsMessageObjectSegment<TTypeResolver> : global::Voxels.Networking.S_WorldOptionsMessage, IZeroFormatterSegment
+        where TTypeResolver : ITypeResolver, new()
+    {
+        static readonly int[] __elementSizes = new int[]{ 1, 4, 4, 4 };
+
+        readonly ArraySegment<byte> __originalBytes;
+        readonly global::ZeroFormatter.DirtyTracker __tracker;
+        readonly int __binaryLastIndex;
+        readonly byte[] __extraFixedBytes;
+
+
+        // 0
+        public override byte CommandID
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, byte>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, byte>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 1
+        public override int Seed
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, int>(__originalBytes, 1, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, int>(__originalBytes, 1, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 2
+        public override int Time
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, int>(__originalBytes, 2, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, int>(__originalBytes, 2, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+        // 3
+        public override int TimeMultiplier
+        {
+            get
+            {
+                return ObjectSegmentHelper.GetFixedProperty<TTypeResolver, int>(__originalBytes, 3, __binaryLastIndex, __extraFixedBytes, __tracker);
+            }
+            set
+            {
+                ObjectSegmentHelper.SetFixedProperty<TTypeResolver, int>(__originalBytes, 3, __binaryLastIndex, __extraFixedBytes, value, __tracker);
+            }
+        }
+
+
+        public S_WorldOptionsMessageObjectSegment(global::ZeroFormatter.DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
+        {
+            var __array = originalBytes.Array;
+
+            this.__originalBytes = originalBytes;
+            this.__tracker = dirtyTracker = dirtyTracker.CreateChild();
+            this.__binaryLastIndex = BinaryUtil.ReadInt32(ref __array, originalBytes.Offset + 4);
+
+            this.__extraFixedBytes = ObjectSegmentHelper.CreateExtraFixedBytes(this.__binaryLastIndex, 3, __elementSizes);
+
+        }
+
+        public bool CanDirectCopy()
+        {
+            return !__tracker.IsDirty;
+        }
+
+        public ArraySegment<byte> GetBufferReference()
+        {
+            return __originalBytes;
+        }
+
+        public int Serialize(ref byte[] targetBytes, int offset)
+        {
+            if (__extraFixedBytes != null || __tracker.IsDirty)
+            {
+                var startOffset = offset;
+                offset += (8 + 4 * (3 + 1));
+
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, byte>(ref targetBytes, startOffset, offset, 0, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, int>(ref targetBytes, startOffset, offset, 1, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, int>(ref targetBytes, startOffset, offset, 2, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+                offset += ObjectSegmentHelper.SerializeFixedLength<TTypeResolver, int>(ref targetBytes, startOffset, offset, 3, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
+
+                return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 3);
             }
             else
             {
@@ -2225,226 +2987,6 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels
                 offset += ObjectSegmentHelper.SerializeCacheSegment<TTypeResolver, global::Voxels.BlockData[]>(ref targetBytes, startOffset, offset, 3, ref _Data);
 
                 return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 3);
-            }
-            else
-            {
-                return ObjectSegmentHelper.DirectCopyAll(__originalBytes, ref targetBytes, offset);
-            }
-        }
-    }
-
-    public class BlockDataArrayHintFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.BlockDataArrayHint>
-        where TTypeResolver : ITypeResolver, new()
-    {
-        public override int? GetLength()
-        {
-            return null;
-        }
-
-        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.BlockDataArrayHint value)
-        {
-            var segment = value as IZeroFormatterSegment;
-            if (segment != null)
-            {
-                return segment.Serialize(ref bytes, offset);
-            }
-            else if (value == null)
-            {
-                BinaryUtil.WriteInt32(ref bytes, offset, -1);
-                return 4;
-            }
-            else
-            {
-                var startOffset = offset;
-
-                offset += (8 + 4 * (0 + 1));
-                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, global::Voxels.BlockData[,,]>(ref bytes, startOffset, offset, 0, value.Hint1);
-
-                return ObjectSegmentHelper.WriteSize(ref bytes, startOffset, offset, 0);
-            }
-        }
-
-        public override global::Voxels.BlockDataArrayHint Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
-        {
-            byteSize = BinaryUtil.ReadInt32(ref bytes, offset);
-            if (byteSize == -1)
-            {
-                byteSize = 4;
-                return null;
-            }
-            return new BlockDataArrayHintObjectSegment<TTypeResolver>(tracker, new ArraySegment<byte>(bytes, offset, byteSize));
-        }
-    }
-
-    public class BlockDataArrayHintObjectSegment<TTypeResolver> : global::Voxels.BlockDataArrayHint, IZeroFormatterSegment
-        where TTypeResolver : ITypeResolver, new()
-    {
-        static readonly int[] __elementSizes = new int[]{ 0 };
-
-        readonly ArraySegment<byte> __originalBytes;
-        readonly global::ZeroFormatter.DirtyTracker __tracker;
-        readonly int __binaryLastIndex;
-        readonly byte[] __extraFixedBytes;
-
-        CacheSegment<TTypeResolver, global::Voxels.BlockData[,,]> _Hint1;
-
-        // 0
-        public override global::Voxels.BlockData[,,] Hint1
-        {
-            get
-            {
-                return _Hint1.Value;
-            }
-            set
-            {
-                _Hint1.Value = value;
-            }
-        }
-
-
-        public BlockDataArrayHintObjectSegment(global::ZeroFormatter.DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
-        {
-            var __array = originalBytes.Array;
-
-            this.__originalBytes = originalBytes;
-            this.__tracker = dirtyTracker = dirtyTracker.CreateChild();
-            this.__binaryLastIndex = BinaryUtil.ReadInt32(ref __array, originalBytes.Offset + 4);
-
-            this.__extraFixedBytes = ObjectSegmentHelper.CreateExtraFixedBytes(this.__binaryLastIndex, 0, __elementSizes);
-
-            _Hint1 = new CacheSegment<TTypeResolver, global::Voxels.BlockData[,,]>(__tracker, ObjectSegmentHelper.GetSegment(originalBytes, 0, __binaryLastIndex, __tracker));
-        }
-
-        public bool CanDirectCopy()
-        {
-            return !__tracker.IsDirty;
-        }
-
-        public ArraySegment<byte> GetBufferReference()
-        {
-            return __originalBytes;
-        }
-
-        public int Serialize(ref byte[] targetBytes, int offset)
-        {
-            if (__extraFixedBytes != null || __tracker.IsDirty)
-            {
-                var startOffset = offset;
-                offset += (8 + 4 * (0 + 1));
-
-                offset += ObjectSegmentHelper.SerializeCacheSegment<TTypeResolver, global::Voxels.BlockData[,,]>(ref targetBytes, startOffset, offset, 0, ref _Hint1);
-
-                return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 0);
-            }
-            else
-            {
-                return ObjectSegmentHelper.DirectCopyAll(__originalBytes, ref targetBytes, offset);
-            }
-        }
-    }
-
-    public class VisibilityFlagsArrayHintFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.VisibilityFlagsArrayHint>
-        where TTypeResolver : ITypeResolver, new()
-    {
-        public override int? GetLength()
-        {
-            return null;
-        }
-
-        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.VisibilityFlagsArrayHint value)
-        {
-            var segment = value as IZeroFormatterSegment;
-            if (segment != null)
-            {
-                return segment.Serialize(ref bytes, offset);
-            }
-            else if (value == null)
-            {
-                BinaryUtil.WriteInt32(ref bytes, offset, -1);
-                return 4;
-            }
-            else
-            {
-                var startOffset = offset;
-
-                offset += (8 + 4 * (0 + 1));
-                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, global::Voxels.VisibilityFlags[,,]>(ref bytes, startOffset, offset, 0, value.Hint1);
-
-                return ObjectSegmentHelper.WriteSize(ref bytes, startOffset, offset, 0);
-            }
-        }
-
-        public override global::Voxels.VisibilityFlagsArrayHint Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
-        {
-            byteSize = BinaryUtil.ReadInt32(ref bytes, offset);
-            if (byteSize == -1)
-            {
-                byteSize = 4;
-                return null;
-            }
-            return new VisibilityFlagsArrayHintObjectSegment<TTypeResolver>(tracker, new ArraySegment<byte>(bytes, offset, byteSize));
-        }
-    }
-
-    public class VisibilityFlagsArrayHintObjectSegment<TTypeResolver> : global::Voxels.VisibilityFlagsArrayHint, IZeroFormatterSegment
-        where TTypeResolver : ITypeResolver, new()
-    {
-        static readonly int[] __elementSizes = new int[]{ 0 };
-
-        readonly ArraySegment<byte> __originalBytes;
-        readonly global::ZeroFormatter.DirtyTracker __tracker;
-        readonly int __binaryLastIndex;
-        readonly byte[] __extraFixedBytes;
-
-        CacheSegment<TTypeResolver, global::Voxels.VisibilityFlags[,,]> _Hint1;
-
-        // 0
-        public override global::Voxels.VisibilityFlags[,,] Hint1
-        {
-            get
-            {
-                return _Hint1.Value;
-            }
-            set
-            {
-                _Hint1.Value = value;
-            }
-        }
-
-
-        public VisibilityFlagsArrayHintObjectSegment(global::ZeroFormatter.DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
-        {
-            var __array = originalBytes.Array;
-
-            this.__originalBytes = originalBytes;
-            this.__tracker = dirtyTracker = dirtyTracker.CreateChild();
-            this.__binaryLastIndex = BinaryUtil.ReadInt32(ref __array, originalBytes.Offset + 4);
-
-            this.__extraFixedBytes = ObjectSegmentHelper.CreateExtraFixedBytes(this.__binaryLastIndex, 0, __elementSizes);
-
-            _Hint1 = new CacheSegment<TTypeResolver, global::Voxels.VisibilityFlags[,,]>(__tracker, ObjectSegmentHelper.GetSegment(originalBytes, 0, __binaryLastIndex, __tracker));
-        }
-
-        public bool CanDirectCopy()
-        {
-            return !__tracker.IsDirty;
-        }
-
-        public ArraySegment<byte> GetBufferReference()
-        {
-            return __originalBytes;
-        }
-
-        public int Serialize(ref byte[] targetBytes, int offset)
-        {
-            if (__extraFixedBytes != null || __tracker.IsDirty)
-            {
-                var startOffset = offset;
-                offset += (8 + 4 * (0 + 1));
-
-                offset += ObjectSegmentHelper.SerializeCacheSegment<TTypeResolver, global::Voxels.VisibilityFlags[,,]>(ref targetBytes, startOffset, offset, 0, ref _Hint1);
-
-                return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 0);
             }
             else
             {
@@ -2814,6 +3356,226 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels
         }
     }
 
+    public class BlockDataArrayHintFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.BlockDataArrayHint>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return null;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.BlockDataArrayHint value)
+        {
+            var segment = value as IZeroFormatterSegment;
+            if (segment != null)
+            {
+                return segment.Serialize(ref bytes, offset);
+            }
+            else if (value == null)
+            {
+                BinaryUtil.WriteInt32(ref bytes, offset, -1);
+                return 4;
+            }
+            else
+            {
+                var startOffset = offset;
+
+                offset += (8 + 4 * (0 + 1));
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, global::Voxels.BlockData[,,]>(ref bytes, startOffset, offset, 0, value.Hint1);
+
+                return ObjectSegmentHelper.WriteSize(ref bytes, startOffset, offset, 0);
+            }
+        }
+
+        public override global::Voxels.BlockDataArrayHint Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = BinaryUtil.ReadInt32(ref bytes, offset);
+            if (byteSize == -1)
+            {
+                byteSize = 4;
+                return null;
+            }
+            return new BlockDataArrayHintObjectSegment<TTypeResolver>(tracker, new ArraySegment<byte>(bytes, offset, byteSize));
+        }
+    }
+
+    public class BlockDataArrayHintObjectSegment<TTypeResolver> : global::Voxels.BlockDataArrayHint, IZeroFormatterSegment
+        where TTypeResolver : ITypeResolver, new()
+    {
+        static readonly int[] __elementSizes = new int[]{ 0 };
+
+        readonly ArraySegment<byte> __originalBytes;
+        readonly global::ZeroFormatter.DirtyTracker __tracker;
+        readonly int __binaryLastIndex;
+        readonly byte[] __extraFixedBytes;
+
+        CacheSegment<TTypeResolver, global::Voxels.BlockData[,,]> _Hint1;
+
+        // 0
+        public override global::Voxels.BlockData[,,] Hint1
+        {
+            get
+            {
+                return _Hint1.Value;
+            }
+            set
+            {
+                _Hint1.Value = value;
+            }
+        }
+
+
+        public BlockDataArrayHintObjectSegment(global::ZeroFormatter.DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
+        {
+            var __array = originalBytes.Array;
+
+            this.__originalBytes = originalBytes;
+            this.__tracker = dirtyTracker = dirtyTracker.CreateChild();
+            this.__binaryLastIndex = BinaryUtil.ReadInt32(ref __array, originalBytes.Offset + 4);
+
+            this.__extraFixedBytes = ObjectSegmentHelper.CreateExtraFixedBytes(this.__binaryLastIndex, 0, __elementSizes);
+
+            _Hint1 = new CacheSegment<TTypeResolver, global::Voxels.BlockData[,,]>(__tracker, ObjectSegmentHelper.GetSegment(originalBytes, 0, __binaryLastIndex, __tracker));
+        }
+
+        public bool CanDirectCopy()
+        {
+            return !__tracker.IsDirty;
+        }
+
+        public ArraySegment<byte> GetBufferReference()
+        {
+            return __originalBytes;
+        }
+
+        public int Serialize(ref byte[] targetBytes, int offset)
+        {
+            if (__extraFixedBytes != null || __tracker.IsDirty)
+            {
+                var startOffset = offset;
+                offset += (8 + 4 * (0 + 1));
+
+                offset += ObjectSegmentHelper.SerializeCacheSegment<TTypeResolver, global::Voxels.BlockData[,,]>(ref targetBytes, startOffset, offset, 0, ref _Hint1);
+
+                return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 0);
+            }
+            else
+            {
+                return ObjectSegmentHelper.DirectCopyAll(__originalBytes, ref targetBytes, offset);
+            }
+        }
+    }
+
+    public class VisibilityFlagsArrayHintFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.VisibilityFlagsArrayHint>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return null;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.VisibilityFlagsArrayHint value)
+        {
+            var segment = value as IZeroFormatterSegment;
+            if (segment != null)
+            {
+                return segment.Serialize(ref bytes, offset);
+            }
+            else if (value == null)
+            {
+                BinaryUtil.WriteInt32(ref bytes, offset, -1);
+                return 4;
+            }
+            else
+            {
+                var startOffset = offset;
+
+                offset += (8 + 4 * (0 + 1));
+                offset += ObjectSegmentHelper.SerializeFromFormatter<TTypeResolver, global::Voxels.VisibilityFlags[,,]>(ref bytes, startOffset, offset, 0, value.Hint1);
+
+                return ObjectSegmentHelper.WriteSize(ref bytes, startOffset, offset, 0);
+            }
+        }
+
+        public override global::Voxels.VisibilityFlagsArrayHint Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = BinaryUtil.ReadInt32(ref bytes, offset);
+            if (byteSize == -1)
+            {
+                byteSize = 4;
+                return null;
+            }
+            return new VisibilityFlagsArrayHintObjectSegment<TTypeResolver>(tracker, new ArraySegment<byte>(bytes, offset, byteSize));
+        }
+    }
+
+    public class VisibilityFlagsArrayHintObjectSegment<TTypeResolver> : global::Voxels.VisibilityFlagsArrayHint, IZeroFormatterSegment
+        where TTypeResolver : ITypeResolver, new()
+    {
+        static readonly int[] __elementSizes = new int[]{ 0 };
+
+        readonly ArraySegment<byte> __originalBytes;
+        readonly global::ZeroFormatter.DirtyTracker __tracker;
+        readonly int __binaryLastIndex;
+        readonly byte[] __extraFixedBytes;
+
+        CacheSegment<TTypeResolver, global::Voxels.VisibilityFlags[,,]> _Hint1;
+
+        // 0
+        public override global::Voxels.VisibilityFlags[,,] Hint1
+        {
+            get
+            {
+                return _Hint1.Value;
+            }
+            set
+            {
+                _Hint1.Value = value;
+            }
+        }
+
+
+        public VisibilityFlagsArrayHintObjectSegment(global::ZeroFormatter.DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
+        {
+            var __array = originalBytes.Array;
+
+            this.__originalBytes = originalBytes;
+            this.__tracker = dirtyTracker = dirtyTracker.CreateChild();
+            this.__binaryLastIndex = BinaryUtil.ReadInt32(ref __array, originalBytes.Offset + 4);
+
+            this.__extraFixedBytes = ObjectSegmentHelper.CreateExtraFixedBytes(this.__binaryLastIndex, 0, __elementSizes);
+
+            _Hint1 = new CacheSegment<TTypeResolver, global::Voxels.VisibilityFlags[,,]>(__tracker, ObjectSegmentHelper.GetSegment(originalBytes, 0, __binaryLastIndex, __tracker));
+        }
+
+        public bool CanDirectCopy()
+        {
+            return !__tracker.IsDirty;
+        }
+
+        public ArraySegment<byte> GetBufferReference()
+        {
+            return __originalBytes;
+        }
+
+        public int Serialize(ref byte[] targetBytes, int offset)
+        {
+            if (__extraFixedBytes != null || __tracker.IsDirty)
+            {
+                var startOffset = offset;
+                offset += (8 + 4 * (0 + 1));
+
+                offset += ObjectSegmentHelper.SerializeCacheSegment<TTypeResolver, global::Voxels.VisibilityFlags[,,]>(ref targetBytes, startOffset, offset, 0, ref _Hint1);
+
+                return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 0);
+            }
+            else
+            {
+                return ObjectSegmentHelper.DirectCopyAll(__originalBytes, ref targetBytes, offset);
+            }
+        }
+    }
+
 
 }
 
@@ -3059,77 +3821,6 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels
     using global::ZeroFormatter.Formatters;
     using global::ZeroFormatter.Internal;
     using global::ZeroFormatter.Segments;
-
-
-    public class DirIndexFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.DirIndex>
-        where TTypeResolver : ITypeResolver, new()
-    {
-        public override int? GetLength()
-        {
-            return 1;
-        }
-
-        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.DirIndex value)
-        {
-            return BinaryUtil.WriteByte(ref bytes, offset, (Byte)value);
-        }
-
-        public override global::Voxels.DirIndex Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
-        {
-            byteSize = 1;
-            return (global::Voxels.DirIndex)BinaryUtil.ReadByte(ref bytes, offset);
-        }
-    }
-
-
-    public class NullableDirIndexFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.DirIndex?>
-        where TTypeResolver : ITypeResolver, new()
-    {
-        public override int? GetLength()
-        {
-            return 2;
-        }
-
-        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.DirIndex? value)
-        {
-            BinaryUtil.WriteBoolean(ref bytes, offset, value.HasValue);
-            if (value.HasValue)
-            {
-                BinaryUtil.WriteByte(ref bytes, offset + 1, (Byte)value.Value);
-            }
-            else
-            {
-                BinaryUtil.EnsureCapacity(ref bytes, offset, offset + 2);
-            }
-
-            return 2;
-        }
-
-        public override global::Voxels.DirIndex? Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
-        {
-            byteSize = 2;
-            var hasValue = BinaryUtil.ReadBoolean(ref bytes, offset);
-            if (!hasValue) return null;
-
-            return (global::Voxels.DirIndex)BinaryUtil.ReadByte(ref bytes, offset + 1);
-        }
-    }
-
-
-
-    public class DirIndexEqualityComparer : IEqualityComparer<global::Voxels.DirIndex>
-    {
-        public bool Equals(global::Voxels.DirIndex x, global::Voxels.DirIndex y)
-        {
-            return (Byte)x == (Byte)y;
-        }
-
-        public int GetHashCode(global::Voxels.DirIndex x)
-        {
-            return (int)(Byte)x;
-        }
-    }
-
 
 
     public class BlockTypeFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.BlockType>
@@ -3409,6 +4100,77 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels
         }
 
         public int GetHashCode(global::Voxels.VisibilityFlags x)
+        {
+            return (int)(Byte)x;
+        }
+    }
+
+
+
+    public class DirIndexFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.DirIndex>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return 1;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.DirIndex value)
+        {
+            return BinaryUtil.WriteByte(ref bytes, offset, (Byte)value);
+        }
+
+        public override global::Voxels.DirIndex Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = 1;
+            return (global::Voxels.DirIndex)BinaryUtil.ReadByte(ref bytes, offset);
+        }
+    }
+
+
+    public class NullableDirIndexFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.DirIndex?>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return 2;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.DirIndex? value)
+        {
+            BinaryUtil.WriteBoolean(ref bytes, offset, value.HasValue);
+            if (value.HasValue)
+            {
+                BinaryUtil.WriteByte(ref bytes, offset + 1, (Byte)value.Value);
+            }
+            else
+            {
+                BinaryUtil.EnsureCapacity(ref bytes, offset, offset + 2);
+            }
+
+            return 2;
+        }
+
+        public override global::Voxels.DirIndex? Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = 2;
+            var hasValue = BinaryUtil.ReadBoolean(ref bytes, offset);
+            if (!hasValue) return null;
+
+            return (global::Voxels.DirIndex)BinaryUtil.ReadByte(ref bytes, offset + 1);
+        }
+    }
+
+
+
+    public class DirIndexEqualityComparer : IEqualityComparer<global::Voxels.DirIndex>
+    {
+        public bool Equals(global::Voxels.DirIndex x, global::Voxels.DirIndex y)
+        {
+            return (Byte)x == (Byte)y;
+        }
+
+        public int GetHashCode(global::Voxels.DirIndex x)
         {
             return (int)(Byte)x;
         }

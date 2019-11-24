@@ -15,9 +15,6 @@ namespace Voxels.Networking {
 	public class ServerController : ServerSideController<ServerController> {
 		const int   PROTOCOL_VERSION = 1;
 		const float PING_INTERVAL    = 10;
-		
-		public string ServerName = "Untitled";
-		public string MOTD       = "Greetings!";
 
 		Dictionary<int,ClientState>                          _clients  = new Dictionary<int, ClientState>();
 		Dictionary<ClientPacketID, BaseClientMessageHandler> _handlers = new Dictionary<ClientPacketID, BaseClientMessageHandler>();
@@ -68,10 +65,12 @@ namespace Voxels.Networking {
 			_handlers.Add(ClientPacketID.Pong,           new C_PongMessageHandler());
 			_handlers.Add(ClientPacketID.ChatMessage,    new C_ChatMessageHandler());
 			_handlers.Add(ClientPacketID.PlayerUpdate,   new C_PlayerUpdateMessageHandler());
+			_handlers.Add(ClientPacketID.PutBlock,       new C_PutBlockMessageHandler());
 
 			_packetsReceived = 0;
 			_packetsSent     = 0;
 			_server = new Server();
+			_server.MaxMessageSize = 32768;
 			_server.Start(port);
 			_port = port;
 			IsStarted = true;
@@ -96,7 +95,9 @@ namespace Voxels.Networking {
 			var body = ZeroFormatterSerializer.Serialize(message);
 			var header = new PacketHeader((byte)id, compress, (ushort)body.Length);
 			if ( compress ) {
-				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, CLZF2.Compress(body)));
+				var compressedBody   = CLZF2.Compress(body);
+				header.ContentLength = (ushort)compressedBody.Length;
+				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, compressedBody));
 			}
 			else {
 				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, body));
@@ -153,7 +154,11 @@ namespace Voxels.Networking {
 			};
 			_clients.Add(msg.connectionId, state);
 
-			SendNetMessage(state, ServerPacketID.Identification, new S_HandshakeMessage { CommandID = (byte)ServerPacketID.Identification, MOTD = MOTD, ProtocolVersion = PROTOCOL_VERSION, ServerName = ServerName });
+			var motd       = Utils.NetworkOptions.Motd;
+			var serverName = Utils.NetworkOptions.ServerName;
+			SendNetMessage(state, ServerPacketID.Identification, new S_HandshakeMessage {
+				CommandID = (byte)ServerPacketID.Identification, MOTD = motd, ProtocolVersion = PROTOCOL_VERSION, ServerName = serverName
+			});
 			Debug.LogFormat("Client with id {0} connecting. Sending handshake command.", msg.connectionId);
 		}
 
@@ -193,7 +198,7 @@ namespace Voxels.Networking {
 				State = client
 			});
 			Debug.LogFormat("Player '{0}' with id '{1}' disconnected.", client.UserName, msg.connectionId);
-			ServerChatManager.Instance.BroadcastFromServer(ChatMessageType.Info, string.Format("{0} connected to the server.", client.UserName));
+			ServerChatManager.Instance.BroadcastFromServer(ChatMessageType.Info, string.Format("{0} left the server.", client.UserName));
 			_clients.Remove(msg.connectionId);
 		}
 	}

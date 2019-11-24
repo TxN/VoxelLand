@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using Voxels.UI;
+using Voxels.Networking.Clientside;
 
 namespace Voxels {
 	public sealed class PlayerInteraction : MonoBehaviour {
@@ -11,9 +12,8 @@ namespace Voxels {
         public BlockData BlockInSight  { get; private set; } = BlockData.Empty;
 
 		void Update() {
-			return;
-			var cm = ChunkManager.Instance;
-			cm.ViewPosition = transform.position;
+			var cm = ClientChunkManager.Instance;
+			//cm.ViewPosition = transform.position;
 			var hitInfo = new RaycastHit();
 			var dir = transform.TransformDirection(Vector3.forward);
 			if ( Physics.Raycast(transform.position, dir, out hitInfo, MAX_SIGHT_DISTANCE) ) { //TODO: Chunk layermask
@@ -31,7 +31,7 @@ namespace Voxels {
 						var blockIn = cm.GetBlockIn(CurrentInPos);
 						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString() ));
 					} else if ( Input.GetMouseButtonUp(1) ) {
-						//cm.PutBlock(CurrentOutPos, new BlockData(GameManager.Instance.Hotbar.SelectedBlock,0));
+						cm.PutBlock(CurrentOutPos, new BlockData(ClientUIManager.Instance.Hotbar.SelectedBlock,0));
 					}
 				}
 			} else {

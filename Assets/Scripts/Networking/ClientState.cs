@@ -15,6 +15,7 @@ namespace Voxels.Networking {
 	public enum CState : byte {
 		Disconneted,
 		Handshake,
+		Initialize,
 		Connected
 	}
 }

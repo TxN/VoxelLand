@@ -11,7 +11,12 @@ namespace Voxels.Networking {
 		public override void ProcessMessage(ClientState client, byte[] rawCommand) {
 			base.ProcessMessage(client, rawCommand);
 			var server = ServerController.Instance;
-			var command = ZeroFormatterSerializer.Deserialize<C_HandshakeMessage>(rawCommand);	
+			var command = ZeroFormatterSerializer.Deserialize<C_HandshakeMessage>(rawCommand);
+			if ( !GameManager.Instance.Server.Initialized ) {
+				ServerController.Instance.ForceDisconnectClient(client, "Server is starting!");
+				return;
+			}
+
 			foreach ( var cli in server.Clients.Values ) {
 				if ( cli.UserName == command.ClientName ) {
 					ServerController.Instance.ForceDisconnectClient(client, string.Format("User with name {0} is already connected. Force disconnecting.", command.ClientName));
@@ -25,7 +30,7 @@ namespace Voxels.Networking {
 			}
 			
 			client.ConnectionTime = DateTime.Now;
-			client.CurrentState = CState.Connected;
+			client.CurrentState = CState.Initialize;
 			EventManager.Fire(new OnClientConnected { ConnectionId = client.ConnectionID, State = client });
 			UnityEngine.Debug.LogFormat("Server: client with name {0} connected.", client.UserName);
 			ServerChatManager.Instance.BroadcastFromServer(ChatMessageType.Info, string.Format("{0} connected to the server.", command.ClientName));

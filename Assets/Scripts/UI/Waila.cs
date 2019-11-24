@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using Voxels.Networking.Clientside;
+
 using TMPro;
 
 namespace Voxels.UI {
@@ -16,12 +18,12 @@ namespace Voxels.UI {
 		}
 
 		void Update() {
-		/*	var player = GameManager.Instance.LocalPlayer;
+			var player = ClientPlayerEntityManager.Instance.LocalPlayer.View;
 			if ( !player ) {
 				MainHolder.SetActive(false);
 				return;
 			}
-			var selectedBlock = player.BlockInSight;
+			var selectedBlock = player.Interactor.BlockInSight;
 			MainHolder.SetActive(selectedBlock.IsEmpty() ? false : true);
 			if ( selectedBlock.IsEmpty() || selectedBlock == _prevSelectedBlock ) {
 				return;
@@ -32,7 +34,7 @@ namespace Voxels.UI {
 			BlockNameText.text  = selectedBlock.Type.ToString();
 			LightLevelText.text = string.Format("Light level: {0}", selectedBlock.LightLevel);
 			_prevSelectedBlock = selectedBlock;
-			*/
+			
 		}
 		
 	}

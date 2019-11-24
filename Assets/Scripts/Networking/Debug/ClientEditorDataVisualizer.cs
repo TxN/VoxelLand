@@ -24,11 +24,15 @@ namespace Voxels.Networking.NetDebug {
 		}
 
 		void OnGUI() {
-			if ( !_showGUI ) {
+			if ( !_showGUI || !GameManager.Instance.IsClient ) {
 				return;
 			}
 
 			var cc = ClientController.Instance;
+
+			if ( cc == null ) {
+				return;
+			}
 
 			GUI.Label(new Rect(10, 10, 150, 20), string.Format("Player name: {0}", cc.ClientName));
 		}

@@ -16,7 +16,7 @@ namespace Voxels.Networking {
 		[Index(2)]
 		public virtual Vector2 LookDir    { get; set; }
 
-		public bool IsLocalPlayer(PlayerEntity entity) {
+		public static bool IsLocalPlayer(PlayerEntity entity) {
 			if ( !GameManager.Instance.IsClient ) {
 				return false;
 			}

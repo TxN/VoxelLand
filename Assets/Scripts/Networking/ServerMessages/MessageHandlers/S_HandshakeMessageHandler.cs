@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using Voxels.Networking.Clientside;
+
 using ZeroFormatter;
 
 namespace Voxels.Networking {
@@ -15,6 +17,7 @@ namespace Voxels.Networking {
 
 			Debug.LogFormat("Received server '{0}' handshake.\nMotd: {1}", serverInfo.ServerName, serverInfo.Motd);
 			cc.SendNetMessage(ClientPacketID.Identification, new C_HandshakeMessage { ClientName = cc.ClientName, Password = cc.Password, ProtocolVersion = ClientController.ProtocolVersion });
+			ClientChatManager.Instance.AddReceivedMessage("", serverInfo.Motd, ChatMessageType.Raw);
 		}
 	}
 }

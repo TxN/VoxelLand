@@ -22,13 +22,13 @@ namespace Voxels.Networking.Serverside {
 
 		public override void PostLoad() {
 			base.PostLoad();
-			EventManager.Subscribe<OnClientConnected>   (this, OnClientJoin);
+			EventManager.Subscribe<OnServerReadyToSpawnNewPlayer>   (this, OnNeedClientSpawn);
 			EventManager.Subscribe<OnClientDisconnected>(this, OnClientDisconnect);
 		}
 
 		public override void Reset() {
 			base.Reset();
-			EventManager.Unsubscribe<OnClientConnected>   (OnClientJoin);
+			EventManager.Unsubscribe<OnServerReadyToSpawnNewPlayer>   (OnNeedClientSpawn);
 			EventManager.Unsubscribe<OnClientDisconnected>(OnClientDisconnect);
 		}
 
@@ -77,7 +77,7 @@ namespace Voxels.Networking.Serverside {
 			}
 		}
 
-		void OnClientJoin(OnClientConnected e) {
+		void OnNeedClientSpawn(OnServerReadyToSpawnNewPlayer e) {
 			Debug.LogFormat("Sending to {0} all player spawn", e.State.UserName);
 			//send all live players to client
 			SendAllPlayers(e.State);

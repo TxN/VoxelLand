@@ -10,8 +10,6 @@ namespace Voxels {
 
 		public Transform CameraTransform = null;
 
-
-
 		const float POS_UPDATE_DELAY = 0.1f;
 		const float POS_MIN_DELTA    = 0.1f;
 		const float ANG_MIN_DELTA    = 1f;
@@ -24,6 +22,14 @@ namespace Voxels {
 		Vector2              _lastSentDir     = Vector2.zero;
 
 		float _lastReceivedHeadPitch = 0f;
+
+		PlayerInteraction _interactor;
+
+		public PlayerInteraction Interactor {
+			get {
+				return _interactor;
+			}
+		}
 
 		public float HeadPitch {
 			get {
@@ -56,6 +62,8 @@ namespace Voxels {
 			_lastUpdateTime = Time.time;
 			if ( !_isLocalAutority ) {
 				_interpolator = GetComponent<MovementInterpolator>();
+			} else {
+				_interactor = GetComponentInChildren<PlayerInteraction>();
 			}
 		}
 

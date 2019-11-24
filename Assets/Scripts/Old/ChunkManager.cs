@@ -237,7 +237,7 @@ namespace Voxels {
 					}
 				}
 			}
-			LandGenerator.Instance.RefreshQueue(_chunkLoadList.ToList());
+			//LandGenerator.Instance.RefreshQueue(_chunkLoadList.ToList());
 		}
 
 		/*
