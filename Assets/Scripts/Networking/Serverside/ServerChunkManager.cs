@@ -358,7 +358,10 @@ namespace Voxels.Networking.Serverside {
 		void OnPlayerJoin(OnClientConnected e) {
 			Debug.LogFormat("Player {0} joined. Starting to world info.", e.State.UserName);
 			CreateSendQueue(e.State);
-			ServerController.Instance.SendNetMessage(e.State, ServerPacketID.WorldOptions, new S_WorldOptionsMessage() { Seed = WorldOptions.Seed });
+			var wsc = ServerWorldStateController.Instance;
+			ServerController.Instance.SendNetMessage(e.State, ServerPacketID.WorldOptions, new S_WorldOptionsMessage() {
+				Seed = WorldOptions.Seed, DayLength = WorldOptions.DayLength, Time = wsc.WorldTime, TimeMultiplier = wsc.TimeScale
+			});
 		}
 
 		void OnPlayerLeft(OnClientDisconnected e) {

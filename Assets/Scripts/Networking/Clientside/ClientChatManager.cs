@@ -31,4 +31,3 @@ namespace Voxels.Networking.Clientside {
 		}
 	}
 }
-

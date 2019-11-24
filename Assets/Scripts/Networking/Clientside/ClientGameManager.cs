@@ -15,6 +15,7 @@ namespace Voxels.Networking {
 			_controllers.Add("players-client", new ClientPlayerEntityManager(this));
 			_controllers.Add("chunks-client",  new ClientChunkManager(this));
 			_controllers.Add("ui-client",      new ClientUIManager(this));
+			_controllers.Add("world-client",   new ClientWorldStateController(this));
 		}
 
 		public void Reset() {

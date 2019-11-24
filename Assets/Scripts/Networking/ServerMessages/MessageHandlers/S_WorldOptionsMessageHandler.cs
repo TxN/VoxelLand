@@ -10,7 +10,9 @@ namespace Voxels.Networking {
 			var command = ZeroFormatterSerializer.Deserialize<S_WorldOptionsMessage>(rawCommand);
 
 			WorldOptions.Seed = command.Seed;
-			//TODO: set other options
+			var wsc = ClientWorldStateController.Instance;
+			wsc.SetTimeParameters(command.Time, command.TimeMultiplier);
+			WorldOptions.DayLength = command.DayLength;
 		}
 	}
 }

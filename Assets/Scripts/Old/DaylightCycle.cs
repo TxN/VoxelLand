@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using Voxels.Networking.Clientside;
+
 namespace Voxels {
 	public sealed class DaylightCycle : MonoBehaviour {
 		public AnimationCurve LightIntensityCurve = null;
@@ -8,10 +10,6 @@ namespace Voxels {
 		public Gradient SunColor       = null;
 		public Material SkyboxMaterial = null;
 
-		public float TimeScale = 1f;
-		public float DayLength = 1200f;
-
-		float           _time    = 0f;
 		ResourceLibrary _library = null;
 
 		void Start() {
@@ -19,11 +17,8 @@ namespace Voxels {
 		}
 
 		void Update() {
-			_time += TimeScale * Time.deltaTime;
-			var dayPercent = _time / DayLength;
-			if ( dayPercent > 1f) {
-				_time = 0f;
-			}
+			var wsc = ClientWorldStateController.Instance;
+			var dayPercent = wsc.DayPercent;
 			var skyColor = SkyColor.Evaluate(dayPercent);
 			var horizonColor = HorizonColor.Evaluate(dayPercent);
 			var sunColor = SunColor.Evaluate(dayPercent);
