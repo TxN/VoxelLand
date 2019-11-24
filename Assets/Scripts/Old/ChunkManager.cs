@@ -7,25 +7,18 @@ using UnityEngine;
 using SMGCore;
 using SMGCore.EventSys;
 using Voxels.Events;
+using Voxels.Networking.Utils;
 
 namespace Voxels {
-	public sealed class ChunkManager : MonoSingleton<ChunkManager> {
-		public ResourceLibrary       Library             = null;
-		public BlockPreviewGenerator PreviewGenerator    = null;
-
-		public TilesetHelper TilesetHelper { get; private set; } = null;
-
+	public sealed class ChunkManager : ManualSingleton<ChunkManager>, IChunkManager {
 		Dictionary<Int3, Chunk> _chunks  = new Dictionary<Int3, Chunk>();
 		HashSet<Int3>           _library = new HashSet<Int3>();
-		int                     _sizeY  = 0;
+		int                     _sizeY   = 0;
 
 		HashSet<Int3>          _chunkLoadList     = new HashSet<Int3>();
 		Queue<Int3>            _saveLoadList      = new Queue<Int3>(128);
 		ChunkRendererPool      _renderPool        = new ChunkRendererPool();
 		DestroyBlockEffectPool _destroyEffectPool = new DestroyBlockEffectPool();
-
-		public const int LOAD_RADIUS   = 10;
-		public const int UNLOAD_DISTANCE = 16 * 12;
 
 		public int GetWorldHeight {
 			get {
@@ -48,10 +41,7 @@ namespace Voxels {
 		protected override void Awake() {
 			base.Awake();
 			_sizeY = 1;
-			_chunks = new Dictionary<Int3, Chunk>();
-			TilesetHelper = new TilesetHelper(Library.TileSize, Library.TilesetSize);
-			BlockModelGenerator.PrepareGenerator(TilesetHelper);
-			Library.Init(PreviewGenerator);
+			_chunks = new Dictionary<Int3, Chunk>();		
 			_renderPool.Init();
 			_destroyEffectPool.Init();
 		}
@@ -98,12 +88,6 @@ namespace Voxels {
 				if ( chunk != null && chunk.NeedRebuildGeometry ) {
 					chunk.UpdateGeometry();
 				}
-			}
-		}
-
-		void OnDestroy() {
-			if ( Library ) {
-				Library.DeInit();
 			}
 		}
 
@@ -167,8 +151,8 @@ namespace Voxels {
 			var y = index.Y;
 			var z = index.Z;
 			var chunk  = data == null ?
-					new Chunk(this, x, y, z, new Vector3(x * Chunk.CHUNK_SIZE_X, y * Chunk.CHUNK_SIZE_Y, z * Chunk.CHUNK_SIZE_Z)) :
-					new Chunk(this, data);
+					new Chunk(this, x, y, z, new Vector3(x * Chunk.CHUNK_SIZE_X, y * Chunk.CHUNK_SIZE_Y, z * Chunk.CHUNK_SIZE_Z), false) :
+					new Chunk(this, data, false);
 			var render = _renderPool.Get();
 			render.name = string.Format("Chunk {0} {1}", x, z);
 			render.transform.position = Vector3.zero;
@@ -208,6 +192,7 @@ namespace Voxels {
 			_chunks.Remove(index);
 		}
 
+		/*
 		void RefreshChunkGenQueue() {
 			_chunkLoadList.Clear();
 			_saveLoadList.Clear();
@@ -232,11 +217,12 @@ namespace Voxels {
 			}
 			LandGenerator.Instance.RefreshQueue(_chunkLoadList.ToList());
 		}
+		*/
 
 		void LoadGenWorld() {
 			_chunkLoadList.Clear();
 			var originPos = Int3.Zero;
-			for ( int r = 0; r < LOAD_RADIUS; r++ ) {
+			for ( int r = 0; r < WorldOptions.ChunkLoadRadius; r++ ) {
 				for ( int x = -r; x < r; x++ ) {
 					for ( int z = -r; z < r; z++ ) {
 						var newPos = originPos.Add(x, 0, z);
@@ -254,11 +240,12 @@ namespace Voxels {
 			LandGenerator.Instance.RefreshQueue(_chunkLoadList.ToList());
 		}
 
+		/*
 		void UnloadFarChunks() {
 			var unloadList = new List<Int3>();
 			foreach ( var chunkPair in _chunks ) {
 				var chunk = chunkPair.Value;
-				if ( chunk.GetDistance(ViewPosition) > UNLOAD_DISTANCE ) {
+				if ( chunk.GetDistance(ViewPosition) > WorldOptions.ChunkUnloadDistance ) {
 					unloadList.Add(chunkPair.Key);
 				}
 			}
@@ -267,6 +254,7 @@ namespace Voxels {
 				UnloadChunk(item);
 			}
 		}
+		
 
 		void UnloadChunk(Int3 pos) {
 			var chunk = GetChunk(pos);
@@ -276,6 +264,7 @@ namespace Voxels {
 			chunk.UnloadChunk();
 			_chunks.Remove(pos);	
 		}
+		*/
 
 		public Chunk GetChunk(int x, int y, int z) {
 			var key = new Int3(x, y, z);

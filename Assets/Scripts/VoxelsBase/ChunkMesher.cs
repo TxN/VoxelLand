@@ -18,11 +18,11 @@ namespace Voxels {
 		public VisibilityFlags Visibility;
 	}
 
-	public sealed class ChunkMesher {
+	public sealed class ChunkMesher : IChunkMesher {
 		public bool Busy  { get; private set; }
 		public bool Ready { get; private set; }
 
-		public List<MesherBlockInput> Blocks;
+		public List<MesherBlockInput> Blocks { get; private set; }
 
 		GeneratableMesh _opaqueCollidedMesh      = null;
 		GeneratableMesh _opaquePassableMesh      = null;

@@ -6,61 +6,6 @@ using SMGCore.EventSys;
 using Voxels.Events;
 
 namespace Voxels {
-	public enum DirIndex: byte { //for reference
-		UP       = 0,
-		DOWN     = 1,
-		RIGHT    = 2,
-		LEFT     = 3,
-		FORWARD  = 4,
-		BACKWARD = 5
-	}
-
-	public struct LightInfo {
-		public byte SunUp;
-		public byte SunDown;
-		public byte SunRight;
-		public byte SunLeft;
-		public byte SunForward;
-		public byte SunBackward;
-
-		public byte OUp;
-		public byte ODown;
-		public byte ORight;
-		public byte OLeft;
-		public byte OForward;
-		public byte OBackward;
-
-		public static LightInfo FullLit = new LightInfo {
-			SunUp       = Chunk.MAX_SUNLIGHT_VALUE,
-			SunDown     = Chunk.MAX_SUNLIGHT_VALUE,
-			SunRight    = Chunk.MAX_SUNLIGHT_VALUE,
-			SunLeft     = Chunk.MAX_SUNLIGHT_VALUE,
-			SunForward  = Chunk.MAX_SUNLIGHT_VALUE,
-			SunBackward = Chunk.MAX_SUNLIGHT_VALUE,
-
-			OUp       = Chunk.MAX_SUNLIGHT_VALUE,
-			ODown     = Chunk.MAX_SUNLIGHT_VALUE,
-			OBackward = Chunk.MAX_SUNLIGHT_VALUE,
-			OForward  = Chunk.MAX_SUNLIGHT_VALUE,
-			OLeft     = Chunk.MAX_SUNLIGHT_VALUE,
-			ORight    = Chunk.MAX_SUNLIGHT_VALUE
-		};
-	}
-
-	public struct LightRemNode {
-		public int X;
-		public int Y;
-		public int Z;
-		public byte Light;
-
-		public LightRemNode(int x, int y, int z, byte val) {
-			X = x;
-			Y = y;
-			Z = z;
-			Light = val;
-		}
-	}
-
 	public sealed class Chunk {
 		public const int CHUNK_SIZE_X                         = 16;
 		public const int CHUNK_SIZE_Y                         = 128;
@@ -72,66 +17,80 @@ namespace Voxels {
 		public const int MAX_SUNLIGHT_VALUE                   = 255;
 		public const int MESHER_CAPACITY                      = 2048;
 
-		public ChunkRenderer Renderer = null;
-
+		public ChunkRenderer Renderer   { get; set; }
 		public Vector3 OriginPos        { get; }
 		public bool Dirty               { get; private set; } = false;
-		public bool NeedRebuildGeometry { get; set; } = false;
+		public bool NeedRebuildGeometry { get; set; }         = false;
 
-		ChunkManager        _owner           = null;
-		ChunkMesher         _mesher          = null;
+		IChunkManager       _owner           = null;
+		IChunkMesher        _mesher          = null;
+		ResourceLibrary    _library          = null;
 
-		VisibilityFlagsHolder _visibiltiy      = null;
-		BlockDataHolder       _blocks          = null;
 		int     _indexX                      = 0;
 		int     _indexY                      = 0;
 		int     _indexZ                      = 0;
 		bool    _needUpdateVisibilityAll     = true;
 		int     _maxNonEmptyY                = 0;
 		int     _loadedNeighbors             = 0;
-		bool    _fullyInited                 = false;	
+		bool    _fullyInited                 = false;
 
-		List<Int3> _dirtyBlocks = new List<Int3>(MAX_DIRTY_BLOCKS_BEFORE_FULL_REBUILD);
+		VisibilityFlagsHolder _visibiltiy      = null;
+		BlockDataHolder      _blocks           = null;
+		List<Int3>           _dirtyBlocks      = new List<Int3>(MAX_DIRTY_BLOCKS_BEFORE_FULL_REBUILD);
+		Queue<Int3>          _lightAddQueue    = new Queue<Int3>        (LIGHT_SOURCES_CAPACITY);
+		Queue<LightRemNode>  _lightRemQueue    = new Queue<LightRemNode>(LIGHT_SOURCES_CAPACITY);
+		Queue<Int3>          _sunlightAddQueue = new Queue<Int3>        (CHUNK_SIZE_X * CHUNK_SIZE_Y);
+		Queue<LightRemNode>  _sunlightRemQueue = new Queue<LightRemNode>(LIGHT_SOURCES_CAPACITY);
 
-		Queue<Int3>         _lightAddQueue    = new Queue<Int3>        (LIGHT_SOURCES_CAPACITY);
-		Queue<LightRemNode> _lightRemQueue    = new Queue<LightRemNode>(LIGHT_SOURCES_CAPACITY);
-		Queue<Int3>         _sunlightAddQueue = new Queue<Int3>        (CHUNK_SIZE_X * CHUNK_SIZE_Y);
-		Queue<LightRemNode> _sunlightRemQueue = new Queue<LightRemNode>(LIGHT_SOURCES_CAPACITY);
-
-		public Chunk(ChunkManager owner, ChunkData data) {
+		public Chunk(IChunkManager owner, ChunkData data, bool isServerChunk) {
 			_owner = owner;
 			var v = data.Visibiltiy;
 			var b = data.Blocks;
-			_visibiltiy = new VisibilityFlagsHolder(v.SizeX, v.SizeY, v.SizeZ, v.Data);
-			_blocks     = new BlockDataHolder(b.SizeX, b.SizeY, b.SizeZ, b.Data);
-			OriginPos   = data.Origin;
-			_mesher     = new ChunkMesher(_owner.Library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, OriginPos);
-			_indexX     = data.IndexX;
-			_indexY     = data.IndexY;
-			_indexZ     = data.IndexZ;
+			_visibiltiy   = new VisibilityFlagsHolder(v.SizeX, v.SizeY, v.SizeZ, v.Data);
+			_blocks       = new BlockDataHolder(b.SizeX, b.SizeY, b.SizeZ, b.Data);
+			OriginPos     = data.Origin;
+			_indexX       = data.IndexX;
+			_indexY       = data.IndexY;
+			_indexZ       = data.IndexZ;
 			_maxNonEmptyY = data.Height;
-			_fullyInited = true;
+			_library      = VoxelsStatic.Instance.Library;
+			_fullyInited  = true;
 
+			if ( isServerChunk ) {
+				_mesher = new EmptyChunkMesher();
+			} else {
+				_mesher = new ChunkMesher(_library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, OriginPos);
+			}
+
+			_loadedNeighbors = _owner.GatherNeighbors(new Int3(_indexX, _indexY, _indexZ));
+		/*	if ( _loadedNeighbors == 15 ) {
+				ForceUpdateChunk();
+				_fullyInited = true;
+			}*/
 			EventManager.Subscribe<Event_ChunkLoaded>(this, OnChunkLoaded);
 		}
 
-		public Chunk(ChunkManager owner, int x, int y, int z, Vector3 originPos) {
+		public Chunk(IChunkManager owner, int x, int y, int z, Vector3 originPos, bool isServerChunk) {
 			_owner        = owner;
 			_visibiltiy   = new VisibilityFlagsHolder(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
 			_blocks       = new BlockDataHolder      (CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
-			_mesher       = new ChunkMesher(_owner.Library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, originPos);
 			OriginPos     = originPos;
 			_indexX       = x;
 			_indexY       = y;
 			_indexZ       = z;
+			_library      = VoxelsStatic.Instance.Library;
 
-			var cm = ChunkManager.Instance;
-			_loadedNeighbors = cm.GatherNeighbors(new Int3(_indexX, _indexY, _indexZ));
+			if ( isServerChunk ) {
+				_mesher = new EmptyChunkMesher();
+			} else {
+				_mesher = new ChunkMesher(_library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, originPos);
+			}
+
+			_loadedNeighbors = _owner.GatherNeighbors(new Int3(_indexX, _indexY, _indexZ));
 			if ( _loadedNeighbors == 15 ) {
 				ForceUpdateChunk();
 				_fullyInited = true;
 			}
-
 			EventManager.Subscribe<Event_ChunkLoaded>(this, OnChunkLoaded);
 		}
 
@@ -178,13 +137,11 @@ namespace Voxels {
 			if ( _fullyInited ) {
 				return;
 			}
-			var cm = ChunkManager.Instance;
 			_loadedNeighbors |= IsNeighbor(e.Coordinates);
 			if ( _loadedNeighbors == 15 ) {
 				ForceUpdateChunk();
 				_fullyInited = true;
 			}
-			
 		}
 
 		int IsNeighbor(Int3 coords) {
@@ -211,6 +168,8 @@ namespace Voxels {
 			Renderer = null;
 			_mesher.DeInit();
 		}
+
+		#region LightCalculation
 
 		public void EnqueueToLightAdd(Int3 node) {
 			Dirty = true;
@@ -580,7 +539,7 @@ namespace Voxels {
 			}
 			//Up
 			if ( y < CHUNK_SIZE_Y - 1 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x, y + 1, z].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x, y + 1, z].Type) ) {
 					var blockLight = _blocks[x, y + 1, z].SunLevel;
 					if ( l > blockLight ) {
 						var block = _blocks[x, y + 1, z];
@@ -591,7 +550,7 @@ namespace Voxels {
 				}
 			} else {
 				var chunk = neighborChunks[0];
-				if ( chunk != null && _owner.Library.IsLightPassBlock(chunk._blocks[x, 0, z].Type) ) {
+				if ( chunk != null && _library.IsLightPassBlock(chunk._blocks[x, 0, z].Type) ) {
 					var blockLight = chunk._blocks[x, 0, z].SunLevel;
 					if ( l > blockLight ) {
 						var block = chunk._blocks[x, 0, z];
@@ -603,7 +562,7 @@ namespace Voxels {
 			}
 			//Down
 			if ( y > 0 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x, y - 1, z].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x, y - 1, z].Type) ) {
 					var blockLight = _blocks[x, y - 1, z].SunLevel;
 					if ( l > blockLight ) {
 						var nLight = oLight == MAX_SUNLIGHT_VALUE ? oLight : l;
@@ -616,7 +575,7 @@ namespace Voxels {
 			}
 			//Right
 			if ( x < CHUNK_SIZE_X - 1 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x + 1, y, z].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x + 1, y, z].Type) ) {
 					var blockLight = _blocks[x + 1, y, z].SunLevel;
 					if ( l > blockLight ) {
 
@@ -628,7 +587,7 @@ namespace Voxels {
 				}
 			} else {
 				var chunk = neighborChunks[2];
-				if ( chunk != null && _owner.Library.IsLightPassBlock(chunk._blocks[0, y, z].Type) ) {
+				if ( chunk != null && _library.IsLightPassBlock(chunk._blocks[0, y, z].Type) ) {
 					var blockLight = chunk._blocks[0, y, z].SunLevel;
 					if ( l > blockLight ) {
 						var block = chunk._blocks[0, y, z];
@@ -640,7 +599,7 @@ namespace Voxels {
 			}
 			//Left
 			if ( x > 0 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x - 1, y, z].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x - 1, y, z].Type) ) {
 					var blockLight = _blocks[x - 1, y, z].SunLevel;
 					if ( l > blockLight ) {
 						var block =_blocks[x - 1, y, z];
@@ -651,7 +610,7 @@ namespace Voxels {
 				}
 			} else {
 				var chunk = neighborChunks[3];
-				if ( chunk != null && _owner.Library.IsLightPassBlock(chunk._blocks[CHUNK_SIZE_X - 1, y, z].Type) ) {
+				if ( chunk != null && _library.IsLightPassBlock(chunk._blocks[CHUNK_SIZE_X - 1, y, z].Type) ) {
 					var blockLight = chunk._blocks[CHUNK_SIZE_X - 1, y, z].SunLevel;
 					if ( l > blockLight ) {
 						var block = chunk._blocks[CHUNK_SIZE_X - 1, y, z];
@@ -663,7 +622,7 @@ namespace Voxels {
 			}
 			//Forward
 			if ( z < CHUNK_SIZE_Z - 1 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x, y, z + 1].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x, y, z + 1].Type) ) {
 					var blockLight = _blocks[x, y, z + 1].SunLevel;
 					if ( l > blockLight ) {
 						var block = _blocks[x, y, z + 1];
@@ -674,7 +633,7 @@ namespace Voxels {
 				}
 			} else {
 				var chunk = neighborChunks[4];
-				if ( chunk != null && _owner.Library.IsLightPassBlock(chunk._blocks[x, y, 0].Type) ) {
+				if ( chunk != null && _library.IsLightPassBlock(chunk._blocks[x, y, 0].Type) ) {
 					var blockLight = chunk._blocks[x, y, 0].SunLevel;
 					if ( l > blockLight ) {
 						var block = chunk._blocks[x, y, 0];
@@ -686,7 +645,7 @@ namespace Voxels {
 			}
 			//Backwards
 			if ( z > 0 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x, y, z - 1].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x, y, z - 1].Type) ) {
 					var blockLight = _blocks[x, y, z - 1].SunLevel;
 					if ( l > blockLight ) {
 						var block =_blocks[x, y, z - 1];
@@ -697,7 +656,7 @@ namespace Voxels {
 				}
 			} else {
 				var chunk = neighborChunks[5];
-				if ( chunk != null && _owner.Library.IsLightPassBlock(chunk._blocks[x, y, CHUNK_SIZE_Z - 1].Type) ) {
+				if ( chunk != null && _library.IsLightPassBlock(chunk._blocks[x, y, CHUNK_SIZE_Z - 1].Type) ) {
 					var blockLight = chunk._blocks[x, y, CHUNK_SIZE_Z - 1].SunLevel;
 					if ( l > blockLight ) {
 						var block = chunk._blocks[x, y, CHUNK_SIZE_Z - 1];
@@ -875,11 +834,16 @@ namespace Voxels {
 			}
 		}
 
+		#endregion
+
 		public void UpdateGeometry() {
-			var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 			_mesher.PrepareMesher();
 			var neighbors = GetNeighborChunks();
 			var blockList = _mesher.Blocks;
+			if ( blockList == null ) {
+				NeedRebuildGeometry = false;
+				return;
+			}
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
 				for ( int y = 0; y < _maxNonEmptyY; y++ ) {
 					for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
@@ -898,16 +862,6 @@ namespace Voxels {
 			}
 			_mesher.StartAsyncMeshing();
 			NeedRebuildGeometry = false;
-			stopwatch.Stop();
-			//AddTime(stopwatch.Elapsed.TotalMilliseconds);
-		}
-
-		static double totalTime = 0d;
-		public static int  GenCount = 0;
-		public static void AddTime(double time) {
-			GenCount++;
-			totalTime += time;
-			Debug.Log(string.Format("Cur:{0}, Av:{1}", time, totalTime / GenCount));
 		}
 
 		public void FinalizeMeshUpdate() {
@@ -927,7 +881,7 @@ namespace Voxels {
 							_visibiltiy[x, y, z] = VisibilityFlags.None;
 							continue;
 						}
-						_visibiltiy[x, y, z] = _owner.Library.IsTranslucentBlock(_blocks[x, y, z].Type) ? CheckVisibilityTranslucent(x, y, z, neighbors) : CheckVisibilityOpaque(x, y, z, neighbors);
+						_visibiltiy[x, y, z] = _library.IsTranslucentBlock(_blocks[x, y, z].Type) ? CheckVisibilityTranslucent(x, y, z, neighbors) : CheckVisibilityOpaque(x, y, z, neighbors);
 					}
 				}
 			}
@@ -957,6 +911,7 @@ namespace Voxels {
 			NeedRebuildGeometry = true;
 		}
 
+		#region VisibilityCalculation
 		public void UpdateVisibilityForNeighbors(int x, int y, int z, Chunk[] neighborChunks) {
 			UpdateVisibilityAtBlock(x, y, z); // self
 			//Up
@@ -1037,57 +992,57 @@ namespace Voxels {
 			var flag = VisibilityFlags.None;
 			//Up
 			if ( y < CHUNK_SIZE_Y - 1 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x, y  + 1, z].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x, y  + 1, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Up);
 				}				
 			}
 			//Down
 			if ( y > 0 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x, y - 1, z].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x, y - 1, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Down);
 				}
 			}
 			//Right
 			if ( x < CHUNK_SIZE_X - 1 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x + 1, y, z].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x + 1, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Right);
 				}
 			} else {
 				var chunk = neighborChunks[2];
-				if ( chunk == null || _owner.Library.IsLightPassBlock(chunk._blocks[0, y, z].Type) ) {
+				if ( chunk == null || _library.IsLightPassBlock(chunk._blocks[0, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Right);
 				}
 			}
 			//Left
 			if ( x > 0 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x - 1, y, z].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x - 1, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Left);
 				}
 			} else {
 				var chunk = neighborChunks[3];
-				if ( chunk == null || _owner.Library.IsLightPassBlock(chunk._blocks[CHUNK_SIZE_X - 1, y, z].Type) ) {
+				if ( chunk == null || _library.IsLightPassBlock(chunk._blocks[CHUNK_SIZE_X - 1, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Left);
 				}
 			}
 			//Forward
 			if ( z < CHUNK_SIZE_Z - 1 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x, y, z + 1].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x, y, z + 1].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Forward);
 				}
 			} else {
 				var chunk = neighborChunks[4];
-				if ( chunk == null || _owner.Library.IsLightPassBlock(chunk._blocks[x, y, 0].Type) ) {
+				if ( chunk == null || _library.IsLightPassBlock(chunk._blocks[x, y, 0].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Forward);
 				}
 			}
 			//Backwards
 			if ( z > 0 ) {
-				if ( _owner.Library.IsLightPassBlock(_blocks[x, y, z - 1].Type) ) {
+				if ( _library.IsLightPassBlock(_blocks[x, y, z - 1].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Backward);
 				}
 			} else {
 				var chunk = neighborChunks[5];
-				if ( chunk == null || _owner.Library.IsLightPassBlock(chunk._blocks[x, y, CHUNK_SIZE_Z -1].Type) ) {
+				if ( chunk == null || _library.IsLightPassBlock(chunk._blocks[x, y, CHUNK_SIZE_Z -1].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Backward);
 				}
 			}
@@ -1098,62 +1053,63 @@ namespace Voxels {
 			var flag = VisibilityFlags.None;
 			//Up
 			if ( y < CHUNK_SIZE_Y - 1 ) {
-				if ( !_owner.Library.IsFullBlock(_blocks[x, y + 1, z].Type) ) {
+				if ( !_library.IsFullBlock(_blocks[x, y + 1, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Up);
 				}
 			}
 			//Down
 			if ( y > 0 ) {
-				if ( !_owner.Library.IsFullBlock(_blocks[x, y - 1, z].Type) ) {
+				if ( !_library.IsFullBlock(_blocks[x, y - 1, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Down);
 				}
 			}
 			//Right
 			if ( x < CHUNK_SIZE_X - 1 ) {
-				if ( !_owner.Library.IsFullBlock(_blocks[x + 1, y, z].Type) ) {
+				if ( !_library.IsFullBlock(_blocks[x + 1, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Right);
 				}
 			} else {
 				var chunk = neighborChunks[2];
-				if ( chunk == null || !_owner.Library.IsFullBlock(chunk._blocks[0, y, z].Type) ) {
+				if ( chunk == null || !_library.IsFullBlock(chunk._blocks[0, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Right);
 				}
 			}
 			//Left
 			if ( x > 0 ) {
-				if ( !_owner.Library.IsFullBlock(_blocks[x - 1, y, z].Type) ) {
+				if ( !_library.IsFullBlock(_blocks[x - 1, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Left);
 				}
 			} else {
 				var chunk = neighborChunks[3];
-				if ( chunk == null || !_owner.Library.IsFullBlock(chunk._blocks[CHUNK_SIZE_X - 1, y, z].Type) ) {
+				if ( chunk == null || !_library.IsFullBlock(chunk._blocks[CHUNK_SIZE_X - 1, y, z].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Left);
 				}
 			}
 			//Forward
 			if ( z < CHUNK_SIZE_Z - 1 ) {
-				if ( !_owner.Library.IsFullBlock(_blocks[x, y, z + 1].Type) ) {
+				if ( !_library.IsFullBlock(_blocks[x, y, z + 1].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Forward);
 				}
 			} else {
 				var chunk = neighborChunks[4];
-				if ( chunk == null || !_owner.Library.IsFullBlock(chunk._blocks[x, y, 0].Type) ) {
+				if ( chunk == null || !_library.IsFullBlock(chunk._blocks[x, y, 0].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Forward);
 				}
 			}
 			//Backwards
 			if ( z > 0 ) {
-				if ( !_owner.Library.IsFullBlock(_blocks[x, y, z - 1].Type) ) {
+				if ( !_library.IsFullBlock(_blocks[x, y, z - 1].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Backward);
 				}
 			} else {
 				var chunk = neighborChunks[5];
-				if ( chunk == null || !_owner.Library.IsFullBlock(chunk._blocks[x, y, CHUNK_SIZE_Z - 1].Type) ) {
+				if ( chunk == null || !_library.IsFullBlock(chunk._blocks[x, y, CHUNK_SIZE_Z - 1].Type) ) {
 					VisibilityFlagsHelper.Set(ref flag, VisibilityFlags.Backward);
 				}
 			}
 			return flag;
 		}
+		#endregion
 
 		LightInfo GetLightForBlock(int x, int y, int z, Chunk[] neighborChunks) {
 			var res = new LightInfo();
@@ -1234,7 +1190,7 @@ namespace Voxels {
 		}
 
 		public bool HasTranslucentOrNonFullBlockAt(int x, int y, int z) {
-			return _owner.Library.IsLightPassBlock(_blocks[x, y, z].Type);
+			return _library.IsLightPassBlock(_blocks[x, y, z].Type);
 		}
 
 		public bool HasFullBlockAt(int x, int y, int z) {
@@ -1247,9 +1203,9 @@ namespace Voxels {
 		//Unsafe version, only for fast block setting in worldgen
 		public void PutBlockUnsafe(int x, int y, int z, BlockData block ) {
 			var checkY = y + 1;
-			_maxNonEmptyY = (checkY) > _maxNonEmptyY ? checkY : _maxNonEmptyY;
-			if ( _owner.Library.IsEmissiveBlock(block.Type) ) {
-				block.LightLevel = _owner.Library.GetBlockDescription(block.Type).LightLevel;
+			_maxNonEmptyY = checkY > _maxNonEmptyY ? checkY : _maxNonEmptyY;
+			if ( _library.IsEmissiveBlock(block.Type) ) {
+				block.LightLevel = _library.GetBlockDescription(block.Type).LightLevel;
 				_lightAddQueue.Enqueue(new Int3(x, y, z));
 			}
 			_blocks[x, y, z] = block;
@@ -1261,11 +1217,11 @@ namespace Voxels {
 			var oldBlock = _blocks[x, y, z];
 			var oldLight    = oldBlock.LightLevel;
 			var oldSunlight = oldBlock.SunLevel;	
-			if ( _owner.Library.IsEmissiveBlock(block.Type) ) {
-				block.LightLevel = _owner.Library.GetBlockDescription(block.Type).LightLevel;
+			if ( _library.IsEmissiveBlock(block.Type) ) {
+				block.LightLevel = _library.GetBlockDescription(block.Type).LightLevel;
 				_lightAddQueue.Enqueue(new Int3(x, y, z));
 			}
-			if ( !_owner.Library.IsLightPassBlock(block.Type) ) {
+			if ( !_library.IsLightPassBlock(block.Type) ) {
 				if ( oldLight > 0 ) {
 					_lightRemQueue.Enqueue(new LightRemNode(x, y, z, oldLight));
 				}
@@ -1302,12 +1258,6 @@ namespace Voxels {
 			AddDirtyBlock(x, y, z);
 		}
 
-		byte CalculateOLightingByNeighbors(LightInfo neighborsLighting) {
-			byte res = 0;
-			
-			return res;
-		}
-
 		void AddDirtyBlock(int x, int y, int z) {
 			Dirty = true;
 			if ( _needUpdateVisibilityAll || _dirtyBlocks.Count >= MAX_DIRTY_BLOCKS_BEFORE_FULL_REBUILD ) {
@@ -1327,23 +1277,23 @@ namespace Voxels {
 		}
 
 		BlockDescription GetBlockDescription(BlockType type) {
-			return _owner.Library.GetBlockDescription(type);
+			return _library.GetBlockDescription(type);
 		}
 
 		bool GetBlockTranslucent(BlockType type) {
-			return _owner.Library.IsTranslucentBlock(type);
+			return _library.IsTranslucentBlock(type);
 		}
 
 		bool GetBlockFull(BlockType type) {
-			return _owner.Library.IsFullBlock(type);
+			return _library.IsFullBlock(type);
 		}
 
 		bool GetBlockEmissive(BlockType type) {
-			return _owner.Library.IsEmissiveBlock(type);
+			return _library.IsEmissiveBlock(type);
 		}
 
 		bool GetBlockLightPass(BlockType type) {
-			return _owner.Library.IsLightPassBlock(type);
+			return _library.IsLightPassBlock(type);
 		}
 
 		Chunk[] GetNeighborChunks() {

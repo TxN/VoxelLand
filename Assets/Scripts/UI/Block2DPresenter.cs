@@ -11,7 +11,6 @@ namespace Voxels {
 		RawImage  _image      = null;
 		BlockData _shownBlock = BlockData.Empty;
 
-
 		void Awake() {
 			_image = GetComponent<RawImage>();
 			EventManager.Subscribe<Event_BlockPreviewUpdated>(this, OnBlockPreviewUpdated);
@@ -24,7 +23,7 @@ namespace Voxels {
 		public void ShowBlock(BlockData block) {
 			_shownBlock = block;
 
-			var preview = ChunkManager.Instance.Library.GetBlockPreview(block);
+			var preview = VoxelsStatic.Instance.Library.GetBlockPreview(block);
 			if ( preview == null ) {
 				_image.enabled = false;
 				return;

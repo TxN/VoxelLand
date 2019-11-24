@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Voxels {
 	[System.Serializable]
 	public struct Byte2: System.IEquatable<Byte2> {
@@ -110,4 +112,15 @@ namespace Voxels {
 		}
 	}
 
+	public static class ChunkHelper {
+		public static Int3 GetChunkIdFromCoords(Vector3 pos) {
+			var posX = Mathf.FloorToInt(pos.x);
+			var posY = Mathf.FloorToInt(pos.y);
+			var posZ = Mathf.FloorToInt(pos.z);
+			var fullChunksX = Mathf.FloorToInt(posX / (float)Chunk.CHUNK_SIZE_X);
+			var fullChunksY = Mathf.FloorToInt(posY / (float)Chunk.CHUNK_SIZE_Y);
+			var fullChunksZ = Mathf.FloorToInt(posZ / (float)Chunk.CHUNK_SIZE_Z);
+			return new Int3(fullChunksX, fullChunksY, fullChunksZ);
+		}
+	}
 }

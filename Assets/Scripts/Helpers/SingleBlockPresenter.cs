@@ -4,7 +4,7 @@ namespace Voxels {
 	[RequireComponent(typeof(MeshRenderer))]
 	[RequireComponent(typeof(MeshFilter))]
 	public sealed class SingleBlockPresenter : MonoBehaviour {
-		public Vector3      Offset         = new Vector3(-0.5f, -0.5f, -0.5f);
+		public Vector3      Offset = new Vector3(-0.5f, -0.5f, -0.5f);
 
 		MeshRenderer    _renderer = null;
 		MeshFilter      _filter   = null;
@@ -22,7 +22,7 @@ namespace Voxels {
 
 		public void DrawBlock(BlockData data) {
 			_genMesh.ClearAll();
-			var library = ChunkManager.Instance.Library;
+			var library = VoxelsStatic.Instance.Library;
 			var desc = library.GetBlockDescription(data.Type);
 			var inp = new MesherBlockInput() { Block = data, Lighting = LightInfo.FullLit, Position = Byte3.Zero, Visibility = VisibilityFlags.All };
 			BlockModelGenerator.AddBlock(_genMesh, desc, ref Offset,ref inp);
@@ -31,11 +31,9 @@ namespace Voxels {
 			_filter.mesh = _genMesh.Mesh;
 		}
 
-
 		private void OnDestroy() {
 			_filter.mesh = null;
 			_genMesh.Destroy();
 		}
 	}
-
 }

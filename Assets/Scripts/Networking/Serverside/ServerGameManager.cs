@@ -15,6 +15,8 @@ namespace Voxels.Networking {
 			_controllers.Add("server",      new ServerController(this));
 			_controllers.Add("chat-server", new ServerChatManager(this));
 			_controllers.Add("players",     new ServerPlayerEntityManager(this));
+			_controllers.Add("chunks",      new ServerChunkManager(this));
+			_controllers.Add("procgen",     new ServerLandGenerator(this));
 
 		}
 

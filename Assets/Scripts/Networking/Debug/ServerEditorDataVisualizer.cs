@@ -11,7 +11,7 @@ using Voxels.Networking.Serverside;
 
 namespace Voxels.Networking.NetDebug {
 	public sealed class ServerEditorDataVisualizer : MonoBehaviour {
-
+		
 		public long ReceivedCommands = 0;
 		public long SentCommands = 0;
 		public List<ClientState> Clients = null;

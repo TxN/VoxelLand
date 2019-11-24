@@ -27,10 +27,6 @@ namespace Voxels {
 			_camera.targetTexture = _rt;
 		}
 
-		private void Update() {
-		
-		}
-
 		void LateUpdate() {
 			if ( _blockPreviewQueue.Count > 0 ) {
 				_blockPresenter.gameObject.SetActive(true);

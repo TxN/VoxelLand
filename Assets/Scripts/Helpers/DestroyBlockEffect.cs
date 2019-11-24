@@ -6,12 +6,11 @@ using SMGCore;
 
 namespace Voxels {
 	public class DestroyBlockEffect : MonoBehaviour, IPoolItem {
-		ParticleSystem         _pSystem      = null;
-		ParticleSystemRenderer _pRenderer    = null;
-		Material               _instanceMat  = null;
-		DestroyBlockEffectPool _owner        = null;
-		ChunkManager           _cm           = null;
-		VoxelLightingReceiver _lightDetector = null;
+		ParticleSystem         _pSystem       = null;
+		ParticleSystemRenderer _pRenderer     = null;
+		Material               _instanceMat   = null;
+		DestroyBlockEffectPool _owner         = null;
+		VoxelLightingReceiver  _lightDetector = null;
 
 		bool _inited = false;
 
@@ -20,7 +19,7 @@ namespace Voxels {
 				Init();
 			}
 			gameObject.SetActive(true);
-			var desc = ChunkManager.Instance.Library.GetBlockDescription(data.Type);
+			var desc = VoxelsStatic.Instance.Library.GetBlockDescription(data.Type);
 			if ( desc.Subtypes.Count == 0 ) {
 				Return();
 				return;
@@ -37,7 +36,6 @@ namespace Voxels {
 		}
 
 		void Init() {
-			_cm                 = ChunkManager.Instance;
 			_pSystem            = GetComponent<ParticleSystem>();
 			_pRenderer          = GetComponent<ParticleSystemRenderer>();
 			_lightDetector      = GetComponent<VoxelLightingReceiver>();
@@ -66,4 +64,3 @@ namespace Voxels {
 		}
 	}
 }
-

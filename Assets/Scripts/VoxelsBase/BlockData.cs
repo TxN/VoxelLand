@@ -19,7 +19,7 @@ namespace Voxels {
 		[IgnoreFormat]
 		public BlockDescription Info {
 			get {
-				return ChunkManager.Instance.Library.GetBlockDescription(Type);
+				return VoxelsStatic.Instance.Library.GetBlockDescription(Type);
 			}
 		}
 

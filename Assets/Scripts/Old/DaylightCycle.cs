@@ -15,7 +15,7 @@ namespace Voxels {
 		ResourceLibrary _library = null;
 
 		void Start() {
-			_library = ChunkManager.Instance.Library;
+			_library = VoxelsStatic.Instance.Library;
 		}
 
 		void Update() {
@@ -37,8 +37,7 @@ namespace Voxels {
 			SkyboxMaterial.SetVector("_SunVector", sunVec);
 
 			_library.OpaqueMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));
-			_library.TranslucentMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));
-			
+			_library.TranslucentMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));	
 		}
 
 		Vector4 SunPosToVector(float az, float al) {
@@ -55,4 +54,3 @@ namespace Voxels {
 		}
 	}
 }
-

@@ -7,7 +7,7 @@ using Unity.Jobs;
 using SMGCore;
 
 namespace Voxels {
-	public sealed class LandGenerator : MonoSingleton<LandGenerator> {
+	public sealed class LandGenerator : ManualSingleton<LandGenerator> {
 		Queue<Int3>  _chunkGenQueue = new Queue<Int3>(16);
 
 		Unity.Mathematics.Random _random;
@@ -108,9 +108,7 @@ namespace Voxels {
 				if ( h > waterLevel ) {
 					SpawnTree(chunk, new Int3(x, h, z));
 				}
-				
 			}
-			
 		}
 
 		void SpawnTree(Chunk chunk, Int3 startPos) {
@@ -157,7 +155,7 @@ namespace Voxels {
 			chunk.PutBlock(x, y + trunkHeight + 3, z + 1, new BlockData(BlockType.Leaves, 0));
 			chunk.PutBlock(x, y + trunkHeight + 3, z - 1, new BlockData(BlockType.Leaves, 0));
 		}
-
+		/*
 		void PlaceBlockFromTop(BlockData blockToPlace, int x, int z, params BlockType[]   allowedTypes) {
 			var cm = ChunkManager.Instance;
 			var height = cm.GetWorldHeight;
@@ -173,7 +171,7 @@ namespace Voxels {
 				}
 			}
 		}
-
+				
 		void PlaceBlockFromTop(BlockData blockToPlace, int x, int z) {
 			var cm = ChunkManager.Instance;
 			var height = cm.GetWorldHeight;
@@ -185,6 +183,7 @@ namespace Voxels {
 				}
 			}
 		}
+		*/
 	}
 }
 
