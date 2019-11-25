@@ -6,14 +6,14 @@ using Voxels.Networking.Clientside;
 namespace Voxels {
 	public sealed class PlayerInteraction : MonoBehaviour {
 		const int MAX_SIGHT_DISTANCE = 32;
-
-		public Vector3   CurrentInPos  { get; private set; } = Vector3.zero;
-        public Vector3   CurrentOutPos { get; private set; } = Vector3.zero;
-        public BlockData BlockInSight  { get; private set; } = BlockData.Empty;
+		 
+		public Vector3   CurrentInPos   { get; private set; } = Vector3.zero;
+        public Vector3   CurrentOutPos  { get; private set; } = Vector3.zero;
+        public BlockData BlockInSight   { get; private set; } = BlockData.Empty;
+        public BlockData BlockOutSight  { get; private set; } = BlockData.Empty;
 
 		void Update() {
 			var cm = ClientChunkManager.Instance;
-			//cm.ViewPosition = transform.position;
 			var hitInfo = new RaycastHit();
 			var dir = transform.TransformDirection(Vector3.forward);
 			if ( Physics.Raycast(transform.position, dir, out hitInfo, MAX_SIGHT_DISTANCE) ) { //TODO: Chunk layermask
@@ -23,7 +23,8 @@ namespace Voxels {
 				if ( chunk != null ) {
 					var block = cm.GetBlockIn(CurrentInPos);
 					BlockInSight = block;
-
+					var outBlock = cm.GetBlockIn(CurrentOutPos);
+					BlockOutSight = outBlock;
 					if ( Input.GetMouseButtonUp(0) ) {
 						cm.DestroyBlock(CurrentInPos);
 					}
@@ -36,8 +37,9 @@ namespace Voxels {
 				}
 			} else {
 				CurrentOutPos = Vector3.zero;
-				CurrentInPos = Vector3.zero;
-				BlockInSight = BlockData.Empty;
+				CurrentInPos  = Vector3.zero;
+				BlockInSight  = BlockData.Empty;
+				BlockOutSight = BlockData.Empty;
 			}
 		}
 

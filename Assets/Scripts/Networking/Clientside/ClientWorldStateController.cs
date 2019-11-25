@@ -14,6 +14,8 @@ namespace Voxels.Networking.Clientside {
 
 		GameObject _skyboxController = null;
 
+		ResourceLibrary _library = null;
+
 		public float WorldTime {
 			get; private set;
 		}
@@ -38,9 +40,15 @@ namespace Voxels.Networking.Clientside {
 			}
 		}
 
+		public float AmbientLightIntensity {
+			get {
+				return _library.AmbientLightIntensity.Evaluate(DayPercent);
+			}
+		}
+
 		public override void Init() {
 			base.Init();
-
+			_library = VoxelsStatic.Instance.Library;
 			var sbFab = Resources.Load(SKYBOX_CONTROLLER_PATH);
 			_skyboxController = Object.Instantiate((GameObject)sbFab, null);
 		}

@@ -4,7 +4,6 @@ using Voxels.Networking.Clientside;
 
 namespace Voxels {
 	public sealed class DaylightCycle : MonoBehaviour {
-		public AnimationCurve LightIntensityCurve = null;
 		public Gradient SkyColor       = null;
 		public Gradient HorizonColor   = null;
 		public Gradient SunColor       = null;
@@ -18,21 +17,22 @@ namespace Voxels {
 
 		void Update() {
 			var wsc = ClientWorldStateController.Instance;
-			var dayPercent = wsc.DayPercent;
-			var skyColor = SkyColor.Evaluate(dayPercent);
+			var dayPercent   = wsc.DayPercent;
+			var skyColor     = SkyColor.Evaluate(dayPercent);
 			var horizonColor = HorizonColor.Evaluate(dayPercent);
 			var sunColor = SunColor.Evaluate(dayPercent);
 			SkyboxMaterial.SetColor("_SkyColor1", skyColor);
 			SkyboxMaterial.SetColor("_SkyColor2", horizonColor);
 			SkyboxMaterial.SetColor("_SkyColor3", skyColor);
-			SkyboxMaterial.SetColor("_SunColor", sunColor);
+			SkyboxMaterial.SetColor("_SunColor",  sunColor);
 
 			var sunAlt = (360f * dayPercent) + 85;
 			var sunVec = SunPosToVector(2f, sunAlt);
 			SkyboxMaterial.SetVector("_SunVector", sunVec);
 
-			_library.OpaqueMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));
-			_library.TranslucentMaterial.SetFloat("_Daylight", LightIntensityCurve.Evaluate(dayPercent));	
+			var intensity = ClientWorldStateController.Instance.AmbientLightIntensity;
+			_library.OpaqueMaterial.SetFloat("_Daylight", intensity);
+			_library.TranslucentMaterial.SetFloat("_Daylight", intensity);	
 		}
 
 		Vector4 SunPosToVector(float az, float al) {

@@ -7,11 +7,12 @@ using Voxels.Events;
 
 namespace Voxels {
 	public sealed class ResourceLibrary : ScriptableObject {
-		public Material OpaqueMaterial      = null;
-		public Material TranslucentMaterial = null;
-		public Texture2D BlockTilest        = null;
-		public int       TilesetSize        = 512;
-		public int       TileSize           = 16;
+		public AnimationCurve AmbientLightIntensity = new AnimationCurve();
+		public Material       OpaqueMaterial        = null;
+		public Material       TranslucentMaterial   = null;
+		public Texture2D      BlockTilest           = null;
+		public int            TilesetSize           = 512;
+		public int            TileSize              = 16;
 
 		public List<BlockDescription> BlockDescriptions = new List<BlockDescription>();
 

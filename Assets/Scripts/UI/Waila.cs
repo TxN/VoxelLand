@@ -24,6 +24,7 @@ namespace Voxels.UI {
 				return;
 			}
 			var selectedBlock = player.Interactor.BlockInSight;
+			var normalBlock   = player.Interactor.BlockOutSight;
 			MainHolder.SetActive(selectedBlock.IsEmpty() ? false : true);
 			if ( selectedBlock.IsEmpty() || selectedBlock == _prevSelectedBlock ) {
 				return;
@@ -32,7 +33,7 @@ namespace Voxels.UI {
 
 			BlockImagePresenter.ShowBlock(selectedBlock);
 			BlockNameText.text  = selectedBlock.Type.ToString();
-			LightLevelText.text = string.Format("Light level: {0}", selectedBlock.LightLevel);
+			LightLevelText.text = string.Format("Light level: {0}", normalBlock.LightLevel);
 			_prevSelectedBlock = selectedBlock;
 			
 		}
