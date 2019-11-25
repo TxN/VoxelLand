@@ -20,6 +20,11 @@ namespace Voxels.UI {
 			StartServerButton.onClick.AddListener(StartServer);
 			JoinGameButton.onClick.AddListener(JoinGame);
 			LocalGameButton.onClick.AddListener(LocalGame);
+
+			if ( Application.isBatchMode ) {
+				Application.targetFrameRate = 120;
+				StartServer();
+			}
 		}
 
 		void StartServer() {
