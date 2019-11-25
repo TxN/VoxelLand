@@ -14,7 +14,8 @@ namespace Voxels.Networking.Clientside {
 		ChunkRendererPool      _renderPool        = new ChunkRendererPool();
 		DestroyBlockEffectPool _destroyEffectPool = new DestroyBlockEffectPool();
 
-		int _sizeY = 0;
+		bool _enabled = false;
+		int _sizeY    = 0;
 
 		public int GetWorldHeight {
 			get {
@@ -31,10 +32,16 @@ namespace Voxels.Networking.Clientside {
 		}
 
 		public override void Update() {
+			if ( !_enabled ) {
+				return;
+			}
 			UpdateDirtyChunks();
 		}
 
 		public override void LateUpdate() {
+			if ( !_enabled ) {
+				return;
+			}
 			foreach ( var chunkPair in _chunks ) {
 				var chunk = chunkPair.Value;
 				if ( chunk != null && chunk.MesherWorkComplete ) {
@@ -257,6 +264,13 @@ namespace Voxels.Networking.Clientside {
 				return;
 			}
 			DestroyBlock(x, y, z, false);
+		}
+
+		public void FinalizeInitLoad() {
+			foreach ( var chunk in _chunks ) {
+				chunk.Value.ForceUpdateChunk();
+			}
+			_enabled = true;
 		}
 
 	}
