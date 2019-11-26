@@ -10,6 +10,7 @@ using Voxels.Networking.Serverside;
 
 using Telepathy;
 using ZeroFormatter;
+using JetBrains.Annotations;
 
 namespace Voxels.Networking {
 	public class ServerController : ServerSideController<ServerController> {
@@ -84,6 +85,17 @@ namespace Voxels.Networking {
 
 			_server.Stop();
 			IsStarted = false;
+		}
+
+		[CanBeNull]
+		public ClientState GetClientByName(string name) {
+			name = name.ToLower();
+			foreach ( var pair in _clients ) {
+				if ( name == pair.Value.UserName.ToLower() ) {
+					return pair.Value;
+				}
+			}
+			return null;
 		}
 
 		public void ForceDisconnectClient(ClientState client, string message) {
