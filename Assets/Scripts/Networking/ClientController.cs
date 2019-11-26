@@ -51,18 +51,19 @@ namespace Voxels.Networking {
 			}
 			_handlers.Clear();
 
-			_handlers.Add(ServerPacketID.Identification,  new S_HandshakeMessageHandler());
-			_handlers.Add(ServerPacketID.ForceDisconnect, new S_ForceDisconnectMessageHandler());
-			_handlers.Add(ServerPacketID.JoinSuccess,     new S_JoinSuccessMessageHandler());
-			_handlers.Add(ServerPacketID.Ping,            new S_PingMessageHandler());
-			_handlers.Add(ServerPacketID.ChatMessage,     new S_ChatMessageHandler());
-			_handlers.Add(ServerPacketID.PlayerSpawn,     new S_SpawnPlayerMessageHandler());
-			_handlers.Add(ServerPacketID.PlayerDespawn,   new S_DespawnPlayerMessageHandler());
-			_handlers.Add(ServerPacketID.PlayerUpdate,    new S_PlayerUpdateMessageHandler());
-			_handlers.Add(ServerPacketID.ChunkInit,       new S_InitChunkMessageHandler());
-			_handlers.Add(ServerPacketID.LoadFinalize,    new S_LoadFinalizeMessageHandler());
-			_handlers.Add(ServerPacketID.WorldOptions,    new S_WorldOptionsMessageHandler());
-			_handlers.Add(ServerPacketID.PutBlock,        new S_PutBlockMessageHandler());
+			_handlers.Add(ServerPacketID.Identification,        new S_HandshakeMessageHandler());
+			_handlers.Add(ServerPacketID.ForceDisconnect,       new S_ForceDisconnectMessageHandler());
+			_handlers.Add(ServerPacketID.JoinSuccess,           new S_JoinSuccessMessageHandler());
+			_handlers.Add(ServerPacketID.Ping,                  new S_PingMessageHandler());
+			_handlers.Add(ServerPacketID.ChatMessage,           new S_ChatMessageHandler());
+			_handlers.Add(ServerPacketID.PlayerSpawn,           new S_SpawnPlayerMessageHandler());
+			_handlers.Add(ServerPacketID.PlayerDespawn,         new S_DespawnPlayerMessageHandler());
+			_handlers.Add(ServerPacketID.PlayerUpdate,          new S_PlayerUpdateMessageHandler());
+			_handlers.Add(ServerPacketID.PlayerPosAndRotUpdate, new S_PosAndOrientationUpdateMessageHandler());
+			_handlers.Add(ServerPacketID.ChunkInit,             new S_InitChunkMessageHandler());
+			_handlers.Add(ServerPacketID.LoadFinalize,          new S_LoadFinalizeMessageHandler());
+			_handlers.Add(ServerPacketID.WorldOptions,          new S_WorldOptionsMessageHandler());
+			_handlers.Add(ServerPacketID.PutBlock,              new S_PutBlockMessageHandler());
 
 			ClientName = name;
 			Password = password;

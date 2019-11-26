@@ -63,6 +63,7 @@ namespace Voxels {
 			if ( !_isLocalAutority ) {
 				_interpolator = GetComponent<MovementInterpolator>();
 			} else {
+				_lastReceivedHeadPitch = info.LookDir.x;
 				_interactor = GetComponentInChildren<PlayerInteraction>();
 			}
 		}
@@ -102,10 +103,7 @@ namespace Voxels {
 
 			_lastSentDir = currentLook;
 			_lastUpdateTime = Time.time;
-
-			_info.Position = _lastSentPos;
-			_info.LookDir  = _lastSentDir;
-			ClientPlayerEntityManager.Instance.SendUpdateToServer(_info);
+			ClientPlayerEntityManager.Instance.SendPosUpdateToServer(_info, _lastSentPos, yaw, HeadPitch);
 		}
 
 		void OnDespawn(OnClientPlayerDespawn e) {

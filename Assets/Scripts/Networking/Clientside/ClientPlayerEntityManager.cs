@@ -4,6 +4,7 @@ using UnityEngine;
 
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
+using Voxels.Utils;
 
 using JetBrains.Annotations;
 
@@ -55,11 +56,22 @@ namespace Voxels.Networking.Clientside {
 			return null;
 		}
 
+		[CanBeNull]
+		public PlayerEntity GetPlayer(ushort conId) {
+			foreach ( var player in _players ) {
+				if ( player.ConId == conId ) {
+					return player;
+				}
+			}
+			return null;
+		}
+
 		public void SpawnPlayer(PlayerEntity newPlayer) {
 			_players.Add(newPlayer);
 			var prefabPath = IsLocalPlayer(newPlayer) ? PLAYER_PREFAB_PATH : PROXY_PREFAB_PATH;
 			var playerGo   = Object.Instantiate(Resources.Load(prefabPath), newPlayer.Position, Quaternion.identity) as GameObject;
 			playerGo.name  = newPlayer.PlayerName;
+			playerGo.transform.rotation = Quaternion.Euler(0, newPlayer.LookDir.y, 0);
 			var playerView = playerGo.GetComponent<PlayerMovement>();
 			newPlayer.View = playerView;
 			playerView.Setup(newPlayer);
@@ -78,20 +90,39 @@ namespace Voxels.Networking.Clientside {
 		}
 
 		public void UpdatePlayer(PlayerEntity newInfo) {
-			var localEntity = GetPlayer(newInfo.PlayerName);
+			var localEntity = GetPlayer(newInfo.ConId);
 			if ( localEntity == null ) {
 				return;
 			}
 			localEntity.Position = newInfo.Position;
 			localEntity.LookDir  = newInfo.LookDir;
+			
 			EventManager.Fire(new OnClientPlayerUpdate { Player = localEntity });
 		}
 
-		public void SendUpdateToServer(PlayerEntity senderInfo) {
+		public void UpdatePlayerPos(ushort conId, Vector3 newPos, byte rawPitch, byte rawYaw) {
+			var localEntity = GetPlayer(conId);
+			if ( localEntity == null ) {
+				return;
+			}
+			localEntity.Position = newPos;
+			var pitch = MathUtils.Remap(rawPitch, 0, 255, 0, 360);
+			var yaw   = MathUtils.Remap(rawYaw,   0, 255, 0, 360);
+			localEntity.LookDir = new Vector2(pitch, yaw);
+			EventManager.Fire(new OnClientPlayerUpdate { Player = localEntity });
+		}
+
+		public void SendPosUpdateToServer(PlayerEntity senderInfo, Vector3 position, float yaw, float pitch) {
 			if ( senderInfo == null || !IsLocalPlayer(senderInfo) ) {
 				return;
 			}
-			ClientController.Instance.SendNetMessage(ClientPacketID.PlayerUpdate, new C_PlayerUpdateMessage { PlayerInfo = senderInfo });
+			senderInfo.Position = position;
+			senderInfo.LookDir = new Vector2(pitch, yaw);
+			ClientController.Instance.SendNetMessage(ClientPacketID.PlayerPosAndRotUpdate, new C_PosAndOrientationUpdateMessage {
+				Position  = position,
+				LookPitch = (byte)Mathf.RoundToInt(MathUtils.Remap(pitch, 0, 360, 0, 255)),
+				Yaw       = (byte)Mathf.RoundToInt(MathUtils.Remap(yaw,   0, 360, 0, 255)),
+			});
 		}
 	}
 }

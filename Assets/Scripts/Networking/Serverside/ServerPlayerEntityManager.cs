@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
+using Voxels.Utils;
 
 using JetBrains.Annotations;
 
@@ -41,6 +42,22 @@ namespace Voxels.Networking.Serverside {
 			server.SendToAll(ServerPacketID.PlayerUpdate, new S_PlayerUpdateMessage { Player = player });
 		}
 
+		public void BroadcastPlayerPosUpdate(ClientState client, Vector3 newPos, byte rawPitch, byte rawYaw) {
+			var server = ServerController.Instance;
+			var player = GetPlayerByOwner(client);
+			var pitch = MathUtils.Remap(rawPitch, 0, 255, 0, 360);
+			var yaw   = MathUtils.Remap(rawPitch, 0, 255, 0, 360);
+			player.Position = newPos;
+			player.LookDir  = new Vector2(pitch, yaw);
+			
+			server.SendToAll(ServerPacketID.PlayerPosAndRotUpdate, new S_PosAndOrientationUpdateMessage {
+				ConId     = (ushort)client.ConnectionID,
+				Position  = newPos,
+				LookPitch = rawPitch,
+				Yaw       = rawYaw
+			});
+		}
+
 		[CanBeNull]
 		PlayerEntity GetPlayerByOwner(ClientState owner) {
 			foreach ( var player in Players ) {
@@ -52,7 +69,7 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		void SpawnPlayer(ClientState client) {
-			var player = new PlayerEntity { Owner = client, PlayerName = client.UserName, Position = DefaultSpawnPoint };
+			var player = new PlayerEntity { Owner = client, PlayerName = client.UserName, Position = DefaultSpawnPoint, ConId = (ushort)client.ConnectionID };
 			Players.Add(player);
 			var server = ServerController.Instance;
 			server.SendToAll(ServerPacketID.PlayerSpawn, new S_SpawnPlayerMessage { PlayerToSpawn = player });

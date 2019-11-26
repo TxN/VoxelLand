@@ -18,18 +18,21 @@ namespace Voxels.UI {
 		}
 
 		void Update() {
-			var player = ClientPlayerEntityManager.Instance.LocalPlayer.View;
-			if ( !player ) {
+			var player = ClientPlayerEntityManager.Instance.LocalPlayer;
+			if ( player == null ) {
+				return;
+			}
+			var playerView = player.View;
+			if ( !playerView ) {
 				MainHolder.SetActive(false);
 				return;
 			}
-			var selectedBlock = player.Interactor.BlockInSight;
-			var normalBlock   = player.Interactor.BlockOutSight;
+			var selectedBlock = playerView.Interactor.BlockInSight;
+			var normalBlock   = playerView.Interactor.BlockOutSight;
 			MainHolder.SetActive(selectedBlock.IsEmpty() ? false : true);
 			if ( selectedBlock.IsEmpty() || selectedBlock == _prevSelectedBlock ) {
 				return;
 			}
-
 
 			BlockImagePresenter.ShowBlock(selectedBlock);
 			BlockNameText.text  = selectedBlock.Type.ToString();

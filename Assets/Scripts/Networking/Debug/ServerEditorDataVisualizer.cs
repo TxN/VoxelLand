@@ -41,6 +41,7 @@ namespace Voxels.Networking.NetDebug {
 				return;
 			}
 			foreach ( var player in pc.Players ) {
+				Gizmos.DrawWireSphere(player.Position, 0.5f);
 				Handles.Label(player.Position, player.PlayerName);
 			}
 		}

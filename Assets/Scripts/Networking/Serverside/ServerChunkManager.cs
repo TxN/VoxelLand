@@ -356,7 +356,7 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		void OnPlayerJoin(OnClientConnected e) {
-			Debug.LogFormat("Player {0} joined. Starting to world info.", e.State.UserName);
+			Debug.LogFormat("Player {0} joined. Starting to send world info.", e.State.UserName);
 			CreateSendQueue(e.State);
 			var wsc = ServerWorldStateController.Instance;
 			ServerController.Instance.SendNetMessage(e.State, ServerPacketID.WorldOptions, new S_WorldOptionsMessage() {
