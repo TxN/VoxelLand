@@ -111,7 +111,7 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 			m_Speed = (m_Speed == m_WalkSpeed ? m_RunSpeed : m_WalkSpeed);
 		}
 
-		if ( ClientPlayerEntityManager.Instance.IsPlayerControlEnabled ) {
+		if ( ClientInputManager.Instance.IsMovementEnabled ) {
 			_rotation.y += Input.GetAxis("Mouse X");
 			transform.eulerAngles = _rotation * m_RotationSensivity;
 		}
@@ -125,18 +125,19 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 		float inputX = Input.GetAxis("Horizontal");
 		float inputY = Input.GetAxis("Vertical");
 
-		if ( !ClientPlayerEntityManager.Instance.IsPlayerControlEnabled ) {
+		var movementEnabled = ClientInputManager.Instance.IsMovementEnabled;
+
+		if ( !movementEnabled ) {
 			inputX = 0;
 			inputY = 0;
 		}
 
-		/*var cm = ChunkManager.Instance;
+		var cm = ClientChunkManager.Instance;
 		var playerBlock = cm.GetBlockIn(transform.position);
 
-		var blockDesc = cm.Library.GetBlockDescription(playerBlock.Type);
-		*/
-		//_inWater = blockDesc.IsSwimmable;
-		_inWater = false;
+		var blockDesc = VoxelsStatic.Instance.Library.GetBlockDescription(playerBlock.Type);
+		
+		_inWater = blockDesc.IsSwimmable;
 
 
 		// If both horizontal and vertical are used simultaneously, limit speed (if allowed), so the total doesn't exceed normal move speed
@@ -191,8 +192,7 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 			// Jump! But only if the jump button has been released and player has been grounded for a given number of frames
 			if ( !Input.GetButton("Jump") ) {
 				m_JumpTimer++;
-			}
-			else if ( m_JumpTimer >= m_AntiBunnyHopFactor ) {
+			} else if ( m_JumpTimer >= m_AntiBunnyHopFactor && movementEnabled ) {
 				m_MoveDirection.y = m_JumpSpeed;
 				m_JumpTimer = 0;
 			}
@@ -227,7 +227,7 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 				m_MoveDirection.y = VertLook.LookSin() * WaterVSpeedLimit.x;
 			}
 
-			if ( Input.GetButton("Jump") ) {
+			if ( Input.GetButton("Jump") && movementEnabled ) {
 				m_MoveDirection.y += Time.deltaTime * m_Gravity * 0.8f;
 			}
 			m_MoveDirection.y = Mathf.Clamp(m_MoveDirection.y, WaterVSpeedLimit.y, WaterVSpeedLimit.x);

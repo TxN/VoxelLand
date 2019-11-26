@@ -15,7 +15,7 @@ namespace Voxels {
 		}
 
 		void Update() {
-			if ( _main.HasAutority && ClientPlayerEntityManager.Instance.IsPlayerControlEnabled ) {
+			if ( _main.HasAutority && ClientInputManager.Instance.IsMovementEnabled ) {
 				_rotation.x -= Input.GetAxis("Mouse Y") * Sensivity;
 				_rotation.x = Mathf.Clamp(_rotation.x, Limits.x, Limits.y);
 				transform.localEulerAngles = _rotation;

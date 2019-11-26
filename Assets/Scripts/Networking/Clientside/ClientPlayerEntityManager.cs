@@ -19,16 +19,6 @@ namespace Voxels.Networking.Clientside {
 
 		PlayerEntity _cachedPlayer = null;
 
-		bool _controlEnabled = true;
-		//TODO: Move to GUI controller
-		public bool IsPlayerControlEnabled { get {
-				return LocalPlayer != null && _controlEnabled;
-			}
-			set {
-				_controlEnabled = value;
-			}
-		}
-
 		[CanBeNull]
 		public PlayerEntity LocalPlayer {
 			get {

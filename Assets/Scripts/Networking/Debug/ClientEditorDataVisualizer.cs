@@ -15,8 +15,8 @@ namespace Voxels.Networking.NetDebug {
 		}
 		
 		void Update() {
-			if ( Input.GetKeyDown(KeyCode.T) ) {
-				ClientPlayerEntityManager.Instance.IsPlayerControlEnabled = !ClientPlayerEntityManager.Instance.IsPlayerControlEnabled;
+			if ( Input.GetKeyDown(KeyCode.F1) ) {
+				ClientInputManager.Instance.AddOrRemoveControlLock(this);
 			}
 			if ( Input.GetKeyDown(KeyCode.Y) ) {
 				_showGUI = !_showGUI;

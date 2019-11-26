@@ -11,6 +11,7 @@ namespace Voxels.Networking {
 
 		public void Create() {
 			_controllers.Add("client",         new ClientController(this));
+			_controllers.Add("input-client",   new ClientInputManager(this));
 			_controllers.Add("chat-client",    new ClientChatManager(this));
 			_controllers.Add("players-client", new ClientPlayerEntityManager(this));
 			_controllers.Add("chunks-client",  new ClientChunkManager(this));

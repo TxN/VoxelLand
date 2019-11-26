@@ -50,10 +50,12 @@ namespace Voxels.UI {
 				UpdateBigView();
 			} else {
 				UpdateSmallView();
+				ClientInputManager.Instance.RemoveControlLock(this);
 			}
 			if ( open ) {
 				InputLine.Select();
 				InputLine.ActivateInputField();
+				ClientInputManager.Instance.AddControlLock(this);
 			}
 			ChatOpened = open;
 		}

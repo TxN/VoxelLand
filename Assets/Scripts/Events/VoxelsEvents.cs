@@ -18,4 +18,12 @@ namespace Voxels.Events {
 		public BlockData Block;
 		public Texture2D Texture;
 	}
+
+	public struct Event_ControlLockChanged {
+		public bool IsEnabled;
+
+		public Event_ControlLockChanged(bool flag) {
+			IsEnabled = flag;
+		}
+	}
 }
