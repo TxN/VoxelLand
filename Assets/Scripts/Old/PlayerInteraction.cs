@@ -12,6 +12,10 @@ namespace Voxels {
         public BlockData BlockInSight   { get; private set; } = BlockData.Empty;
         public BlockData BlockOutSight  { get; private set; } = BlockData.Empty;
 
+		public LayerMask EntityColMask;
+
+		Collider[] _colCache = new Collider[16];
+
 		void Update() {
 			var cm = ClientChunkManager.Instance;
 			var hitInfo = new RaycastHit();
@@ -32,7 +36,7 @@ namespace Voxels {
 					if ( Input.GetKey(KeyCode.LeftShift)  && Input.GetMouseButtonUp(1) ) {
 						var blockIn = cm.GetBlockIn(CurrentInPos);
 						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString() ));
-					} else if ( Input.GetMouseButtonUp(1) ) {
+					} else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
 						cm.PutBlock(CurrentOutPos, new BlockData(ClientUIManager.Instance.Hotbar.SelectedBlock,0));
 					}
 				}
@@ -42,6 +46,12 @@ namespace Voxels {
 				BlockInSight  = BlockData.Empty;
 				BlockOutSight = BlockData.Empty;
 			}
+		}
+
+		bool CanPlaceBlock(Vector3 pos ) {
+			var floorPos = new Vector3(Mathf.Floor(pos.x), Mathf.Floor(pos.y), Mathf.Floor(pos.z)) + new Vector3(0.5f, 0.5f, 0.5f);
+			var collisions =  Physics.OverlapBoxNonAlloc(floorPos, new Vector3(0.5f, 0.5f, 0.5f), _colCache, Quaternion.identity, EntityColMask);
+			return collisions == 0;
 		}
 
 		void PaintBlockInSight(Color32 color) {
