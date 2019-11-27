@@ -84,6 +84,12 @@ namespace Voxels.Networking {
 			}
 		}
 
+		public void RareUpdateControllers() {
+			foreach ( var pair in _controllers ) {
+				pair.Value.RareUpdate();
+			}
+		}
+
 	}
 }
 

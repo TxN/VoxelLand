@@ -1,3 +1,5 @@
+using System.Collections;
+
 using UnityEngine;
 
 using SMGCore;
@@ -11,8 +13,22 @@ using UnityEngine.SceneManagement;
 namespace Voxels {
 	public sealed class GameManager : ManualSingleton<GameManager> {
 
+		const float RARE_UPDATE_INTERVAL = 1f;
+
 		public bool IsServer { get; private set; }
 		public bool IsClient { get; private set; }
+
+		public bool ServerAlive {
+			get {
+				return IsServer && _serverManager != null;
+			}
+		}
+
+		public bool ClientAlive {
+			get {
+				return IsClient && _clientManager != null;
+			}
+		}
 
 		ServerGameManager _serverManager = null;
 		ClientGameManager _clientManager = null;
@@ -31,10 +47,10 @@ namespace Voxels {
 
 		public void GoToMainMenu() {
 			//TODO: quit more properly.
-			if ( IsServer ) {
+			if ( ServerAlive ) {
 				_serverManager.Reset();
 			}
-			if ( IsClient ) {
+			if ( ClientAlive ) {
 				_clientManager.Reset();
 			}
 			SceneManager.LoadScene("MainMenu");
@@ -61,27 +77,42 @@ namespace Voxels {
 		}
 
 		void Update() {
-			if ( IsServer ) {
+			if ( ServerAlive ) {
 				_serverManager.UpdateControllers();
 			}
 
-			if ( IsClient ) {
+			if ( ClientAlive ) {
 				_clientManager.UpdateControllers();
 			}
 		}
 
 		void LateUpdate() {
-			if ( IsServer ) {
+			if ( ServerAlive ) {
 				_serverManager.LateUpdateControllers();
 			}
 
-			if ( IsClient ) {
+			if ( ClientAlive ) {
 				_clientManager.LateUpdateControllers();
 			}
 		}
 
 		void OnDestroy() {
 			EventManager.Unsubscribe<OnServerInitializationFinished>(OnServerInitializationFinished);
+
+			StopAllCoroutines();
+		}
+
+		IEnumerator RareUpdate() {
+			while (true) {
+				if ( ServerAlive ) {
+					_serverManager.RareUpdateControllers();
+				}
+
+				if ( ClientAlive ) {
+					_clientManager.LateUpdateControllers();
+				}
+				yield return new WaitForSeconds(RARE_UPDATE_INTERVAL);
+			}
 		}
 
 		void TryStartClient() {

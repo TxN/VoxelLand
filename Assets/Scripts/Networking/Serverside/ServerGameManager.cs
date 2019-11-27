@@ -107,6 +107,12 @@ namespace Voxels.Networking {
 				pair.Value.LateUpdate();
 			}
 		}
+
+		public void RareUpdateControllers() {
+			foreach ( var pair in _controllers ) {
+				pair.Value.RareUpdate();
+			}
+		}
 	}
 
 }

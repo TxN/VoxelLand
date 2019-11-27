@@ -20,6 +20,7 @@ namespace Voxels.Networking {
 
 		public virtual void Update() { }
 		public virtual void LateUpdate() { }
+		public virtual void RareUpdate() { }
 		public virtual void Reset() { }
 	}
 
