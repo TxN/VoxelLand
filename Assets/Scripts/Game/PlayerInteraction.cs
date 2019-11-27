@@ -30,14 +30,15 @@ namespace Voxels {
 					BlockInSight = block;
 					var outBlock = cm.GetBlockIn(CurrentOutPos);
 					BlockOutSight = outBlock;
-					if ( Input.GetMouseButtonUp(0) ) {
-						cm.DestroyBlock(CurrentInPos);
-					}
-					if ( Input.GetKey(KeyCode.LeftShift)  && Input.GetMouseButtonUp(1) ) {
+					if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(1) ) {
 						var blockIn = cm.GetBlockIn(CurrentInPos);
-						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString() ));
+						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString()));
 					} else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
-						cm.PutBlock(CurrentOutPos, new BlockData(ClientUIManager.Instance.Hotbar.SelectedBlock,0));
+						cm.PutBlock(CurrentOutPos, new BlockData(ClientUIManager.Instance.Hotbar.SelectedBlock, 0));
+					} else if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) ) {
+						PaintBlockInSight(new Color32(255, 0, 0, 255));
+					} else if ( Input.GetMouseButtonUp(0) ) {
+						cm.DestroyBlock(CurrentInPos);
 					}
 				}
 			} else {
@@ -55,7 +56,7 @@ namespace Voxels {
 		}
 
 		void PaintBlockInSight(Color32 color) {
-			var cm = ChunkManager.Instance;
+			var cm = ClientChunkManager.Instance;
 			var blockIn = cm.GetBlockIn(CurrentInPos);
 			if ( !blockIn.IsEmpty() ) {
 				blockIn.AddColor = ColorUtils.ConvertTo565(color);

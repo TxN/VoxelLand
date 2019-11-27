@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 using Voxels;
 
-public class CreateLibratyAssetAction {
+public class CreateLibraryAssetAction {
 	[MenuItem("Assets/Create/Tileset Resource Asset")]
 	public static void CreateMyAsset() {
 		ResourceLibrary asset = ScriptableObject.CreateInstance<ResourceLibrary>();
