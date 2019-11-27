@@ -16,6 +16,7 @@ namespace Voxels {
 
 		PlayerEntity         _info            = null;
 		MovementInterpolator _interpolator    = null;
+		CharacterController  _charController  = null;
 		bool                 _isLocalAutority = false;
 		float                _lastUpdateTime  = 0f;
 		Vector3              _lastSentPos     = Vector3.zero;
@@ -60,6 +61,7 @@ namespace Voxels {
 			_lastSentPos = info.Position;
 			_lastSentDir = info.LookDir;
 			_lastUpdateTime = Time.time;
+			_charController = GetComponent<CharacterController>();
 			if ( !_isLocalAutority ) {
 				_interpolator = GetComponent<MovementInterpolator>();
 			} else {
@@ -114,14 +116,17 @@ namespace Voxels {
 		}
 
 		void OnPosUpdate(OnClientPlayerUpdate e) {
-			if ( HasAutority || !IsSamePlayer(e.Player) ) {
+			if ( (!e.Flags.IsSet(PosUpdateOptions.Force) && HasAutority) || !IsSamePlayer(e.Player) ) {
 				return;
 			}
 			if ( _interpolator == null ) {
+				_charController.enabled = false;
+				transform.position = e.Player.Position;
+				_charController.enabled = true;
 				return;
 			}
 			var rot = Quaternion.Euler(0, e.Player.LookDir.y, 0);
-			_interpolator.UpdatePosition(e.Player.Position, rot);
+			_interpolator.UpdatePosition(e.Player.Position, rot, e.Flags.IsSet(PosUpdateOptions.Teleport));
 			_lastReceivedHeadPitch = e.Player.LookDir.x;
 		}
 	}

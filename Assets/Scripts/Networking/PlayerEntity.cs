@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using Voxels.Utils;
+
 using ZeroFormatter;
 
 namespace Voxels.Networking {
@@ -24,6 +26,18 @@ namespace Voxels.Networking {
 			}
 			var name = ClientController.Instance.ClientName;
 			return entity.PlayerName == name;			
+		}
+
+		public byte CompressedPitch {
+			get {
+				return (byte)Mathf.RoundToInt(MathUtils.Remap(LookDir.x, 0, 360, 0, 255));
+			}
+		}
+
+		public byte CompressedYaw {
+			get {
+				return (byte)Mathf.RoundToInt(MathUtils.Remap(LookDir.y, 0, 360, 0, 255));
+			}
 		}
 	}
 }

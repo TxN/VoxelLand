@@ -19,6 +19,7 @@ namespace Voxels {
 			if ( Physics.Raycast(transform.position, dir, out hitInfo, MAX_SIGHT_DISTANCE) ) { //TODO: Chunk layermask
 				CurrentInPos  = hitInfo.point + dir * 0.03f;
 				CurrentOutPos = hitInfo.point - dir * 0.015f;
+
 				var chunk = cm.GetChunkInCoords(CurrentInPos);
 				if ( chunk != null ) {
 					var block = cm.GetBlockIn(CurrentInPos);

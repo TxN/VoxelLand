@@ -90,7 +90,7 @@ namespace Voxels.Networking.Clientside {
 			EventManager.Fire(new OnClientPlayerUpdate { Player = localEntity });
 		}
 
-		public void UpdatePlayerPos(ushort conId, Vector3 newPos, byte rawPitch, byte rawYaw) {
+		public void UpdatePlayerPos(ushort conId, Vector3 newPos, byte rawPitch, byte rawYaw, PosUpdateOptions flags) {
 			var localEntity = GetPlayer(conId);
 			if ( localEntity == null ) {
 				return;
@@ -99,7 +99,7 @@ namespace Voxels.Networking.Clientside {
 			var pitch = MathUtils.Remap(rawPitch, 0, 255, 0, 360);
 			var yaw   = MathUtils.Remap(rawYaw,   0, 255, 0, 360);
 			localEntity.LookDir = new Vector2(pitch, yaw);
-			EventManager.Fire(new OnClientPlayerUpdate { Player = localEntity });
+			EventManager.Fire(new OnClientPlayerUpdate { Player = localEntity, Flags = flags });
 		}
 
 		public void SendPosUpdateToServer(PlayerEntity senderInfo, Vector3 position, float yaw, float pitch) {

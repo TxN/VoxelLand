@@ -33,6 +33,11 @@ namespace Voxels.Networking.Serverside {
 			EventManager.Unsubscribe<OnClientDisconnected>(OnClientDisconnect);
 		}
 
+		public Vector3 GetSpawnPosition(PlayerEntity player) {
+			//Todo: different spawn points
+			return DefaultSpawnPoint;
+		}
+
 		public void BroadcastPlayerUpdate(ClientState client, PlayerEntity newInfo) {
 			var server = ServerController.Instance;
 			var player = GetPlayerByOwner(client);
@@ -42,7 +47,7 @@ namespace Voxels.Networking.Serverside {
 			server.SendToAll(ServerPacketID.PlayerUpdate, new S_PlayerUpdateMessage { Player = player });
 		}
 
-		public void BroadcastPlayerPosUpdate(ClientState client, Vector3 newPos, byte rawPitch, byte rawYaw) {
+		public void BroadcastPlayerPosUpdate(ClientState client, Vector3 newPos, byte rawPitch, byte rawYaw, PosUpdateOptions flags = PosUpdateOptions.None) {
 			var server = ServerController.Instance;
 			var player = GetPlayerByOwner(client);
 			var pitch = MathUtils.Remap(rawPitch, 0, 255, 0, 360);
@@ -51,6 +56,7 @@ namespace Voxels.Networking.Serverside {
 			player.LookDir  = new Vector2(pitch, yaw);
 			
 			server.SendToAll(ServerPacketID.PlayerPosAndRotUpdate, new S_PosAndOrientationUpdateMessage {
+				CommandID = (byte) flags,
 				ConId     = (ushort)client.ConnectionID,
 				Position  = newPos,
 				LookPitch = rawPitch,
@@ -59,7 +65,7 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		[CanBeNull]
-		PlayerEntity GetPlayerByOwner(ClientState owner) {
+		public PlayerEntity GetPlayerByOwner(ClientState owner) {
 			foreach ( var player in Players ) {
 				if ( player.Owner == owner ) {
 					return player;

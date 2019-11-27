@@ -7,8 +7,8 @@ namespace Voxels.Networking {
 		public override void ProcessMessage(byte[] rawCommand) {
 			base.ProcessMessage(rawCommand);
 			var command = ZeroFormatterSerializer.Deserialize<S_PosAndOrientationUpdateMessage>(rawCommand);
-
-			ClientPlayerEntityManager.Instance.UpdatePlayerPos(command.ConId, command.Position, command.LookPitch, command.Yaw);
+			var flags = (PosUpdateOptions) command.CommandID;
+			ClientPlayerEntityManager.Instance.UpdatePlayerPos(command.ConId, command.Position, command.LookPitch, command.Yaw, flags);
 		}
 	}
 }

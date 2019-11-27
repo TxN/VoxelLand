@@ -28,12 +28,12 @@ namespace Voxels.Networking.Clientside {
 			}
 		}
 
-		public void UpdatePosition(Vector3 newPos, Quaternion newRot) {
+		public void UpdatePosition(Vector3 newPos, Quaternion newRot, bool teleport) {
 
 			_prevRot = _lastRot;
 			_lastRot = newRot;
 
-			if ( Vector3.Distance(newPos, _lastPos) > TeleportThreshold ) {
+			if ( Vector3.Distance(newPos, _lastPos) > TeleportThreshold || teleport ) {
 				_prevPos = _lastPos;
 				_lastPos = newPos;
 				_interpProgress = 1.1f;

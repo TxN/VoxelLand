@@ -20,6 +20,7 @@ namespace Voxels.Networking.Serverside {
 			_commands.Add("none",     new NoneChatCommand());
 			_commands.Add("kick",     new KickChatCommand());
 			_commands.Add("time_set", new TimeSetChatCommand());
+			_commands.Add("spawn",    new TeleportToSpawnChatCommand());
 		}
 
 		public override void PostLoad() {

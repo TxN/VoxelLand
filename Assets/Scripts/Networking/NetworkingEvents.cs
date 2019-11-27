@@ -67,7 +67,8 @@ namespace Voxels.Networking.Events {
 	}
 
 	public struct OnClientPlayerUpdate {
-		public PlayerEntity Player;
+		public PlayerEntity     Player;
+		public PosUpdateOptions Flags;
 	}
 
 	public struct OnClientPlayerSpawn {
