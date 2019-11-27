@@ -81,8 +81,13 @@ namespace Voxels.UI {
 		}
 
 		void OnChatSubmit(string text) {
-			InputLine.text = string.Empty;
-			ClientChatManager.Instance.SendMessage(text);
+			if ( !ChatOpened || Input.GetKey(KeyCode.Escape) ) {
+				return;
+			}
+			if ( !string.IsNullOrEmpty(text) ) {
+				ClientChatManager.Instance.SendMessage(text);
+			}
+			InputLine.text = string.Empty;			
 			SwitchChat(false);
 		}
 
