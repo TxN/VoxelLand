@@ -21,11 +21,25 @@ namespace Voxels.Networking.Serverside {
 		public float TimeScale { get; private set; } = 1f;
 
 
-		public float DayPercent {
+		public float TimeTotalDays {
 			get {
 				var days = WorldTime / WorldOptions.DayLength;
+				return days;
+			}
+		}
+
+		public float DayPercent {
+			get {
+				var days  = WorldTime / WorldOptions.DayLength;
+				return TimeTotalDays - DaysPassed;
+			}
+		}
+
+		public int DaysPassed {
+			get {
+				var days  = WorldTime / WorldOptions.DayLength;
 				var whole = Mathf.FloorToInt(days);
-				return days - whole;
+				return whole;
 			}
 		}
 
@@ -43,6 +57,15 @@ namespace Voxels.Networking.Serverside {
 			}
 		}
 
+		public void SetDayTime(float dayPercent) {
+			var whole = Mathf.FloorToInt(dayPercent);
+			dayPercent = dayPercent - whole;
+
+			var newDay = DaysPassed + 1;
+			WorldTime  = (newDay + dayPercent) * WorldOptions.DayLength;
+			SendToClient();
+		}
+
 		public override void Init() {
 			base.Init();
 			_library = VoxelsStatic.Instance.Library;
@@ -56,6 +79,20 @@ namespace Voxels.Networking.Serverside {
 		public override void Update() {
 			base.Update();
 			WorldTime += Time.deltaTime * TimeScale;
+		}
+
+		public void SendToClient(ClientState state = null) {
+			var command = new S_WorldOptionsMessage() {
+				Seed           = WorldOptions.Seed,
+				DayLength      = WorldOptions.DayLength,
+				Time           = WorldTime,
+				TimeMultiplier = TimeScale
+			};
+			if ( state == null ) {
+				ServerController.Instance.SendToAll(ServerPacketID.WorldOptions, command);
+			} else {
+				ServerController.Instance.SendNetMessage(state, ServerPacketID.WorldOptions, command);
+			}
 		}
 	}
 }

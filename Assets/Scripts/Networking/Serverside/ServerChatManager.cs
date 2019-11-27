@@ -8,7 +8,8 @@ namespace Voxels.Networking.Serverside {
 	public class ServerChatManager : ServerSideController<ServerChatManager> {
 		public ServerChatManager(ServerGameManager owner) : base(owner) { }
 
-		const string COMMAND_START_SYMBOL = "/";
+		const string COMMAND_START_SYMBOL      = "/";
+		const string OP_COMMAND_REJECT_MESSAGE = "<color=\"red\">This command is OP only.</color>";
 
 		List<ChatMessage> _messages = new List<ChatMessage>();
 
@@ -16,8 +17,9 @@ namespace Voxels.Networking.Serverside {
 
 		public override void Init() {
 			base.Init();
-			_commands.Add("none", new NoneChatCommand());
-			_commands.Add("kick", new KickChatCommand());
+			_commands.Add("none",     new NoneChatCommand());
+			_commands.Add("kick",     new KickChatCommand());
+			_commands.Add("time_set", new TimeSetChatCommand());
 		}
 
 		public override void PostLoad() {
@@ -56,7 +58,11 @@ namespace Voxels.Networking.Serverside {
 
 			var firstWord = parts[0].Replace("/", "").ToLower();
 			if ( _commands.TryGetValue(firstWord, out var handler) ) {
-				output = handler.ProcessCommand(sender, parts);
+				if ( handler.OpOnly && !sender.IsOp ) {
+					output = OP_COMMAND_REJECT_MESSAGE;
+				} else {
+					output = handler.ProcessCommand(sender, parts);
+				}				
 			} else {
 				output = _commands["none"].ProcessCommand(sender, parts);
 			}
