@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Voxels {
@@ -121,6 +122,26 @@ namespace Voxels {
 			var fullChunksY = Mathf.FloorToInt(posY / (float)Chunk.CHUNK_SIZE_Y);
 			var fullChunksZ = Mathf.FloorToInt(posZ / (float)Chunk.CHUNK_SIZE_Z);
 			return new Int3(fullChunksX, fullChunksY, fullChunksZ);
+		}
+
+		public static void Spiral(int dimX, int dimY, Action<int,int> callback) {
+			int x, y, dx, dy;
+			x = y = dx = 0;
+			dy = -1;
+			var t = Mathf.Max(dimX, dimY);
+			var maxI = t * t;
+			for ( int i = 0; i < maxI; i++ ) {
+				if ( (-dimX / 2 <= x) && (x <= dimX / 2) && (-dimY / 2 <= y) && (y <= dimY / 2) ) {
+					callback(x, y);
+				}
+				if ( (x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1 - y)) ) {
+					t = dx;
+					dx = -dy;
+					dy = t;
+				}
+				x += dx;
+				y += dy;
+			}
 		}
 	}
 
