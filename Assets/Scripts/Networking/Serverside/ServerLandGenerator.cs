@@ -22,6 +22,8 @@ namespace Voxels.Networking.Serverside {
 
 		public int Seed { get; private set; }
 
+		public int QueueCount { get { return _chunkGenQueue.Count; } }
+
 		public override void Load() {
 			Seed = Utils.WorldOptions.Seed;
 			Random.InitState(Seed);
@@ -33,20 +35,26 @@ namespace Voxels.Networking.Serverside {
 			base.PostLoad();
 		}
 
-		public void AddToQueue(Int3 newChunk) {
+		public void ClearQueue() {
+			_chunkGenQueue.Clear();
+		}
+
+		public void AddToQueue(Int3 newChunk, bool run) {
 			_chunkGenQueue.Enqueue(newChunk);
-			RunGenRoutine();
+			if ( run ) {
+				RunGenRoutine();
+			}			
 		}
 
 		public void RefreshQueue(List<Int3> newChunks) {
-			_chunkGenQueue.Clear();
+			ClearQueue();
 			foreach ( var item in newChunks ) {
 				_chunkGenQueue.Enqueue(item);
 			}
 			RunGenRoutine();
 		}
 
-		void RunGenRoutine() {
+		public void RunGenRoutine() {
 			if ( _routineRuuning ) {
 				return;
 			}
