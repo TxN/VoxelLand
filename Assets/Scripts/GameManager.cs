@@ -74,6 +74,7 @@ namespace Voxels {
 			}
 			System.Threading.Thread.Sleep(50);
 			TryStartClient();
+			StartCoroutine(RareUpdate());
 		}
 
 		void Update() {

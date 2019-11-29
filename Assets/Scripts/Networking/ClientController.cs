@@ -61,6 +61,7 @@ namespace Voxels.Networking {
 			_handlers.Add(ServerPacketID.PlayerUpdate,          new S_PlayerUpdateMessageHandler());
 			_handlers.Add(ServerPacketID.PlayerPosAndRotUpdate, new S_PosAndOrientationUpdateMessageHandler());
 			_handlers.Add(ServerPacketID.ChunkInit,             new S_InitChunkMessageHandler());
+			_handlers.Add(ServerPacketID.ChunkUnload,           new S_UnloadChunkMessageHandler());
 			_handlers.Add(ServerPacketID.LoadFinalize,          new S_LoadFinalizeMessageHandler());
 			_handlers.Add(ServerPacketID.WorldOptions,          new S_WorldOptionsMessageHandler());
 			_handlers.Add(ServerPacketID.PutBlock,              new S_PutBlockMessageHandler());
@@ -73,7 +74,7 @@ namespace Voxels.Networking {
 			_packetsReceived = 0;
 			_packetsSent = 0;
 			_client = new Client();
-			_client.MaxMessageSize = 32768;
+			_client.MaxMessageSize = 65535;
 			_client.Connect(ip, port);
 			_port = port;
 			IsStarted = true;

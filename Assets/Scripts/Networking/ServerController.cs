@@ -14,6 +14,9 @@ using JetBrains.Annotations;
 
 namespace Voxels.Networking {
 	public class ServerController : ServerSideController<ServerController> {
+
+		public bool EnableCompression = true;
+
 		const int   PROTOCOL_VERSION = 1;
 		const float PING_INTERVAL    = 10;
 
@@ -72,7 +75,7 @@ namespace Voxels.Networking {
 			_packetsReceived = 0;
 			_packetsSent     = 0;
 			_server = new Server();
-			_server.MaxMessageSize = 32768;
+			_server.MaxMessageSize = 65535;
 			_server.Start(port);
 			_port = port;
 			IsStarted = true;
@@ -105,9 +108,10 @@ namespace Voxels.Networking {
 		}
 
 		public void SendNetMessage<T>(ClientState client, ServerPacketID id, T message, bool compress = false) where T : BaseMessage {
+			var compressFlag = compress && EnableCompression;
 			var body = ZeroFormatterSerializer.Serialize(message);
-			var header = new PacketHeader((byte)id, compress, (ushort)body.Length);
-			if ( compress ) {
+			var header = new PacketHeader((byte)id, compressFlag, (ushort)body.Length);
+			if ( compressFlag ) {
 				var compressedBody   = CLZF2.Compress(body);
 				header.ContentLength = (ushort)compressedBody.Length;
 				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, compressedBody));

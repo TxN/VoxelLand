@@ -8,7 +8,7 @@ namespace Voxels.Networking {
 			base.ProcessMessage(rawCommand);
 			var command = ZeroFormatterSerializer.Deserialize<S_LoadFinalizeMessage>(rawCommand);
 
-			ClientChunkManager.Instance.FinalizeInitLoad();
+			//ClientChunkManager.Instance.FinalizeInitLoad();
 		}
 	}
 }

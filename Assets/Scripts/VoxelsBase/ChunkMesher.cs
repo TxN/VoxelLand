@@ -74,6 +74,7 @@ namespace Voxels {
 			}
 			Busy = true;
 			_curentThread = new Thread(StartMeshing);
+			_curentThread.Name = "Chunk Mesher Job";
 			_curentThread.Start();
 		}
 

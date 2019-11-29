@@ -28,12 +28,14 @@ namespace Voxels.Networking {
 			return entity.PlayerName == name;			
 		}
 
+		[IgnoreFormat]
 		public byte CompressedPitch {
 			get {
 				return (byte)Mathf.RoundToInt(MathUtils.Remap(LookDir.x, 0, 360, 0, 255));
 			}
 		}
 
+		[IgnoreFormat]
 		public byte CompressedYaw {
 			get {
 				return (byte)Mathf.RoundToInt(MathUtils.Remap(LookDir.y, 0, 360, 0, 255));

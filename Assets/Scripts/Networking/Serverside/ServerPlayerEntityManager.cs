@@ -84,7 +84,7 @@ namespace Voxels.Networking.Serverside {
 			Players.Add(player);
 			var server = ServerController.Instance;
 			server.SendToAll(ServerPacketID.PlayerSpawn, new S_SpawnPlayerMessage { PlayerToSpawn = player });
-			EventManager.Fire<OnServerPlayerSpawn>(new OnServerPlayerSpawn { Player = player });
+			EventManager.Fire<OnServerPlayerSpawn>(new OnServerPlayerSpawn { Player = player, Client = client });
 		}
 
 		void DespawnPlayer(ClientState client) {

@@ -21,6 +21,11 @@ namespace Voxels {
 		public Vector3 OriginPos        { get; }
 		public bool Dirty               { get; private set; } = false;
 		public bool NeedRebuildGeometry { get; set; }         = false;
+		public Int3 Index {
+			get {
+				return new Int3(_indexX, _indexY, _indexZ);
+			}
+		}
 
 		IChunkManager       _owner           = null;
 		IChunkMesher        _mesher          = null;
@@ -42,11 +47,32 @@ namespace Voxels {
 		Queue<Int3>          _sunlightAddQueue = new Queue<Int3>        (CHUNK_SIZE_X * CHUNK_SIZE_Y);
 		Queue<LightRemNode>  _sunlightRemQueue = new Queue<LightRemNode>(LIGHT_SOURCES_CAPACITY);
 
+		public Chunk(ChunkData data) {
+			var b = data.Blocks;
+			_visibiltiy = new VisibilityFlagsHolder(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
+			_blocks = new BlockDataHolder(b.SizeX, b.SizeY, b.SizeZ, b.Data);
+			OriginPos = data.Origin;
+			_indexX = data.IndexX;
+			_indexY = data.IndexY;
+			_indexZ = data.IndexZ;
+			_maxNonEmptyY = data.Height;
+		}
+
+		public void FinishInitClientChunk(IChunkManager owner) {
+			_owner = owner;
+			_library = VoxelsStatic.Instance.Library;
+			_mesher = new ChunkMesher(_library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, OriginPos);
+			_loadedNeighbors = _owner.GatherNeighbors(new Int3(_indexX, _indexY, _indexZ));
+			if ( _loadedNeighbors == 15 ) {				
+				_fullyInited = true;
+			}
+			ForceUpdateChunk();
+		}
+
 		public Chunk(IChunkManager owner, ChunkData data, bool isServerChunk) {
 			_owner = owner;
-			var v = data.Visibiltiy;
 			var b = data.Blocks;
-			_visibiltiy   = new VisibilityFlagsHolder(v.SizeX, v.SizeY, v.SizeZ, v.Data);
+			_visibiltiy   = new VisibilityFlagsHolder(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
 			_blocks       = new BlockDataHolder(b.SizeX, b.SizeY, b.SizeZ, b.Data);
 			OriginPos     = data.Origin;
 			_indexX       = data.IndexX;
@@ -54,7 +80,6 @@ namespace Voxels {
 			_indexZ       = data.IndexZ;
 			_maxNonEmptyY = data.Height;
 			_library      = VoxelsStatic.Instance.Library;
-			_fullyInited  = true;
 
 			if ( isServerChunk ) {
 				_mesher = new EmptyChunkMesher();
@@ -63,11 +88,10 @@ namespace Voxels {
 			}
 
 			_loadedNeighbors = _owner.GatherNeighbors(new Int3(_indexX, _indexY, _indexZ));
-		/*	if ( _loadedNeighbors == 15 ) {
+			if ( _loadedNeighbors == 15 ) {
 				ForceUpdateChunk();
 				_fullyInited = true;
-			}*/
-			EventManager.Subscribe<Event_ChunkLoaded>(this, OnChunkLoaded);
+			}
 		}
 
 		public Chunk(IChunkManager owner, int x, int y, int z, Vector3 originPos, bool isServerChunk) {
@@ -91,11 +115,10 @@ namespace Voxels {
 				ForceUpdateChunk();
 				_fullyInited = true;
 			}
-			EventManager.Subscribe<Event_ChunkLoaded>(this, OnChunkLoaded);
 		}
 
 		public ChunkData GetData() {
-			return new ChunkData() { Blocks = _blocks, Height = (byte)_maxNonEmptyY, IndexX = _indexX, IndexY = _indexY, IndexZ = _indexZ, Origin = OriginPos, Visibiltiy = _visibiltiy };
+			return new ChunkData() { Blocks = _blocks, Height = (byte)_maxNonEmptyY, IndexX = _indexX, IndexY = _indexY, IndexZ = _indexZ, Origin = OriginPos };
 		}
 
 		public void SetAllBlocks(BlockData[] blocks, int maxY) {
@@ -133,11 +156,11 @@ namespace Voxels {
 			return Vector3.Distance(pos, OriginPos);
 		}
 
-		void OnChunkLoaded(Event_ChunkLoaded e) {
+		public void OnChunkLoaded(Int3 loadedChunk) {
 			if ( _fullyInited ) {
 				return;
 			}
-			_loadedNeighbors |= IsNeighbor(e.Coordinates);
+			_loadedNeighbors |= IsNeighbor(loadedChunk);
 			if ( _loadedNeighbors == 15 ) {
 				ForceUpdateChunk();
 				_fullyInited = true;
@@ -164,7 +187,6 @@ namespace Voxels {
 		}
 
 		public void UnloadChunk() {
-			EventManager.Unsubscribe<Event_ChunkLoaded>(OnChunkLoaded);
 			Renderer = null;
 			_mesher.DeInit();
 		}
@@ -872,6 +894,9 @@ namespace Voxels {
 		public void UpdateVisibilityAll() {
 			_dirtyBlocks.Clear();
 			_needUpdateVisibilityAll = false;
+			if ( _mesher is EmptyChunkMesher ) {
+				return;
+			}
 			NeedRebuildGeometry = true;
 			var neighbors = GetNeighborChunks();
 			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
@@ -1270,10 +1295,6 @@ namespace Voxels {
 		public void SetDirtyAll() {
 			Dirty = true;
 			_needUpdateVisibilityAll = true;
-		}
-
-		public void MarkAsLoaded() {
-			EventManager.Fire(new Event_ChunkLoaded() { Coordinates = new Int3(_indexX, _indexY, _indexZ), LoadedChunk = this});
 		}
 
 		BlockDescription GetBlockDescription(BlockType type) {

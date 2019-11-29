@@ -17,7 +17,5 @@ namespace Voxels {
 		public virtual Vector3               Origin     { get; set; }
 		[Index(5)]
 		public virtual BlockDataHolder       Blocks     { get; set; }
-		[Index(6)]
-		public virtual VisibilityFlagsHolder Visibiltiy { get; set; }
 	}
 }

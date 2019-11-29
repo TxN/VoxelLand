@@ -131,7 +131,6 @@ namespace Voxels.Networking.Serverside {
 				}
 			}
 			chunk.SetDirtyAll();
-			chunk.MarkAsLoaded();
 		}
 
 		void SpawnTree(Chunk chunk, Int3 startPos) {

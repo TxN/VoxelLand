@@ -9,11 +9,6 @@ namespace Voxels.Events {
 		public Chunk UpdatedChunk;
 	}
 
-	public struct Event_ChunkLoaded {
-		public Chunk LoadedChunk;
-		public Int3  Coordinates;
-	}
-
 	public struct Event_BlockPreviewUpdated {
 		public BlockData Block;
 		public Texture2D Texture;

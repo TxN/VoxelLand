@@ -22,6 +22,7 @@ namespace Voxels.Networking.Events {
 	}
 
 	public struct OnServerPlayerSpawn {
+		public ClientState  Client;
 		public PlayerEntity Player;
 	}
 

@@ -13,6 +13,7 @@ namespace Voxels.Networking {
 		PlayerPosAndRotUpdate,
 		WorldOptions,
 		ChunkInit,
+		ChunkUnload,
 		LoadFinalize,
 		PutBlock,
 		None = 255

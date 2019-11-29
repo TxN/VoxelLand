@@ -9,12 +9,16 @@ namespace Voxels.Networking.Clientside {
 	public class ClientChunkManager : ClientsideController<ClientChunkManager>, IChunkManager {
 		public ClientChunkManager(ClientGameManager owner) : base(owner) { }
 
+		Queue<ChunkData> _receivedChunks = new Queue<ChunkData>(128);
+
 		Dictionary<Int3, Chunk> _chunks = new Dictionary<Int3, Chunk>();
 
 		ChunkRendererPool      _renderPool        = new ChunkRendererPool();
 		DestroyBlockEffectPool _destroyEffectPool = new DestroyBlockEffectPool();
 
-		bool _enabled = false;
+		ChunkDeserializer _deserializer = new ChunkDeserializer();
+
+		bool _enabled = true;
 		int _sizeY    = 0;
 
 		public int GetWorldHeight {
@@ -35,6 +39,8 @@ namespace Voxels.Networking.Clientside {
 			if ( !_enabled ) {
 				return;
 			}
+			SpawnReceivedChunk();
+			DeserializeNewChunk();
 			UpdateDirtyChunks();
 		}
 
@@ -159,14 +165,28 @@ namespace Voxels.Networking.Clientside {
 			}
 		}
 
-		Chunk GetOrInitChunk(Int3 index) {
-			if ( _chunks.TryGetValue(index, out var res) ) {
-				return res;
+		Chunk InitializeChunk(Int3 index, Chunk rawChunk) {
+			if ( _chunks.ContainsKey(index) ) {
+				DeInitChunk(index);
 			}
-			return InitializeChunk(index);
+			var x = index.X;
+			var y = index.Y;
+			var z = index.Z;
+			rawChunk.FinishInitClientChunk(this);
+			_chunks[index] = rawChunk;
+			var render = _renderPool.Get();
+			render.name = string.Format("Chunk {0} {1}", x, z);
+			render.transform.position = Vector3.zero;
+			render.Setup(rawChunk);
+			rawChunk.Renderer = render;
+			rawChunk.ForceUpdateChunk();
+			foreach ( var item in _chunks ) {
+				item.Value.OnChunkLoaded(index);
+			}
+			return rawChunk;
 		}
 
-		Chunk InitializeChunk(Int3 index, ChunkData data = null) {
+		/*Chunk InitializeChunk(Int3 index, ChunkData data = null) {
 			if ( _chunks.ContainsKey(index) ) {
 				DeInitChunk(index);
 			}
@@ -184,7 +204,7 @@ namespace Voxels.Networking.Clientside {
 			chunk.Renderer = render;
 			chunk.ForceUpdateChunk();
 			return chunk;
-		}
+		}*/
 
 		void DeInitChunk(Int3 index) {
 			if ( !_chunks.ContainsKey(index) ) {
@@ -194,6 +214,13 @@ namespace Voxels.Networking.Clientside {
 			_renderPool.Return(chunk.Renderer);
 			chunk.Renderer = null;
 			_chunks.Remove(index);
+		}
+
+		public void UnloadChunk(Int3 pos) {
+			var chunk = GetChunk(pos);
+			_renderPool.Return(chunk.Renderer);
+			chunk.UnloadChunk();
+			_chunks.Remove(pos);
 		}
 
 		public int GatherNeighbors(Int3 index) {
@@ -227,6 +254,25 @@ namespace Voxels.Networking.Clientside {
 			return res;
 		}
 
+		void DeserializeNewChunk() {
+			if ( _receivedChunks.Count == 0  || _deserializer.Busy || _deserializer.Ready ) {
+				return;
+			}
+			var d = _receivedChunks.Dequeue();
+			_deserializer.StartDeserialize(d);
+		}
+
+		void SpawnReceivedChunk() {
+			if ( !_deserializer.Ready ) {
+				return;
+			}
+			var c = _deserializer.GetResult();
+			if ( c != null ) {
+				var index = c.Index;
+				InitializeChunk(index, c);
+			}			
+		}
+
 		void UpdateDirtyChunks() {
 			foreach ( var chunkPair in _chunks ) {
 				var chunk = chunkPair.Value;
@@ -248,8 +294,7 @@ namespace Voxels.Networking.Clientside {
 				return;
 			}
 			var d = e.Data;
-			var index = new Int3(d.IndexX, d.IndexY, d.IndexZ);
-			InitializeChunk(index, d);
+			_receivedChunks.Enqueue(d);
 		}
 
 		public void ProcessServerBlockUpdate(BlockData block, int x, int y, int z) {

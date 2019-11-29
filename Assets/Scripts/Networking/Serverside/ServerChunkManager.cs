@@ -10,13 +10,13 @@ using Voxels.Networking.Events;
 namespace Voxels.Networking.Serverside {
 
 	public class PlayerChunkLoadState {
-		public bool         PlayerInited   = false;
-		public ClientState  Client         = null;
-		public PlayerEntity Entity         = null;
-		public Queue<Int3>  SendQueue      = new Queue<Int3>();
-		public List<Int3>   SentChunks     = new List<Int3>(256);
-		public Queue<Int3>  LoadGenQueue   = new Queue<Int3>(256);
-		public List<Int3>   ChunksToUnload = new List<Int3>(32);
+		public bool          PlayerInited   = false;
+		public ClientState   Client         = null;
+		public PlayerEntity  Entity         = null;
+		public Queue<Int3>   SendQueue      = new Queue<Int3>();
+		public HashSet<Int3> SentChunks     = new HashSet<Int3>();
+		public Queue<Int3>   LoadGenQueue   = new Queue<Int3>(256);
+		public List<Int3>    ChunksToUnload = new List<Int3>(32);
 	}
 
 
@@ -29,8 +29,9 @@ namespace Voxels.Networking.Serverside {
 
 		Queue<Int3> _loadQueue = new Queue<Int3>(128);
 
-		Dictionary<Int3, Chunk> _chunks = new Dictionary<Int3, Chunk>();
-		HashSet<Int3>          _library = new HashSet<Int3>();
+		Dictionary<Int3, Chunk> _chunks         = new Dictionary<Int3, Chunk>();
+		HashSet<Int3>          _library         = new HashSet<Int3>();
+		HashSet<Int3>          _keepaliveChunks = new HashSet<Int3>();
 		int                    _sizeY   = 1;
 
 		public override void Load() {
@@ -44,10 +45,11 @@ namespace Voxels.Networking.Serverside {
 			EventManager.Subscribe<OnServerChunkGenQueueEmpty>(this, OnGenerationFinished);
 			EventManager.Subscribe<OnClientDisconnected>      (this, OnPlayerLeft);
 			EventManager.Subscribe<OnClientConnected>         (this, OnPlayerJoin);
+			EventManager.Subscribe<OnServerPlayerSpawn>       (this, OnPlayerSpawned);
 
 			Owner.AddToInitQueue(this);
 
-			LoadGenWorld();
+			LoadGenWorldOrigin();
 		}
 
 		public override void Reset() {
@@ -55,6 +57,7 @@ namespace Voxels.Networking.Serverside {
 			EventManager.Unsubscribe<OnServerChunkGenerated>    (OnChunkGenerated);
 			EventManager.Unsubscribe<OnServerChunkGenQueueEmpty>(OnGenerationFinished);
 			EventManager.Unsubscribe<OnClientConnected>         (OnPlayerJoin);
+			EventManager.Unsubscribe<OnServerPlayerSpawn>       (OnPlayerSpawned);
 			EventManager.Unsubscribe<OnClientDisconnected>      (OnPlayerLeft);
 		}
 
@@ -68,6 +71,13 @@ namespace Voxels.Networking.Serverside {
 			foreach ( var item in _playerStates ) {
 				UpdateClientQueues(item.Value);
 			}		
+		}
+
+		public override void RareUpdate() {
+			base.RareUpdate();
+			foreach ( var item in _playerStates ) {
+				UpdatePlayerVisibleChunks(item.Value);
+			}
 		}
 
 		public int GetWorldHeight {
@@ -234,7 +244,7 @@ namespace Voxels.Networking.Serverside {
 					new Chunk(this, x, y, z, new Vector3(x * Chunk.CHUNK_SIZE_X, y * Chunk.CHUNK_SIZE_Y, z * Chunk.CHUNK_SIZE_Z), true) :
 					new Chunk(this, data, true);
 			_chunks[index] = chunk;
-			_library.Add(index);
+			//_library.Add(index); //TODO: add to library only after first save
 			return chunk;
 		}
 
@@ -246,25 +256,30 @@ namespace Voxels.Networking.Serverside {
 			_chunks.Remove(index);
 		}
 
-		void LoadGenWorld() {
+		void LoadGenWorldOrigin() {
 			var lg = ServerLandGenerator.Instance;
 			lg.ClearQueue();
 			lg.ImmediateMode = true;
 			var dim = (WorldOptions.ChunkLoadRadius - 1) * 2;
 			ChunkHelper.Spiral(dim, dim, GenOrLoad);
+			ChunkHelper.Spiral(dim, dim, (x,y) => { _keepaliveChunks.Add(new Int3(x, 0, y)); });
 			Debug.LogFormat("Initial world generation. Chunks to load: {0}", lg.QueueCount);
 			lg.RunGenRoutine();
 			lg.ImmediateMode = false;
 		}
 
 		void GenOrLoad(int x, int z) {
+			GenOrLoad(x, z, false);
+		}
+
+		void GenOrLoad(int x, int z, bool run) {
 			var lg = ServerLandGenerator.Instance;
 			var newPos = new Int3(x, 0, z);
 			if ( GetChunk(newPos) != null ) {
 				return;
 			}
 			if ( !_library.Contains(newPos) ) {
-				lg.AddToQueue(newPos, false);
+				lg.AddToQueue(newPos, run);
 			}	else {
 				_loadQueue.Enqueue(newPos);
 			}
@@ -311,7 +326,7 @@ namespace Voxels.Networking.Serverside {
 				state.SendQueue.Enqueue(c);
 				var chunk = GetChunk(c);
 				if ( chunk == null ) {
-					GenOrLoad(c.X, c.Z);
+					GenOrLoad(c.X, c.Z, true);
 					break;
 				}				
 			}
@@ -320,10 +335,16 @@ namespace Voxels.Networking.Serverside {
 				var c = state.SendQueue.Peek();
 				var chunk = GetChunk(c);
 				if ( chunk != null ) {
-					state.SentChunks.Add(c);
 					state.SendQueue.Dequeue();
-					SendChunkToClient(state.Client, chunk.GetData());
+					SendChunkToClient(state, chunk.GetData(), c);
 				}
+			}
+
+			if ( state.ChunksToUnload.Count > 0 ) {
+				foreach ( var item in state.ChunksToUnload ) {
+					UnloadChunkOnClient(state, item);
+				}
+				state.ChunksToUnload.Clear();
 			}
 
 			if ( state.SendQueue.Count == 0 && !state.PlayerInited ) {
@@ -332,39 +353,38 @@ namespace Voxels.Networking.Serverside {
 			}
 		}
 
-		#region CHUNK_LOAD_LIST_MANAGEMENT
-	/*	void RefreshChunkGenQueueForClient(ClientState client) {
-			_chunkLoadList.Clear();
-			_saveLoadList.Clear();
-			ViewPosition.y = 0;
-			var originPos = GetChunkIdFromCoords(ViewPosition);
-			//корявый способ, но пока так
-			for ( int r = 0; r < LOAD_RADIUS; r++ ) {
-				for ( int x = -r; x < r; x++ ) {
-					for ( int z = -r; z < r; z++ ) {
-						var newPos = originPos.Add(x, 0, z);
-						if ( GetChunk(newPos) == null ) {
-							if ( !_library.Contains(newPos) ) {
-								_chunkLoadList.Add(originPos.Add(x, 0, z));
-							}
-							else {
-								_saveLoadList.Enqueue(originPos.Add(x, 0, z));
-							}
 
-						}
-
-					}
-				}
+		List<Int3> _tempVisList = new List<Int3>(256);
+		void UpdatePlayerVisibleChunks(PlayerChunkLoadState state) {
+			if (state.Entity == null ) {
+				return;
 			}
-			LandGenerator.Instance.RefreshQueue(_chunkLoadList.ToList());
+			state.ChunksToUnload.Clear();
+
+			_tempVisList.Clear();
+			var centerPos = ChunkHelper.GetChunkIdFromCoords(state.Entity.Position);
+
+			var dim = (WorldOptions.MaxLoadRadius - 1) * 2;
+			ChunkHelper.Spiral(dim, dim, (x,y) => { _tempVisList.Add(centerPos.Add(x, 0, y)); } );
+			foreach ( var c in _tempVisList ) {
+				if ( state.SentChunks.Contains(c) || state.SendQueue.Contains(c) || state.LoadGenQueue.Contains(c) ) {
+					continue;
+				}
+				state.LoadGenQueue.Enqueue(c);
+			}
+			
+
+			//WorldOptions.ChunkUnloadDistance
 		}
-		*/
-		#endregion
 
+		void SendChunkToClient(PlayerChunkLoadState state, ChunkData data, Int3 index) {
+			state.SentChunks.Add(index);
+			ServerController.Instance.SendNetMessage(state.Client, ServerPacketID.ChunkInit, new S_InitChunkMessage() { Chunk = data }, true);
+		}
 
-
-		void SendChunkToClient(ClientState client, ChunkData data) {
-			ServerController.Instance.SendNetMessage(client, ServerPacketID.ChunkInit, new S_InitChunkMessage() { Chunk = data }, true);
+		void UnloadChunkOnClient(PlayerChunkLoadState state, Int3 index) {
+			state.SentChunks.Remove(index);
+			ServerController.Instance.SendNetMessage(state.Client, ServerPacketID.ChunkUnload, new S_UnloadChunkMessage() { X = index.X, Y = index.Y, Z = index.Z });
 		}
 
 		void FinalizeClientWorldInitialization(ClientState client) {
@@ -384,7 +404,6 @@ namespace Voxels.Networking.Serverside {
 
 		void OnGenerationFinished(OnServerChunkGenQueueEmpty e) {
 			Owner.RemoveFromInitQueue(this);
-			Debug.Log("Generation finished");
 			//TODO: trigger finish prepare
 		}
 
@@ -400,6 +419,12 @@ namespace Voxels.Networking.Serverside {
 			CreateSendQueue(state);
 			var wsc = ServerWorldStateController.Instance; //TODO: Move to world state controller
 			wsc.SendToClient(e.State);
+		}
+
+		void OnPlayerSpawned(OnServerPlayerSpawn e) {
+			if ( _playerStates.TryGetValue(e.Client, out var state) ) {
+				state.Entity = e.Player;
+			}
 		}
 
 		void OnPlayerLeft(OnClientDisconnected e) {
