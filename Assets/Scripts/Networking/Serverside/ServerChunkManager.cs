@@ -372,8 +372,15 @@ namespace Voxels.Networking.Serverside {
 				}
 				state.LoadGenQueue.Enqueue(c);
 			}
-			
 
+			var maxLoadDistance = WorldOptions.ChunkUnloadDistance * WorldOptions.ChunkUnloadDistance;
+
+			foreach ( var c in state.SentChunks ) {
+				var dist = Int3.SquareDistanceFlat(centerPos, c);
+				if ( dist > maxLoadDistance ) {
+					state.ChunksToUnload.Add(c);
+				}
+			}
 			//WorldOptions.ChunkUnloadDistance
 		}
 

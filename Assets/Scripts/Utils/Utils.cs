@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 namespace Voxels {
-	[System.Serializable]
+	[Serializable]
 	public struct Byte2: System.IEquatable<Byte2> {
 		public byte X;
 		public byte Y;
@@ -31,7 +31,7 @@ namespace Voxels {
 		}
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct Int3: System.IEquatable<Int3> {
 		public int X;
 		public int Y;
@@ -65,12 +65,25 @@ namespace Voxels {
 			return X == other.X && Y == other.Y && Z == other.Z;
 		}
 
+		public static float Distance(Int3 a, Int3 b) {
+			var x = (b.X - a.X);
+			var y = (b.Y - a.Y);
+			var z = (b.Z - b.Z);
+			return Mathf.Sqrt(x * x + y * y + z * z);
+		}
+
+		public static float SquareDistanceFlat(Int3 a, Int3 b) {
+			var x = (b.X - a.X);
+			var z = (b.Z - b.Z);
+			return x * x + z * z;
+		}
+
 		public override string ToString() {
 			return string.Format("{0} {1} {2}", X, Y, Z);
 		}
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct Byte3 : System.IEquatable<Byte3> {
 		public byte X;
 		public byte Y;
