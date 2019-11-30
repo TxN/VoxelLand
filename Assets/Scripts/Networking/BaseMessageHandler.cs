@@ -1,6 +1,6 @@
 namespace Voxels.Networking {
 	public class BaseClientMessageHandler {
-		public virtual void ProcessMessage(ClientState client, byte[] rawCommand) {
+		public virtual void ProcessMessage(Serverside.ClientState client, byte[] rawCommand) {
 			
 		}
 	}

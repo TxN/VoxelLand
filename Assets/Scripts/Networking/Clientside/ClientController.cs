@@ -11,7 +11,7 @@ using Voxels.Networking.Utils;
 using Telepathy;
 using ZeroFormatter;
 
-namespace Voxels.Networking {
+namespace Voxels.Networking.Clientside {
 	public class ClientController : ClientsideController<ClientController> {
 		const int PROTOCOL_VERSION   = 1;
 		string     _serverIp         = string.Empty;

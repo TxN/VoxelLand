@@ -866,21 +866,25 @@ namespace Voxels {
 				NeedRebuildGeometry = false;
 				return;
 			}
-			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
-				for ( int y = 0; y < _maxNonEmptyY; y++ ) {
-					for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
-						var block = _blocks[x, y, z];
-						if ( block.IsEmpty() || _visibiltiy[x, y, z] == VisibilityFlags.None ) {
-							continue;
-						}
-						blockList.Add(new MesherBlockInput() {
-							Block      = block,
-							Position   = new Byte3(x, y, z),
-							Lighting   = GetLightForBlock(x, y, z, neighbors),
-							Visibility = _visibiltiy[x, y, z]
-						});
-					}
+
+			var maxVal = (_maxNonEmptyY + 1) * CHUNK_SIZE_X * CHUNK_SIZE_Z;
+			var divY = CHUNK_SIZE_X * CHUNK_SIZE_Z;
+			var divz = CHUNK_SIZE_X;
+			for ( int i = 0; i < maxVal; i++ ) {
+				var block = _blocks[i];
+				if ( block.IsEmpty() || _visibiltiy[i] == VisibilityFlags.None ) {
+					continue;
 				}
+				var y = i / divY;
+				var t = i % divY;
+				var z = t / divz;
+				var x = t % divz;
+				blockList.Add(new MesherBlockInput() {
+					Block = block,
+					Position = new Byte3(x, y, z),
+					Lighting = GetLightForBlock(x, y, z, neighbors),
+					Visibility = _visibiltiy[i]
+				});
 			}
 			_mesher.StartAsyncMeshing();
 			NeedRebuildGeometry = false;
@@ -899,16 +903,20 @@ namespace Voxels {
 			}
 			NeedRebuildGeometry = true;
 			var neighbors = GetNeighborChunks();
-			for ( int x = 0; x < CHUNK_SIZE_X; x++ ) {
-				for ( int y = 0; y < _maxNonEmptyY; y++ ) {
-					for ( int z = 0; z < CHUNK_SIZE_Z; z++ ) {
-						if ( _blocks[x, y, z].IsEmpty() ) {
-							_visibiltiy[x, y, z] = VisibilityFlags.None;
-							continue;
-						}
-						_visibiltiy[x, y, z] = _library.IsTranslucentBlock(_blocks[x, y, z].Type) ? CheckVisibilityTranslucent(x, y, z, neighbors) : CheckVisibilityOpaque(x, y, z, neighbors);
-					}
+
+			var maxVal = (_maxNonEmptyY + 1) * CHUNK_SIZE_X * CHUNK_SIZE_Z;
+			var divY = CHUNK_SIZE_X * CHUNK_SIZE_Z;
+			var divz = CHUNK_SIZE_X;
+			for ( int i = 0; i < maxVal; i++ ) {
+				if ( _blocks[i].IsEmpty() ) {
+					_visibiltiy[i] = VisibilityFlags.None;
+					continue;
 				}
+				var y = i / divY;
+				var t = i % divY;
+				var z = t / divz;
+				var x = t % divz;
+				_visibiltiy[i] = _library.IsTranslucentBlock(_blocks[i].Type) ? CheckVisibilityTranslucent(x, y, z, neighbors) : CheckVisibilityOpaque(x, y, z, neighbors);
 			}
 		}
 

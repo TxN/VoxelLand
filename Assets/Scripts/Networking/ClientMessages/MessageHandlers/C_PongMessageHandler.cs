@@ -1,4 +1,4 @@
-namespace Voxels.Networking {
+namespace Voxels.Networking.Serverside {
 	public class C_PongMessageHandler : BaseClientMessageHandler {
 		public override void ProcessMessage(ClientState client, byte[] rawCommand) {
 			base.ProcessMessage(client, rawCommand);

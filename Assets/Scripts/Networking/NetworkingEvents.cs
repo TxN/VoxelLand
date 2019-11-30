@@ -1,3 +1,5 @@
+using Voxels.Networking.Serverside;
+
 namespace Voxels.Networking.Events {
 	/// <summary>
 	/// Server Events

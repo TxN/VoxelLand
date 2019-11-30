@@ -64,6 +64,16 @@ namespace Voxels {
 			}
 		}
 
+		[IgnoreFormat]
+		public BlockData this[int pointer] {
+			get {
+				return _data[pointer];
+			}
+			set {
+				_data[pointer] = value;
+			}
+		}
+
 
 	}
 }

@@ -62,6 +62,16 @@ namespace Voxels {
 				_data[y * _z * _x + z * _x + x] = value;
 			}
 		}
+
+		[IgnoreFormat]
+		public VisibilityFlags this[int pointer] {
+			get {
+				return _data[pointer];
+			}
+			set {
+				_data[pointer] = value;
+			}
+		}
 	}
 }
 

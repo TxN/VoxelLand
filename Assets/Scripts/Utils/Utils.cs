@@ -68,13 +68,13 @@ namespace Voxels {
 		public static float Distance(Int3 a, Int3 b) {
 			var x = (b.X - a.X);
 			var y = (b.Y - a.Y);
-			var z = (b.Z - b.Z);
+			var z = (b.Z - a.Z);
 			return Mathf.Sqrt(x * x + y * y + z * z);
 		}
 
 		public static float SquareDistanceFlat(Int3 a, Int3 b) {
 			var x = (b.X - a.X);
-			var z = (b.Z - b.Z);
+			var z = (b.Z - a.Z);
 			return x * x + z * z;
 		}
 

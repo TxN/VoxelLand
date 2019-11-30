@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using Voxels.Utils;
+using Voxels.Networking.Clientside;
 
 using ZeroFormatter;
 
@@ -8,7 +9,7 @@ namespace Voxels.Networking {
 	[ZeroFormattable]
 	public class PlayerEntity {
 		[IgnoreFormat]
-		public ClientState   Owner = null;
+		public Serverside.ClientState   Owner = null;
 		[IgnoreFormat]
 		public PlayerMovement View = null;
 		[Index(0)]

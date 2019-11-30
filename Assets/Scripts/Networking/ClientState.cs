@@ -1,6 +1,6 @@
 using System;
 
-namespace Voxels.Networking {
+namespace Voxels.Networking.Serverside {
 	[Serializable]
 	public class ClientState {
 		public CState   CurrentState   = CState.Disconneted;

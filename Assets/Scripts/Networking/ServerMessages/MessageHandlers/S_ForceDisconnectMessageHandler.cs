@@ -2,6 +2,7 @@ using UnityEngine;
 
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
+using Voxels.Networking.Clientside;
 
 using ZeroFormatter;
 

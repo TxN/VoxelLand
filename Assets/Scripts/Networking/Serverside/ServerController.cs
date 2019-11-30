@@ -12,7 +12,7 @@ using Telepathy;
 using ZeroFormatter;
 using JetBrains.Annotations;
 
-namespace Voxels.Networking {
+namespace Voxels.Networking.Serverside {
 	public class ServerController : ServerSideController<ServerController> {
 
 		public bool EnableCompression = true;

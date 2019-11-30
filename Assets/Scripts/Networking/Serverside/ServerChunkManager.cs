@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 using SMGCore.EventSys;
+using SMGCore.Utils;
 using Voxels.Networking.Utils;
 using Voxels.Networking.Events;
 
@@ -17,15 +18,45 @@ namespace Voxels.Networking.Serverside {
 		public HashSet<Int3> SentChunks     = new HashSet<Int3>();
 		public Queue<Int3>   LoadGenQueue   = new Queue<Int3>(256);
 		public List<Int3>    ChunksToUnload = new List<Int3>(32);
+
+		public void Destroy(Dictionary<Int3, int> usedChunks) {
+			PlayerInited = false;
+			Client = null;
+			Entity = null;
+			foreach ( var item in SentChunks ) {
+				usedChunks[item] -= 1;
+				if ( usedChunks[item] <= 0 ) {
+					usedChunks.Remove(item);
+				}
+			}
+			foreach ( var item in SendQueue ) {
+				usedChunks[item] -= 1;
+				if ( usedChunks[item] <= 0 ) {
+					usedChunks.Remove(item);
+				}
+			}
+		}
+	}
+
+	public class DebugDataHolder {
+		public readonly Dictionary<Int3, Chunk> Chunks;
+		public readonly Dictionary<Int3, int>   UsedChunks;
+		public readonly Dictionary<Int3, float> UselessChunks;
+
+		public DebugDataHolder(Dictionary<Int3, Chunk> chunks, Dictionary<Int3, int> usedChunks, Dictionary<Int3, float> uselessChunks ) {
+			Chunks        = chunks;
+			UsedChunks    = usedChunks;
+			UselessChunks = uselessChunks;
+		}
 	}
 
 
 	public sealed class ServerChunkManager : ServerSideController<ServerChunkManager>, IChunkManager {
 		public ServerChunkManager(ServerGameManager owner) : base(owner) { }
 
-		Dictionary<ClientState, Queue<Int3>> _clientsLoadQueue = new Dictionary<ClientState, Queue<Int3>>();
-
-		Dictionary<ClientState, PlayerChunkLoadState> _playerStates = new Dictionary<ClientState, PlayerChunkLoadState>();
+		Dictionary<ClientState, PlayerChunkLoadState> _playerStates     = new Dictionary<ClientState, PlayerChunkLoadState>();
+		Dictionary<Int3,int>                          _usedChunks       = new Dictionary<Int3, int>();
+		Dictionary<Int3, float>                       _uselessChunks    = new Dictionary<Int3, float>();
 
 		Queue<Int3> _loadQueue = new Queue<Int3>(128);
 
@@ -78,6 +109,17 @@ namespace Voxels.Networking.Serverside {
 			foreach ( var item in _playerStates ) {
 				UpdatePlayerVisibleChunks(item.Value);
 			}
+			UpdateUselessChunks();
+		}
+
+		DebugDataHolder _debugHolder = null;
+		public DebugDataHolder DebugData {
+			get {
+				if ( _debugHolder == null ) {
+					_debugHolder = new DebugDataHolder(_chunks, _usedChunks, _uselessChunks);
+				}
+				return _debugHolder;
+			}
 		}
 
 		public int GetWorldHeight {
@@ -108,11 +150,16 @@ namespace Voxels.Networking.Serverside {
 
 		public Chunk GetChunk(int x, int y, int z) {
 			var key = new Int3(x, y, z);
-			_chunks.TryGetValue(key, out var res);
-			return res;
+			return GetChunk(key);
 		}
 
 		public Chunk GetChunk(Int3 pos) {
+			if ( _uselessChunks.ContainsKey(pos) ) {
+				_uselessChunks.Remove(pos);
+			}
+			if (_chunkUnloadSet.Contains(pos) ) {
+				_chunkUnloadSet.Remove(pos);
+			}
 			_chunks.TryGetValue(pos, out var res);
 			return res;
 		}
@@ -227,10 +274,7 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		Chunk GetOrInitChunk(Int3 index) {
-			if ( _chunks.TryGetValue(index, out var res) ) {
-				return res;
-			}
-			return InitializeChunk(index);
+			return GetChunk(index) ?? InitializeChunk(index);
 		}
 
 		Chunk InitializeChunk(Int3 index, ChunkData data = null) {
@@ -325,6 +369,12 @@ namespace Voxels.Networking.Serverside {
 				var c = state.LoadGenQueue.Dequeue();
 				state.SendQueue.Enqueue(c);
 				var chunk = GetChunk(c);
+				if ( !_usedChunks.ContainsKey(c) ) {
+					_usedChunks.Add(c, 1);
+				} else {
+					_usedChunks[c] += 1;
+				}
+				
 				if ( chunk == null ) {
 					GenOrLoad(c.X, c.Z, true);
 					break;
@@ -343,7 +393,11 @@ namespace Voxels.Networking.Serverside {
 			if ( state.ChunksToUnload.Count > 0 ) {
 				foreach ( var item in state.ChunksToUnload ) {
 					UnloadChunkOnClient(state, item);
-				}
+					_usedChunks[item] -= 1;
+					if ( _usedChunks[item] <= 0 ) {
+						_usedChunks.Remove(item);
+					}
+				}				
 				state.ChunksToUnload.Clear();
 			}
 
@@ -381,7 +435,27 @@ namespace Voxels.Networking.Serverside {
 					state.ChunksToUnload.Add(c);
 				}
 			}
-			//WorldOptions.ChunkUnloadDistance
+		}
+
+		HashSet<Int3> _chunkUnloadSet = new HashSet<Int3>();
+		void UpdateUselessChunks() {
+			foreach ( var c in _chunks ) {
+				var id = c.Key;
+				if ( _usedChunks.ContainsKey(id) || _keepaliveChunks.Contains(id) ) {
+					continue;
+				}
+				if ( ! _uselessChunks.ContainsKey(id) && !_chunkUnloadSet.Contains(id) ) {
+					_uselessChunks.Add(id, Time.time);
+				}
+			}
+			var maxAge = WorldOptions.UselessChunksMaxAge;
+			var curTime = Time.time;
+			foreach ( var c in _uselessChunks ) {
+				if ( curTime - c.Value > maxAge ) {
+					//TODO: Save and unload;
+					_chunkUnloadSet.Add(c.Key);
+				}
+			}
 		}
 
 		void SendChunkToClient(PlayerChunkLoadState state, ChunkData data, Int3 index) {
@@ -435,10 +509,8 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		void OnPlayerLeft(OnClientDisconnected e) {
-			if ( _clientsLoadQueue.TryGetValue(e.State, out var q) ) {
-				_clientsLoadQueue.Remove(e.State);
-			}
 			if ( _playerStates.TryGetValue(e.State, out var s) ) {
+				s.Destroy(_usedChunks);
 				_playerStates.Remove(e.State);
 			}
 		}

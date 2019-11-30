@@ -57,11 +57,6 @@ namespace ZeroFormatter
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.ChatMessageType?>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.NullableChatMessageTypeFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.Networking.ChatMessageType?>.Register(new NullableEqualityComparer<global::Voxels.Networking.ChatMessageType>());
             
-            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.CState>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.CStateFormatter<ZeroFormatter.Formatters.DefaultResolver>());
-            ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.Networking.CState>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.CStateEqualityComparer());
-            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.CState?>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.NullableCStateFormatter<ZeroFormatter.Formatters.DefaultResolver>());
-            ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.Networking.CState?>.Register(new NullableEqualityComparer<global::Voxels.Networking.CState>());
-            
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.ServerPacketID>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.ServerPacketIDFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.Networking.ServerPacketID>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.ServerPacketIDEqualityComparer());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.ServerPacketID?>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.NullableServerPacketIDFormatter<ZeroFormatter.Formatters.DefaultResolver>());
@@ -81,6 +76,11 @@ namespace ZeroFormatter
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.Networking.SState>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.SStateEqualityComparer());
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.SState?>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.NullableSStateFormatter<ZeroFormatter.Formatters.DefaultResolver>());
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.Networking.SState?>.Register(new NullableEqualityComparer<global::Voxels.Networking.SState>());
+            
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.Serverside.CState>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.Serverside.CStateFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.Networking.Serverside.CState>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.Serverside.CStateEqualityComparer());
+            ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.Serverside.CState?>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.Serverside.NullableCStateFormatter<ZeroFormatter.Formatters.DefaultResolver>());
+            ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Voxels.Networking.Serverside.CState?>.Register(new NullableEqualityComparer<global::Voxels.Networking.Serverside.CState>());
             
             // Objects
             ZeroFormatter.Formatters.Formatter<ZeroFormatter.Formatters.DefaultResolver, global::Voxels.Networking.C_ChatMessage>.Register(new ZeroFormatter.DynamicObjectSegments.Voxels.Networking.C_ChatMessageFormatter<ZeroFormatter.Formatters.DefaultResolver>());
@@ -4836,77 +4836,6 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels.Networking
 
 
 
-    public class CStateFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.CState>
-        where TTypeResolver : ITypeResolver, new()
-    {
-        public override int? GetLength()
-        {
-            return 1;
-        }
-
-        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.Networking.CState value)
-        {
-            return BinaryUtil.WriteByte(ref bytes, offset, (Byte)value);
-        }
-
-        public override global::Voxels.Networking.CState Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
-        {
-            byteSize = 1;
-            return (global::Voxels.Networking.CState)BinaryUtil.ReadByte(ref bytes, offset);
-        }
-    }
-
-
-    public class NullableCStateFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.CState?>
-        where TTypeResolver : ITypeResolver, new()
-    {
-        public override int? GetLength()
-        {
-            return 2;
-        }
-
-        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.Networking.CState? value)
-        {
-            BinaryUtil.WriteBoolean(ref bytes, offset, value.HasValue);
-            if (value.HasValue)
-            {
-                BinaryUtil.WriteByte(ref bytes, offset + 1, (Byte)value.Value);
-            }
-            else
-            {
-                BinaryUtil.EnsureCapacity(ref bytes, offset, offset + 2);
-            }
-
-            return 2;
-        }
-
-        public override global::Voxels.Networking.CState? Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
-        {
-            byteSize = 2;
-            var hasValue = BinaryUtil.ReadBoolean(ref bytes, offset);
-            if (!hasValue) return null;
-
-            return (global::Voxels.Networking.CState)BinaryUtil.ReadByte(ref bytes, offset + 1);
-        }
-    }
-
-
-
-    public class CStateEqualityComparer : IEqualityComparer<global::Voxels.Networking.CState>
-    {
-        public bool Equals(global::Voxels.Networking.CState x, global::Voxels.Networking.CState y)
-        {
-            return (Byte)x == (Byte)y;
-        }
-
-        public int GetHashCode(global::Voxels.Networking.CState x)
-        {
-            return (int)(Byte)x;
-        }
-    }
-
-
-
     public class ServerPacketIDFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.ServerPacketID>
         where TTypeResolver : ITypeResolver, new()
     {
@@ -5184,6 +5113,95 @@ namespace ZeroFormatter.DynamicObjectSegments.Voxels.Networking
         }
 
         public int GetHashCode(global::Voxels.Networking.SState x)
+        {
+            return (int)(Byte)x;
+        }
+    }
+
+
+
+}
+#pragma warning restore 168
+#pragma warning restore 414
+#pragma warning restore 618
+#pragma warning restore 612
+#pragma warning disable 618
+#pragma warning disable 612
+#pragma warning disable 414
+#pragma warning disable 168
+namespace ZeroFormatter.DynamicObjectSegments.Voxels.Networking.Serverside
+{
+    using global::System;
+    using global::System.Collections.Generic;
+    using global::ZeroFormatter.Formatters;
+    using global::ZeroFormatter.Internal;
+    using global::ZeroFormatter.Segments;
+
+
+    public class CStateFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.Serverside.CState>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return 1;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.Networking.Serverside.CState value)
+        {
+            return BinaryUtil.WriteByte(ref bytes, offset, (Byte)value);
+        }
+
+        public override global::Voxels.Networking.Serverside.CState Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = 1;
+            return (global::Voxels.Networking.Serverside.CState)BinaryUtil.ReadByte(ref bytes, offset);
+        }
+    }
+
+
+    public class NullableCStateFormatter<TTypeResolver> : Formatter<TTypeResolver, global::Voxels.Networking.Serverside.CState?>
+        where TTypeResolver : ITypeResolver, new()
+    {
+        public override int? GetLength()
+        {
+            return 2;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Voxels.Networking.Serverside.CState? value)
+        {
+            BinaryUtil.WriteBoolean(ref bytes, offset, value.HasValue);
+            if (value.HasValue)
+            {
+                BinaryUtil.WriteByte(ref bytes, offset + 1, (Byte)value.Value);
+            }
+            else
+            {
+                BinaryUtil.EnsureCapacity(ref bytes, offset, offset + 2);
+            }
+
+            return 2;
+        }
+
+        public override global::Voxels.Networking.Serverside.CState? Deserialize(ref byte[] bytes, int offset, global::ZeroFormatter.DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = 2;
+            var hasValue = BinaryUtil.ReadBoolean(ref bytes, offset);
+            if (!hasValue) return null;
+
+            return (global::Voxels.Networking.Serverside.CState)BinaryUtil.ReadByte(ref bytes, offset + 1);
+        }
+    }
+
+
+
+    public class CStateEqualityComparer : IEqualityComparer<global::Voxels.Networking.Serverside.CState>
+    {
+        public bool Equals(global::Voxels.Networking.Serverside.CState x, global::Voxels.Networking.Serverside.CState y)
+        {
+            return (Byte)x == (Byte)y;
+        }
+
+        public int GetHashCode(global::Voxels.Networking.Serverside.CState x)
         {
             return (int)(Byte)x;
         }

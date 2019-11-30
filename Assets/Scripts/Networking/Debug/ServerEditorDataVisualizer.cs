@@ -13,9 +13,11 @@ using NaughtyAttributes;
 
 namespace Voxels.Networking.NetDebug {
 	public sealed class ServerEditorDataVisualizer : MonoBehaviour {
+		[Header("Options")]
+		public bool DrawChunkInfo = true;
 
 		public SingleBlockPresenter Presenter = null;
-
+		[Header("Data")]
 		public long              ReceivedCommands = 0;
 		public long              SentCommands     = 0;
 		public List<ClientState> Clients          = null;
@@ -27,7 +29,9 @@ namespace Voxels.Networking.NetDebug {
 				Destroy(gameObject);
 				return;
 			}
+#if UNITY_EDITOR
 			StartCoroutine(UpdateValues());
+#endif
 		}
 
 		void OnDestroy() {
@@ -43,6 +47,29 @@ namespace Voxels.Networking.NetDebug {
 			foreach ( var player in pc.Players ) {
 				Gizmos.DrawWireSphere(player.Position, 0.5f);
 				Handles.Label(player.Position, player.PlayerName);
+			}
+			if ( DrawChunkInfo ) {
+				var cm = ServerChunkManager.Instance;
+				var data = cm.DebugData;
+				foreach ( var item in data.Chunks ) {
+					var index = item.Key;
+					var centerPos = new Vector3(index.X*16 + 8, Chunk.CHUNK_SIZE_Y * 0.5f, index.Z*16 + 8);
+					if ( !data.UsedChunks.ContainsKey(index) && !data.UselessChunks.ContainsKey(index) ) {
+						Gizmos.DrawWireCube(centerPos, new Vector3(16, 128, 16));
+					}					
+				}
+				Gizmos.color = Color.red;
+				foreach ( var item in data.UselessChunks ) {
+					var index = item.Key;
+					var centerPos = new Vector3(index.X * 16 + 8, Chunk.CHUNK_SIZE_Y * 0.5f, index.Z * 16 + 8);
+					Gizmos.DrawWireCube(centerPos, new Vector3(16, 128, 16));
+				}
+				Gizmos.color = Color.green;
+				foreach ( var item in data.UsedChunks ) {
+					var index = item.Key;
+					var centerPos = new Vector3(index.X * 16 + 8, Chunk.CHUNK_SIZE_Y * 0.5f, index.Z * 16 + 8);
+					Gizmos.DrawWireCube(centerPos, new Vector3(16, 128, 16));
+				}
 			}
 		}
 #endif

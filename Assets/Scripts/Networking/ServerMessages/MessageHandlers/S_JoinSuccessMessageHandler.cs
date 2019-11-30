@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using Voxels.Networking.Clientside;
+
 namespace Voxels.Networking {
 	public class S_JoinSuccessMessageHandler : BaseServerMessageHandler {
 		public override void ProcessMessage(byte[] rawCommand) {
