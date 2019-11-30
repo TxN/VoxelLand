@@ -103,6 +103,20 @@ namespace Voxels {
 			StopAllCoroutines();
 		}
 
+		void OnApplicationQuit() {		
+			if ( ClientAlive ) {
+				Debug.Log("Shutting down client.");
+				_clientManager.Save();
+				_clientManager.Reset();
+			}
+
+			if ( ServerAlive ) {
+				Debug.Log("Shutting down server.");
+				_serverManager.Save();
+				_serverManager.Reset();
+			}
+		}
+
 		IEnumerator RareUpdate() {
 			while (true) {
 				if ( ServerAlive ) {

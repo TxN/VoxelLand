@@ -45,6 +45,11 @@ namespace Voxels.Networking.Clientside {
 			MainCycle();
 		}
 
+		public override void Reset() {
+			base.Reset();
+			Disconnect();
+		}
+
 		public void StartClient(string name, string password, string ip,int port) {
 			if ( IsStarted ) {
 				return;

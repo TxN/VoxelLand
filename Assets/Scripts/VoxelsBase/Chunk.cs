@@ -49,12 +49,12 @@ namespace Voxels {
 
 		public Chunk(ChunkData data) {
 			var b = data.Blocks;
-			_visibiltiy = new VisibilityFlagsHolder(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
-			_blocks = new BlockDataHolder(b.SizeX, b.SizeY, b.SizeZ, b.Data);
-			OriginPos = data.Origin;
-			_indexX = data.IndexX;
-			_indexY = data.IndexY;
-			_indexZ = data.IndexZ;
+			_visibiltiy   = new VisibilityFlagsHolder(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
+			_blocks       = new BlockDataHolder(b.SizeX, b.SizeY, b.SizeZ, b.Data);
+			OriginPos     = data.Origin;
+			_indexX       = data.IndexX;
+			_indexY       = data.IndexY;
+			_indexZ       = data.IndexZ;
 			_maxNonEmptyY = data.Height;
 		}
 
@@ -67,6 +67,12 @@ namespace Voxels {
 				_fullyInited = true;
 			}
 			ForceUpdateChunk();
+		}
+
+		public void FinishInitServerChunk(IChunkManager owner) {
+			_owner = owner;
+			_library = VoxelsStatic.Instance.Library;
+			_mesher = new EmptyChunkMesher();
 		}
 
 		public Chunk(IChunkManager owner, ChunkData data, bool isServerChunk) {
@@ -859,6 +865,9 @@ namespace Voxels {
 		#endregion
 
 		public void UpdateGeometry() {
+			if ( _mesher.Busy ) {
+				return;
+			}
 			_mesher.PrepareMesher();
 			var neighbors = GetNeighborChunks();
 			var blockList = _mesher.Blocks;

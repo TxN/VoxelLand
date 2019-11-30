@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
-
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Voxels {
@@ -29,7 +29,7 @@ namespace Voxels {
 		GeneratableMesh _translucentPassableMesh = null;
 		Vector3         _originPos               = Vector3.zero;
 		ResourceLibrary _library                 = null;
-		Thread          _curentThread            = null;
+		Task            _currentTask             = null;
 
 		public ChunkMesher(ResourceLibrary library, int chunkMeshCapacity, int capacity, Vector3 originPos) {
 			_opaqueCollidedMesh      = new GeneratableMesh(chunkMeshCapacity);
@@ -60,22 +60,22 @@ namespace Voxels {
 		}
 
 		public void DeInit() {
-			if ( _curentThread != null && _curentThread.IsAlive ) {
+			
+		/*	if ( _curentThread != null && _curentThread. ) {
 				_curentThread.Abort();
 			}
+			*/
 			_opaqueCollidedMesh.Destroy();
 			_translucentPassableMesh.Destroy();
 			_opaquePassableMesh.Destroy();
 		}
 
 		public void StartAsyncMeshing() {
-			if ( _curentThread != null && _curentThread.IsAlive ) {
-				_curentThread.Abort();
+			if ( Busy ) {
+				return;
 			}
 			Busy = true;
-			_curentThread = new Thread(StartMeshing);
-			_curentThread.Name = "Chunk Mesher Job";
-			_curentThread.Start();
+			_currentTask = Task.Factory.StartNew(StartMeshing);
 		}
 
 		void StartMeshing() {

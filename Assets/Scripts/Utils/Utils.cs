@@ -1,5 +1,8 @@
 using System;
+
 using UnityEngine;
+
+using ZeroFormatter;
 
 namespace Voxels {
 	[Serializable]
@@ -32,9 +35,13 @@ namespace Voxels {
 	}
 
 	[Serializable]
+	[ZeroFormattable]
 	public struct Int3: System.IEquatable<Int3> {
+		[Index(0)]
 		public int X;
+		[Index(1)]
 		public int Y;
+		[Index(2)]
 		public int Z;
 
 		public Int3(int x, int y, int z) {
@@ -43,6 +50,7 @@ namespace Voxels {
 			Z = z;
 		}
 
+		[IgnoreFormat]
 		public static Int3 Zero {
 			get {
 				return new Int3(0, 0, 0);

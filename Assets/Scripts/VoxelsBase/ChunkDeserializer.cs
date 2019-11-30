@@ -1,24 +1,21 @@
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace Voxels {
 	public class ChunkDeserializer {
 		public bool Busy  { get; private set; }
 		public bool Ready { get; private set; }
 
-		Thread    _curentThread = null;
+		Task      _currentTask  = null;
 		ChunkData _data         = null;
 		Chunk     _result       = null;
 
 		public void StartDeserialize(ChunkData data) {
-			if ( _curentThread != null && _curentThread.IsAlive ) {
-				_curentThread.Abort();
+			if ( Busy || Ready ) {
+				return;
 			}
 			Busy = true;
 			_data = data;
-			_curentThread = new Thread(StartJob) {
-				Name = "Deserialize Job"
-			};
-			_curentThread.Start();
+			_currentTask = Task.Factory.StartNew(StartJob);
 		}
 
 		public Chunk GetResult() {
@@ -33,12 +30,15 @@ namespace Voxels {
 		}
 
 		void StartJob() {
+			var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 			Ready = false;
 			if ( _data != null ) {
 				_result = new Chunk(_data);
 			}
 			Ready = true;
 			Busy  = false;
+			stopwatch.Stop();
+			//UnityEngine.Debug.Log(stopwatch.Elapsed.TotalMilliseconds);
 		}
 	}
 }

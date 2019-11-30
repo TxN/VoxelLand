@@ -1,7 +1,5 @@
 using System.IO;
 
-using UnityEngine;
-
 using ZeroFormatter;
 
 namespace Voxels {

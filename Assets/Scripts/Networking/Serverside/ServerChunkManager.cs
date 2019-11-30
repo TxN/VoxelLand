@@ -58,46 +58,47 @@ namespace Voxels.Networking.Serverside {
 		Dictionary<Int3,int>                          _usedChunks       = new Dictionary<Int3, int>();
 		Dictionary<Int3, float>                       _uselessChunks    = new Dictionary<Int3, float>();
 
-		Queue<Int3> _loadQueue = new Queue<Int3>(128);
-
 		Dictionary<Int3, Chunk> _chunks         = new Dictionary<Int3, Chunk>();
-		HashSet<Int3>          _library         = new HashSet<Int3>();
 		HashSet<Int3>          _keepaliveChunks = new HashSet<Int3>();
 		int                    _sizeY   = 1;
 
 		public override void Load() {
 			base.Load();
-			//TODO: load library
 		}
 
 		public override void PostLoad() {
 			base.PostLoad();
-			EventManager.Subscribe<OnServerChunkGenerated>    (this, OnChunkGenerated);
-			EventManager.Subscribe<OnServerChunkGenQueueEmpty>(this, OnGenerationFinished);
-			EventManager.Subscribe<OnClientDisconnected>      (this, OnPlayerLeft);
-			EventManager.Subscribe<OnClientConnected>         (this, OnPlayerJoin);
-			EventManager.Subscribe<OnServerPlayerSpawn>       (this, OnPlayerSpawned);
+			EventManager.Subscribe<OnServerChunkGenerated>     (this, OnChunkGenerated);
+			EventManager.Subscribe<OnServerChunkGenQueueEmpty> (this, OnGenerationFinished);
+			EventManager.Subscribe<OnServerChunkLoadedFromDisk>(this, OnChunkLoadedFromDisk);
+			EventManager.Subscribe<OnClientDisconnected>       (this, OnPlayerLeft);
+			EventManager.Subscribe<OnClientConnected>          (this, OnPlayerJoin);
+			EventManager.Subscribe<OnServerPlayerSpawn>        (this, OnPlayerSpawned);
 
 			Owner.AddToInitQueue(this);
 
 			LoadGenWorldOrigin();
 		}
 
+		public override void Save() {
+			base.Save();
+			foreach ( var item in _chunks ) {
+				ServerSaveLoadController.Instance.SaveChunk(item.Key, item.Value.GetData());
+			}
+		}
+
 		public override void Reset() {
 			base.Reset();
-			EventManager.Unsubscribe<OnServerChunkGenerated>    (OnChunkGenerated);
-			EventManager.Unsubscribe<OnServerChunkGenQueueEmpty>(OnGenerationFinished);
-			EventManager.Unsubscribe<OnClientConnected>         (OnPlayerJoin);
-			EventManager.Unsubscribe<OnServerPlayerSpawn>       (OnPlayerSpawned);
-			EventManager.Unsubscribe<OnClientDisconnected>      (OnPlayerLeft);
+			EventManager.Unsubscribe<OnServerChunkGenerated>     (OnChunkGenerated);
+			EventManager.Unsubscribe<OnServerChunkGenQueueEmpty> (OnGenerationFinished);
+			EventManager.Unsubscribe<OnServerChunkLoadedFromDisk>(OnChunkLoadedFromDisk);
+			EventManager.Unsubscribe<OnClientConnected>          (OnPlayerJoin);
+			EventManager.Unsubscribe<OnServerPlayerSpawn>        (OnPlayerSpawned);
+			EventManager.Unsubscribe<OnClientDisconnected>       (OnPlayerLeft);
 		}
 
 		public override void Update() {
-			if ( _loadQueue.Count > 0 ) {
-				//LoadChunk(_saveLoadList.Dequeue()); //TODO!
-			}
 			UpdateDirtyChunks();
-
 
 			foreach ( var item in _playerStates ) {
 				UpdateClientQueues(item.Value);
@@ -322,10 +323,11 @@ namespace Voxels.Networking.Serverside {
 			if ( GetChunk(newPos) != null ) {
 				return;
 			}
-			if ( !_library.Contains(newPos) ) {
+			var sl = ServerSaveLoadController.Instance;
+			if ( !sl.HasChunkOnDisk(newPos) ) {
 				lg.AddToQueue(newPos, run);
-			}	else {
-				_loadQueue.Enqueue(newPos);
+			} else {
+				sl.TryLoadChunk(newPos);
 			}
 		}
 
@@ -344,12 +346,12 @@ namespace Voxels.Networking.Serverside {
 				}
 			}
 
-			foreach ( var chunkPair in _chunks ) {
+			/*foreach ( var chunkPair in _chunks ) {
 				var chunk = chunkPair.Value;
 				if ( chunk != null && chunk.NeedRebuildGeometry ) {
 					chunk.UpdateGeometry();
 				}
-			}
+			}*/
 		}
 
 		void CreateSendQueue(PlayerChunkLoadState state) {
@@ -452,10 +454,15 @@ namespace Voxels.Networking.Serverside {
 			var curTime = Time.time;
 			foreach ( var c in _uselessChunks ) {
 				if ( curTime - c.Value > maxAge ) {
-					//TODO: Save and unload;
 					_chunkUnloadSet.Add(c.Key);
+					ServerSaveLoadController.Instance.SaveChunk(c.Key, _chunks[c.Key].GetData());
 				}
 			}
+			foreach ( var item in _chunkUnloadSet ) {
+				_uselessChunks.Remove(item);
+				DeInitChunk(item);
+			}
+			_chunkUnloadSet.Clear();
 		}
 
 		void SendChunkToClient(PlayerChunkLoadState state, ChunkData data, Int3 index) {
@@ -486,6 +493,11 @@ namespace Voxels.Networking.Serverside {
 		void OnGenerationFinished(OnServerChunkGenQueueEmpty e) {
 			Owner.RemoveFromInitQueue(this);
 			//TODO: trigger finish prepare
+		}
+
+		void OnChunkLoadedFromDisk(OnServerChunkLoadedFromDisk e) {
+			_chunks.Add(e.Index, e.DeserializedChunk);
+			e.DeserializedChunk.FinishInitServerChunk(this);
 		}
 
 		void OnPlayerJoin(OnClientConnected e) {

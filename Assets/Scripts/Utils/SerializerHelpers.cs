@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using ZeroFormatter;
 
 #if INCLUDE_ONLY_CODE_GENERATION
@@ -48,5 +50,11 @@ namespace Voxels {
 	public class VisibilityFlagsArrayHint {
 		[Index(0)]
 		public virtual Voxels.VisibilityFlags[,,] Hint1 { get; set; }
+	}
+
+	[ZeroFormattable]
+	public class Int3HashsetHint {
+		[Index(0)]
+		public virtual HashSet<Int3> Hint1 { get; set; }
 	}
 }

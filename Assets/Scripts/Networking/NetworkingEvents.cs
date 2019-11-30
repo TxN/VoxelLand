@@ -36,6 +36,11 @@ namespace Voxels.Networking.Events {
 		public int         WaterLevel;
 	}
 
+	public struct OnServerChunkLoadedFromDisk {
+		public Int3  Index;
+		public Chunk DeserializedChunk;
+	}
+
 	public struct OnServerChunkGenQueueEmpty {
 
 	}

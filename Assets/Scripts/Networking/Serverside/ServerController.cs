@@ -58,6 +58,12 @@ namespace Voxels.Networking.Serverside {
 			MainCycle();
 		}
 
+		public override void Reset() {
+			base.Reset();
+			//TODO: force disconnect all players with reason
+			StopServer();
+		}
+
 		public void StartServer(int port) {
 			if ( IsStarted ) {
 				return;
