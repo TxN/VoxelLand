@@ -5,14 +5,13 @@ using SMGCore.EventSys;
 using Voxels.Networking.Events;
 
 namespace Voxels.Networking.Serverside {
-	public class ServerChatManager : ServerSideController<ServerChatManager> {
+	public sealed class ServerChatManager : ServerSideController<ServerChatManager> {
 		public ServerChatManager(ServerGameManager owner) : base(owner) { }
 
 		const string COMMAND_START_SYMBOL      = "/";
 		const string OP_COMMAND_REJECT_MESSAGE = "<color=\"red\">This command is OP only.</color>";
 
-		List<ChatMessage> _messages = new List<ChatMessage>();
-
+		List<ChatMessage>               _messages = new List<ChatMessage>();
 		Dictionary<string, ChatCommand> _commands = new Dictionary<string, ChatCommand>();
 
 		public override void Init() {
@@ -20,6 +19,7 @@ namespace Voxels.Networking.Serverside {
 			_commands.Add("none",     new NoneChatCommand());
 			_commands.Add("kick",     new KickChatCommand());
 			_commands.Add("time_set", new TimeSetChatCommand());
+			_commands.Add("tp",       new TeleportChatCommand());
 			_commands.Add("spawn",    new TeleportToSpawnChatCommand());
 		}
 

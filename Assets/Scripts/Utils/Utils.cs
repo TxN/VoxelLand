@@ -140,7 +140,7 @@ namespace Voxels {
 			var posY = Mathf.FloorToInt(pos.y);
 			var posZ = Mathf.FloorToInt(pos.z);
 			var fullChunksX = Mathf.FloorToInt(posX / (float)Chunk.CHUNK_SIZE_X);
-			var fullChunksY = Mathf.FloorToInt(posY / (float)Chunk.CHUNK_SIZE_Y);
+			var fullChunksY = Mathf.Clamp(Mathf.FloorToInt(posY / (float)Chunk.CHUNK_SIZE_Y), 0, 1);
 			var fullChunksZ = Mathf.FloorToInt(posZ / (float)Chunk.CHUNK_SIZE_Z);
 			return new Int3(fullChunksX, fullChunksY, fullChunksZ);
 		}

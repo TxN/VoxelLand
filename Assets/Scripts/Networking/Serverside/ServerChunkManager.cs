@@ -7,6 +7,7 @@ using SMGCore.EventSys;
 using SMGCore.Utils;
 using Voxels.Networking.Utils;
 using Voxels.Networking.Events;
+using System.Collections.Concurrent;
 
 namespace Voxels.Networking.Serverside {
 
@@ -57,6 +58,7 @@ namespace Voxels.Networking.Serverside {
 		Dictionary<ClientState, PlayerChunkLoadState> _playerStates     = new Dictionary<ClientState, PlayerChunkLoadState>();
 		Dictionary<Int3,int>                          _usedChunks       = new Dictionary<Int3, int>();
 		Dictionary<Int3, float>                       _uselessChunks    = new Dictionary<Int3, float>();
+		HashSet<Int3>                                 _requestedChunks  = new HashSet<Int3>();
 
 		Dictionary<Int3, Chunk> _chunks         = new Dictionary<Int3, Chunk>();
 		HashSet<Int3>          _keepaliveChunks = new HashSet<Int3>();
@@ -98,6 +100,13 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		public override void Update() {
+			if ( _chunksToAdd.TryDequeue(out var pair) ) {
+				_requestedChunks.Remove(pair.Key);
+				_chunks.Add(pair.Key, pair.Value);
+				pair.Value.FinishInitServerChunk(this);
+			}
+
+
 			UpdateDirtyChunks();
 
 			foreach ( var item in _playerStates ) {
@@ -320,7 +329,7 @@ namespace Voxels.Networking.Serverside {
 		void GenOrLoad(int x, int z, bool run) {
 			var lg = ServerLandGenerator.Instance;
 			var newPos = new Int3(x, 0, z);
-			if ( GetChunk(newPos) != null ) {
+			if ( GetChunk(newPos) != null || _requestedChunks.Contains(newPos) ) {
 				return;
 			}
 			var sl = ServerSaveLoadController.Instance;
@@ -329,6 +338,7 @@ namespace Voxels.Networking.Serverside {
 			} else {
 				sl.TryLoadChunk(newPos);
 			}
+			_requestedChunks.Add(newPos);
 		}
 
 		void UpdateDirtyChunks() {
@@ -345,16 +355,9 @@ namespace Voxels.Networking.Serverside {
 					chunk.UpdateLightLevel();
 				}
 			}
-
-			/*foreach ( var chunkPair in _chunks ) {
-				var chunk = chunkPair.Value;
-				if ( chunk != null && chunk.NeedRebuildGeometry ) {
-					chunk.UpdateGeometry();
-				}
-			}*/
 		}
 
-		void CreateSendQueue(PlayerChunkLoadState state) {
+		void CreateInitialSendQueue(PlayerChunkLoadState state) {
 			Vector3 spawnPoint = ServerPlayerEntityManager.Instance.GetSpawnPosition(state.Client);
 			var centerChunk = ChunkHelper.GetChunkIdFromCoords(spawnPoint);
 
@@ -370,17 +373,19 @@ namespace Voxels.Networking.Serverside {
 			while ( state.LoadGenQueue.Count > 0 ) {
 				var c = state.LoadGenQueue.Dequeue();
 				state.SendQueue.Enqueue(c);
+
 				var chunk = GetChunk(c);
 				if ( !_usedChunks.ContainsKey(c) ) {
 					_usedChunks.Add(c, 1);
-				} else {
+				}
+				else {
 					_usedChunks[c] += 1;
 				}
-				
+
 				if ( chunk == null ) {
 					GenOrLoad(c.X, c.Z, true);
 					break;
-				}				
+				}
 			}
 
 			if ( state.SendQueue.Count > 0 ) {
@@ -483,6 +488,7 @@ namespace Voxels.Networking.Serverside {
 
 		void OnChunkGenerated(OnServerChunkGenerated e) {
 			var c = e.WorldCoords;
+			_requestedChunks.Remove(new Int3(c.X, c.Y, c.Z));
 			var chunk = GetOrInitChunkInCoords(c.X, c.Y, c.Z);
 			if ( chunk != null ) {
 				chunk.SetAllBlocks(e.Blocks, e.MaxHeight);
@@ -495,9 +501,10 @@ namespace Voxels.Networking.Serverside {
 			//TODO: trigger finish prepare
 		}
 
+
+		ConcurrentQueue<KeyValuePair<Int3, Chunk>> _chunksToAdd = new ConcurrentQueue<KeyValuePair<Int3, Chunk>>();
 		void OnChunkLoadedFromDisk(OnServerChunkLoadedFromDisk e) {
-			_chunks.Add(e.Index, e.DeserializedChunk);
-			e.DeserializedChunk.FinishInitServerChunk(this);
+			_chunksToAdd.Enqueue(new KeyValuePair<Int3, Chunk>(e.Index, e.DeserializedChunk));
 		}
 
 		void OnPlayerJoin(OnClientConnected e) {
@@ -509,7 +516,7 @@ namespace Voxels.Networking.Serverside {
 			};
 			_playerStates.Add(e.State, state);
 
-			CreateSendQueue(state);
+			CreateInitialSendQueue(state);
 			var wsc = ServerWorldStateController.Instance; //TODO: Move to world state controller
 			wsc.SendToClient(e.State);
 		}

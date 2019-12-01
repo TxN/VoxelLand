@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
+using System;
 
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
@@ -11,6 +12,7 @@ using Voxels.Utils;
 using Voxels.Networking.Utils;
 
 using ZeroFormatter;
+
 
 namespace Voxels.Networking.Serverside {
 	public class ServerSaveLoadController : ServerSideController<ServerSaveLoadController> {
@@ -74,8 +76,7 @@ namespace Voxels.Networking.Serverside {
 
 		public override void Save() {
 			base.Save();
-			//_saveData.ChunkLibrary.
-			_saveData.ChunkArray = _saveData.ChunkLibrary.ToArray();
+			_saveData.ChunkArray = _saveData.ChunkLibrary.ToArray(); //ZeroFormatter не хочет сериализовывать хешсет по какой-то причине, поэтому приходится делать вот так
 			SaveFileToDisk(SAVE_DATA_FILE_NAME, _saveData);
 		}
 
@@ -169,11 +170,17 @@ namespace Voxels.Networking.Serverside {
 
 		void SaveChunkToDisk(Int3 pos, ChunkData data) {
 			var savePath = WorldSavePath;
-			using ( var file = File.Create(savePath + pos.ToString()) ) {
-				using ( var chunkWriter = new BinaryWriter(file) ) {
-					ChunkSerializer.Serialize(data, chunkWriter, true);
+			try {
+				using ( var file = File.Create(savePath + pos.ToString()) ) {
+					using ( var chunkWriter = new BinaryWriter(file) ) {
+						ChunkSerializer.Serialize(data, chunkWriter, true);
+					}
 				}
+			} catch (Exception e) {
+				UnityEngine.Debug.LogError(e.ToString());
+				_chunkSaveQueue.Enqueue(new KeyValuePair<Int3, ChunkData>(pos, data)); //Если по какой-то причине не получилось сохраниться на диск, то возвращаем чанк в конец очереди.
 			}
+
 			_saveData.ChunkLibrary.Add(pos);
 		}
 
