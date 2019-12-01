@@ -13,7 +13,8 @@ namespace Voxels {
 			writer.Write(data.Origin.y);
 			writer.Write(data.Origin.z);
 			var blockData = new byte[0];
-			var uncompressed = ChunkHelper.ToByteArray(data.Blocks.Data, Chunk.CHUNK_SIZE_X * Chunk.CHUNK_SIZE_Z * (data.Height + 1));
+			var uncompressed = ChunkHelper.ToByteArray(data.Blocks.Data, Chunk.CHUNK_SIZE_X * Chunk.CHUNK_SIZE_Z * Chunk.CHUNK_SIZE_Y);
+			
 			if ( compress ) {
 				blockData = CLZF2.Compress(uncompressed);
 			} else {

@@ -3,6 +3,8 @@ using UnityEngine;
 using SMGCore;
 using SMGCore.EventSys;
 using Voxels.Events;
+using Voxels.Networking.Clientside;
+using Voxels.Networking.Utils;
 
 namespace Voxels {
 	public sealed class ChunkRenderer : MonoBehaviour, IPoolItem {
@@ -13,7 +15,8 @@ namespace Voxels {
 		public MeshFilter   OpaquePassableFilter   = null;
 		public MeshCollider OpaquePassableCollider = null;
 
-		Chunk _targetChunk = null;
+		Chunk _targetChunk   = null;
+		bool _colliderInited = false;
 
 		public void Setup(Chunk targetChunk) {
 			EventManager.Subscribe<Event_ChunkMeshUpdate>(this, OnChunkUpdate);
@@ -28,21 +31,51 @@ namespace Voxels {
 			_targetChunk = null;
 		}
 
+		void Update() {
+			if ( !_colliderInited && _targetChunk != null && _targetChunk.OpaqueCollidedMesh != null && _targetChunk.OpaquePassableMesh != null ) {
+				var p = ClientPlayerEntityManager.Instance.LocalPlayer;
+				if ( GetDistanceToPlayer() < WorldOptions.PhysXCollisionDist ) {
+					UpdateColliders();
+				}
+			}
+		}
+
+		void UpdateColliders() {
+			_colliderInited = true;
+			Collider.sharedMesh = _targetChunk.OpaqueCollidedMesh.Mesh;
+			OpaquePassableCollider.sharedMesh = _targetChunk.OpaquePassableMesh.Mesh;
+		}
+
+		float GetDistanceToPlayer() {
+			if ( ClientChatManager.Instance == null || _targetChunk == null ) {
+				return 0;
+			}
+			var p = ClientPlayerEntityManager.Instance.LocalPlayer;
+			if ( p == null ) {
+				return 0;
+			}
+			return Vector3.Distance(_targetChunk.OriginPos, p.Position);
+		}
+
 		void DeInitRenderer() {
-			MeshFilter.mesh        = null;
-			TransparentFilter.mesh = null;
-			Collider.sharedMesh    = null;
-			OpaquePassableFilter.mesh = null;
+			MeshFilter.mesh                   = null;
+			TransparentFilter.mesh            = null;
+			Collider.sharedMesh               = null;
+			OpaquePassableFilter.mesh         = null;
 			OpaquePassableCollider.sharedMesh = null;
+			_colliderInited = false;
 		}
 
 		void UpdateRenderer() {
+			_colliderInited = false;
 			DeInitRenderer();
 			MeshFilter.mesh           = _targetChunk.OpaqueCollidedMesh.Mesh;
 			TransparentFilter.mesh    = _targetChunk.TranslucentPassableMesh.Mesh;
-			Collider.sharedMesh       = _targetChunk.OpaqueCollidedMesh.Mesh;
 			OpaquePassableFilter.mesh = _targetChunk.OpaquePassableMesh.Mesh;
-			OpaquePassableCollider.sharedMesh = _targetChunk.OpaquePassableMesh.Mesh;
+
+			if ( GetDistanceToPlayer() < WorldOptions.PhysXCollisionDist ) {
+				UpdateColliders();
+			}
 		}
 
 		void OnChunkUpdate(Event_ChunkMeshUpdate e) {
