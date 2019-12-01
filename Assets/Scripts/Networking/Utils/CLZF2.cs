@@ -12,44 +12,53 @@ public static class CLZF2 {
 	/// <summary>
 	/// Hashtable, that can be allocated only once
 	/// </summary>
-	private static readonly long[] HashTable = new long[HSIZE];
+	[ThreadStatic]
+	private static long[] HashTable;
 
 	// Compresses inputBytes
 	public static byte[] Compress(byte[] inputBytes) {
-		// Starting guess, increase it later if needed
-		int outputByteCountGuess = inputBytes.Length * 2;
-		byte[] tempBuffer = new byte[outputByteCountGuess];
-		int byteCount = LzfCompress(inputBytes, ref tempBuffer);
+		if ( inputBytes.Length > 1 ) {
+			// Starting guess, increase it later if needed
+			int outputByteCountGuess = inputBytes.Length * 2;
+			byte[] tempBuffer = new byte[outputByteCountGuess];
+			int byteCount = lzf_compress(inputBytes, ref tempBuffer);
 
-		// If byteCount is 0, then increase buffer and try again
-		while ( byteCount == 0 ) {
-			outputByteCountGuess *= 2;
-			tempBuffer = new byte[outputByteCountGuess];
-			byteCount = LzfCompress(inputBytes, ref tempBuffer);
+			// If byteCount is 0, then increase buffer and try again
+			while ( byteCount == 0 ) {
+				outputByteCountGuess *= 2;
+				tempBuffer = new byte[outputByteCountGuess];
+				byteCount = lzf_compress(inputBytes, ref tempBuffer);
+			}
+
+			byte[] outputBytes = new byte[byteCount];
+			Buffer.BlockCopy(tempBuffer, 0, outputBytes, 0, byteCount);
+			return outputBytes;
 		}
-
-		byte[] outputBytes = new byte[byteCount];
-		Buffer.BlockCopy(tempBuffer, 0, outputBytes, 0, byteCount);
-		return outputBytes;
+		return inputBytes;
 	}
 
 	// Decompress outputBytes
 	public static byte[] Decompress(byte[] inputBytes) {
-		// Starting guess, increase it later if needed
-		int outputByteCountGuess = inputBytes.Length * 2;
-		byte[] tempBuffer = new byte[outputByteCountGuess];
-		int byteCount = LzfDecompress(inputBytes, ref tempBuffer);
+		if ( inputBytes.Length > 1 ) {
+			// Starting guess, increase it later if needed
+			int outputByteCountGuess = inputBytes.Length * 2;
+			byte[] tempBuffer = new byte[outputByteCountGuess];
+			int byteCount = lzf_decompress(inputBytes, ref tempBuffer);
 
-		// If byteCount is 0, then increase buffer and try again
-		while ( byteCount == 0 ) {
-			outputByteCountGuess *= 2;
-			tempBuffer = new byte[outputByteCountGuess];
-			byteCount = LzfDecompress(inputBytes, ref tempBuffer);
+			// If byteCount is 0, then increase buffer and try again
+			while ( byteCount == 0 ) {
+				outputByteCountGuess *= 2;
+				tempBuffer = new byte[outputByteCountGuess];
+				byteCount = lzf_decompress(inputBytes, ref tempBuffer);
+			}
+
+			byte[] outputBytes = new byte[byteCount];
+			Buffer.BlockCopy(tempBuffer, 0, outputBytes, 0, byteCount);
+			return outputBytes;
 		}
-
-		byte[] outputBytes = new byte[byteCount];
-		Buffer.BlockCopy(tempBuffer, 0, outputBytes, 0, byteCount);
-		return outputBytes;
+		else {
+			return inputBytes;
+		}
 	}
 
 	/// <summary>
@@ -58,9 +67,13 @@ public static class CLZF2 {
 	/// <param name="input">Reference to the data to compress</param>
 	/// <param name="output">Reference to a buffer which will contain the compressed data</param>
 	/// <returns>The size of the compressed archive in the output buffer</returns>
-	public static int LzfCompress(byte[] input, ref byte[] output) {
+	public static int lzf_compress(byte[] input, ref byte[] output) {
 		int inputLength = input.Length;
 		int outputLength = output.Length;
+
+		if ( HashTable == null ) {
+			HashTable = new long[HSIZE];
+		}
 
 		Array.Clear(HashTable, 0, (int)HSIZE);
 
@@ -73,42 +86,42 @@ public static class CLZF2 {
 		long off;
 		int lit = 0;
 
-		for (; ; )
-		{
+		for (; ; ) {
 			if ( iidx < inputLength - 2 ) {
 				hval = (hval << 8) | input[iidx + 2];
 				hslot = ((hval ^ (hval << 5)) >> (int)(((3 * 8 - HLOG)) - hval * 5) & (HSIZE - 1));
 				reference = HashTable[hslot];
 				HashTable[hslot] = (long)iidx;
 
+				if ( (off = iidx - reference - 1) < MAX_OFF && iidx + 4 < inputLength && reference > 0 &&
+					(input.LongLength < reference + 2 || input.LongLength < iidx + 2)
+						) {
+					bool freakout = true;
+				}
 
-				if ( (off = iidx - reference - 1) < MAX_OFF
-					&& iidx + 4 < inputLength
-					&& reference > 0
-					&& input[reference + 0] == input[iidx + 0]
-					&& input[reference + 1] == input[iidx + 1]
-					&& input[reference + 2] == input[iidx + 2]
-					) {
+
+				if ( (off = iidx - reference - 1) < MAX_OFF && iidx + 4 < inputLength && reference > 0 &&
+
+					input[reference + 0] == input[iidx + 0] &&
+					input[reference + 1] == input[iidx + 1] &&
+					input[reference + 2] == input[iidx + 2] ) {
 					/* match found at *reference++ */
 					uint len = 2;
 					uint maxlen = (uint)inputLength - iidx - len;
 					maxlen = maxlen > MAX_REF ? MAX_REF : maxlen;
 
-					if ( oidx + lit + 1 + 3 >= outputLength ) {
+					if ( oidx + lit + 1 + 3 >= outputLength )
 						return 0;
-					}
 
-					do {
+					do
 						len++;
-					}
 					while ( len < maxlen && input[reference + len] == input[iidx + len] );
 
 					if ( lit != 0 ) {
 						output[oidx++] = (byte)(lit - 1);
 						lit = -lit;
-						do {
+						do
 							output[oidx++] = input[iidx + lit];
-						}
 						while ( (++lit) != 0 );
 					}
 
@@ -138,38 +151,33 @@ public static class CLZF2 {
 					continue;
 				}
 			}
-			else if ( iidx == inputLength ) {
+			else if ( iidx == inputLength )
 				break;
-			}
 
 			/* one more literal byte we must copy */
 			lit++;
 			iidx++;
 
 			if ( lit == MAX_LIT ) {
-				if ( oidx + 1 + MAX_LIT >= outputLength ) {
+				if ( oidx + 1 + MAX_LIT >= outputLength )
 					return 0;
-				}
 
 				output[oidx++] = (byte)(MAX_LIT - 1);
 				lit = -lit;
-				do {
+				do
 					output[oidx++] = input[iidx + lit];
-				}
 				while ( (++lit) != 0 );
 			}
 		}
 
 		if ( lit != 0 ) {
-			if ( oidx + lit + 1 >= outputLength ) {
+			if ( oidx + lit + 1 >= outputLength )
 				return 0;
-			}
 
 			output[oidx++] = (byte)(lit - 1);
 			lit = -lit;
-			do {
+			do
 				output[oidx++] = input[iidx + lit];
-			}
 			while ( (++lit) != 0 );
 		}
 
@@ -183,7 +191,7 @@ public static class CLZF2 {
 	/// <param name="input">Reference to the data to decompress</param>
 	/// <param name="output">Reference to a buffer which will contain the decompressed data</param>
 	/// <returns>Returns decompressed size</returns>
-	public static int LzfDecompress(byte[] input, ref byte[] output) {
+	public static int lzf_decompress(byte[] input, ref byte[] output) {
 		int inputLength = input.Length;
 		int outputLength = output.Length;
 
@@ -193,8 +201,7 @@ public static class CLZF2 {
 		do {
 			uint ctrl = input[iidx++];
 
-			if ( ctrl < (1 << 5) ) /* literal run */
-			{
+			if ( ctrl < (1 << 5) ) { /* literal run */
 				ctrl++;
 
 				if ( oidx + ctrl > outputLength ) {
@@ -202,20 +209,17 @@ public static class CLZF2 {
 					return 0;
 				}
 
-				do {
+				do
 					output[oidx++] = input[iidx++];
-				}
 				while ( (--ctrl) != 0 );
 			}
-			else /* back reference */
-			{
+			else { /* back reference */
 				uint len = ctrl >> 5;
 
 				int reference = (int)(oidx - ((ctrl & 0x1f) << 8) - 1);
 
-				if ( len == 7 ) {
+				if ( len == 7 )
 					len += input[iidx++];
-				}
 
 				reference -= input[iidx++];
 
@@ -232,13 +236,11 @@ public static class CLZF2 {
 				output[oidx++] = output[reference++];
 				output[oidx++] = output[reference++];
 
-				do {
+				do
 					output[oidx++] = output[reference++];
-				}
 				while ( (--len) != 0 );
 			}
-		}
-		while ( iidx < inputLength );
+		} while ( iidx < inputLength );
 
 		return (int)oidx;
 	}
