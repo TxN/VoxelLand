@@ -60,11 +60,6 @@ namespace Voxels {
 		}
 
 		public void DeInit() {
-			
-		/*	if ( _curentThread != null && _curentThread. ) {
-				_curentThread.Abort();
-			}
-			*/
 			_opaqueCollidedMesh.Destroy();
 			_translucentPassableMesh.Destroy();
 			_opaquePassableMesh.Destroy();

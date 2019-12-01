@@ -66,6 +66,7 @@ namespace Voxels {
 			if ( _loadedNeighbors == 15 ) {				
 				_fullyInited = true;
 			}
+			InitSunlight();
 			ForceUpdateChunk();
 		}
 
@@ -73,6 +74,7 @@ namespace Voxels {
 			_owner = owner;
 			_library = VoxelsStatic.Instance.Library;
 			_mesher = new EmptyChunkMesher();
+			InitSunlight();
 		}
 
 		public Chunk(IChunkManager owner, ChunkData data, bool isServerChunk) {
@@ -234,6 +236,7 @@ namespace Voxels {
 		}
 
 		public void UpdateLightLevel() {
+			var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 			if ( _sunlightAddQueue.Count == 0 && _sunlightRemQueue.Count == 0 && _lightAddQueue.Count == 0 && _lightRemQueue.Count == 0 ) {
 				return;
 			}
@@ -260,6 +263,7 @@ namespace Voxels {
 				var elem = _lightAddQueue.Dequeue();
 				PropagateLightToNeighbors(neighbors, elem);
 			}
+			stopwatch.Stop();
 		}
 
 		void PropagateDarknessToNeighbors(Chunk[] neighborChunks, LightRemNode pos) {
@@ -1178,6 +1182,8 @@ namespace Voxels {
 					var block = chunk._blocks[0, y, z];
 					res.SunRight = block.SunLevel;
 					res.ORight   = block.LightLevel;
+				} else {
+					res.SunRight = MAX_SUNLIGHT_VALUE;
 				}
 			}
 			//Left
@@ -1191,6 +1197,8 @@ namespace Voxels {
 					var block = chunk._blocks[CHUNK_SIZE_X - 1, y, z];
 					res.SunLeft = block.SunLevel;
 					res.OLeft   = block.LightLevel;
+				} else {
+					res.SunLeft = MAX_SUNLIGHT_VALUE;
 				}
 			}
 			//Forward
@@ -1204,6 +1212,8 @@ namespace Voxels {
 					var block = chunk._blocks[x, y, 0];
 					res.SunForward = block.SunLevel;
 					res.OForward   = block.LightLevel;
+				} else {
+					res.SunForward = MAX_SUNLIGHT_VALUE;
 				}
 			}
 			//Backwards
@@ -1217,6 +1227,8 @@ namespace Voxels {
 					var block = chunk._blocks[x, y, CHUNK_SIZE_Z - 1];
 					res.SunBackward = block.SunLevel;
 					res.OBackward   = block.LightLevel;
+				} else {
+					res.SunBackward = MAX_SUNLIGHT_VALUE;
 				}
 			}
 			return res;
