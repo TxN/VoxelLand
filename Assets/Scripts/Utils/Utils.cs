@@ -1,5 +1,5 @@
 using System;
-
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 using ZeroFormatter;
@@ -162,6 +162,34 @@ namespace Voxels {
 				}
 				x += dx;
 				y += dy;
+			}
+		}
+
+		public static byte[] ToByteArray(BlockData[] source, int count) {
+			var handle = GCHandle.Alloc(source, GCHandleType.Pinned);
+			try {
+				var pointer = handle.AddrOfPinnedObject();
+				var destination = new byte[count * Marshal.SizeOf(typeof(BlockData))];
+				Marshal.Copy(pointer, destination, 0, destination.Length);
+				return destination;
+			} finally {
+				if ( handle.IsAllocated ) {
+					handle.Free();
+				}
+			}
+		}
+
+		public static BlockData[] FromByteArray(byte[] source, int fullLength) {
+			BlockData[] destination = new BlockData[fullLength];
+			var handle = GCHandle.Alloc(destination, GCHandleType.Pinned);
+			try {
+				IntPtr pointer = handle.AddrOfPinnedObject();
+				Marshal.Copy(source, 0, pointer, source.Length);
+				return destination;
+			} finally {
+				if ( handle.IsAllocated ) {
+					handle.Free();
+				}					
 			}
 		}
 	}

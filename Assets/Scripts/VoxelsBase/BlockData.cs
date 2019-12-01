@@ -1,7 +1,10 @@
+using System.Runtime.InteropServices;
+
 using ZeroFormatter;
 
 namespace Voxels {
 	[ZeroFormattable]
+	[StructLayout(LayoutKind.Sequential)]
 	public struct BlockData {
 		[Index(0)]
 		public BlockType  Type;

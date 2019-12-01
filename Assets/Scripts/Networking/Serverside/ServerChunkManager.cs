@@ -472,7 +472,16 @@ namespace Voxels.Networking.Serverside {
 
 		void SendChunkToClient(PlayerChunkLoadState state, ChunkData data, Int3 index) {
 			state.SentChunks.Add(index);
-			ServerController.Instance.SendNetMessage(state.Client, ServerPacketID.ChunkInit, new S_InitChunkMessage() { Chunk = data }, true);
+			var blockCount = (data.Height + 1) * 16 * 16;
+			ServerController.Instance.SendNetMessage(state.Client, ServerPacketID.ChunkInit, new S_InitChunkMessage() {
+				Height = data.Height,
+				IndexX = data.IndexX,
+				IndexY = data.IndexY,
+				IndexZ = data.IndexZ,
+				Origin = data.Origin,
+				Blocks = ChunkHelper.ToByteArray(data.Blocks.Data, blockCount),
+				BlockCount = Chunk.CHUNK_SIZE_X * Chunk.CHUNK_SIZE_Y * Chunk.CHUNK_SIZE_Z
+			}, true);
 		}
 
 		void UnloadChunkOnClient(PlayerChunkLoadState state, Int3 index) {

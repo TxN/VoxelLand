@@ -88,6 +88,6 @@ namespace Voxels.Networking.Events {
 	}
 
 	public struct OnClientReceiveChunk {
-		public ChunkData Data;
+		public S_InitChunkMessage RawMessage;
 	}
 }

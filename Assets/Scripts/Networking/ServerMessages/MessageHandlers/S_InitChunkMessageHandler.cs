@@ -10,8 +10,7 @@ namespace Voxels.Networking {
 			base.ProcessMessage(rawCommand);
 			
 			var command = ZeroFormatterSerializer.Deserialize<S_InitChunkMessage>(rawCommand);
-			EventManager.Fire(new OnClientReceiveChunk() { Data = command.Chunk });
-			//TODO: add chunk to client chunk manager
+			EventManager.Fire(new OnClientReceiveChunk() { RawMessage = command });
 		}
 	}
 }

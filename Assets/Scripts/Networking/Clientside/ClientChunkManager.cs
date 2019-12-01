@@ -9,7 +9,7 @@ namespace Voxels.Networking.Clientside {
 	public class ClientChunkManager : ClientsideController<ClientChunkManager>, IChunkManager {
 		public ClientChunkManager(ClientGameManager owner) : base(owner) { }
 
-		Queue<ChunkData> _receivedChunks = new Queue<ChunkData>(128);
+		Queue<S_InitChunkMessage> _receivedChunks = new Queue<S_InitChunkMessage>(128);
 
 		Dictionary<Int3, Chunk> _chunks = new Dictionary<Int3, Chunk>();
 
@@ -290,11 +290,10 @@ namespace Voxels.Networking.Clientside {
 		}
 
 		void OnChunkReceived(OnClientReceiveChunk e) {
-			if ( e.Data == null ) {
+			if ( e.RawMessage == null ) {
 				return;
 			}
-			var d = e.Data;
-			_receivedChunks.Enqueue(d);
+			_receivedChunks.Enqueue(e.RawMessage);
 		}
 
 		public void ProcessServerBlockUpdate(BlockData block, int x, int y, int z) {
