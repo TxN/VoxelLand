@@ -8,6 +8,7 @@ using SMGCore.Utils;
 using Voxels.Networking.Utils;
 using Voxels.Networking.Events;
 using System.Collections.Concurrent;
+using System.IO;
 
 namespace Voxels.Networking.Serverside {
 
@@ -470,18 +471,20 @@ namespace Voxels.Networking.Serverside {
 			_chunkUnloadSet.Clear();
 		}
 
+
+		byte[] _chunkSendBuffer = new byte[65535];
 		void SendChunkToClient(PlayerChunkLoadState state, ChunkData data, Int3 index) {
 			state.SentChunks.Add(index);
 			var blockCount = (data.Height + 1) * 16 * 16;
-			ServerController.Instance.SendNetMessage(state.Client, ServerPacketID.ChunkInit, new S_InitChunkMessage() {
-				Height = data.Height,
-				IndexX = data.IndexX,
-				IndexY = data.IndexY,
-				IndexZ = data.IndexZ,
-				Origin = data.Origin,
-				Blocks = ChunkHelper.ToByteArray(data.Blocks.Data, blockCount),
-				BlockCount = Chunk.CHUNK_SIZE_X * Chunk.CHUNK_SIZE_Y * Chunk.CHUNK_SIZE_Z
-			}, true);
+
+			using ( var str = new MemoryStream(_chunkSendBuffer) ) {
+				using ( var writer = new BinaryWriter(str) ) {
+					var count = ChunkSerializer.Serialize(data, writer, true);
+					var dst = new byte[count];
+					System.Array.Copy(_chunkSendBuffer, dst, count);
+					ServerController.Instance.SendRawNetMessage(state.Client, ServerPacketID.ChunkInit, dst, false);
+				}
+			}
 		}
 
 		void UnloadChunkOnClient(PlayerChunkLoadState state, Int3 index) {

@@ -116,13 +116,24 @@ namespace Voxels.Networking.Serverside {
 		public void SendNetMessage<T>(ClientState client, ServerPacketID id, T message, bool compress = false) where T : BaseMessage {
 			var compressFlag = compress && EnableCompression;
 			var body = ZeroFormatterSerializer.Serialize(message);
+			SendRawNetMessage(client, id, body, compress);
+		}
+
+		/// <summary>
+		/// Используется в случае, когда надо отправить заранее отформатированный пакет в обход сериализатора (так как он может сильно тормозить на больших объемах данных)
+		/// </summary>
+		/// <param name="client">Клиент, которому отправляем сообщение</param>
+		/// <param name="id">Код команды</param>
+		/// <param name="body">Сообщение - массив байт</param>
+		/// <param name="compress">Сжимать ли сообщение с помощью LZF</param>
+		public void SendRawNetMessage(ClientState client, ServerPacketID id, byte[] body, bool compress = false) {
+			var compressFlag = compress && EnableCompression;
 			var header = new PacketHeader((byte)id, compressFlag, (ushort)body.Length);
 			if ( compressFlag ) {
-				var compressedBody   = CLZF2.Compress(body);
+				var compressedBody = CLZF2.Compress(body);
 				header.ContentLength = (ushort)compressedBody.Length;
 				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, compressedBody));
-			}
-			else {
+			} else {
 				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, body));
 			}
 			_packetsSent++;

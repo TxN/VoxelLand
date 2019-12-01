@@ -9,14 +9,12 @@ namespace Voxels.Networking.Clientside {
 	public class ClientChunkManager : ClientsideController<ClientChunkManager>, IChunkManager {
 		public ClientChunkManager(ClientGameManager owner) : base(owner) { }
 
-		Queue<S_InitChunkMessage> _receivedChunks = new Queue<S_InitChunkMessage>(128);
+		Queue<ChunkData> _receivedChunks = new Queue<ChunkData>(128);
 
 		Dictionary<Int3, Chunk> _chunks = new Dictionary<Int3, Chunk>();
 
 		ChunkRendererPool      _renderPool        = new ChunkRendererPool();
 		DestroyBlockEffectPool _destroyEffectPool = new DestroyBlockEffectPool();
-
-		ChunkDeserializer _deserializer = new ChunkDeserializer();
 
 		bool _enabled = true;
 		int _sizeY    = 0;
@@ -40,7 +38,6 @@ namespace Voxels.Networking.Clientside {
 				return;
 			}
 			SpawnReceivedChunk();
-			DeserializeNewChunk();
 			UpdateDirtyChunks();
 		}
 
@@ -254,23 +251,16 @@ namespace Voxels.Networking.Clientside {
 			return res;
 		}
 
-		void DeserializeNewChunk() {
-			if ( _receivedChunks.Count == 0  || _deserializer.Busy || _deserializer.Ready ) {
+		void SpawnReceivedChunk() {
+			if ( _receivedChunks.Count == 0 ) {
 				return;
 			}
 			var d = _receivedChunks.Dequeue();
-			_deserializer.StartDeserialize(d);
-		}
-
-		void SpawnReceivedChunk() {
-			if ( !_deserializer.Ready ) {
-				return;
+			var result = new Chunk(d);
+			if ( result != null ) {
+				var index = result.Index;
+				InitializeChunk(index, result);
 			}
-			var c = _deserializer.GetResult();
-			if ( c != null ) {
-				var index = c.Index;
-				InitializeChunk(index, c);
-			}			
 		}
 
 		void UpdateDirtyChunks() {
@@ -290,10 +280,10 @@ namespace Voxels.Networking.Clientside {
 		}
 
 		void OnChunkReceived(OnClientReceiveChunk e) {
-			if ( e.RawMessage == null ) {
+			if ( e.Data == null ) {
 				return;
 			}
-			_receivedChunks.Enqueue(e.RawMessage);
+			_receivedChunks.Enqueue(e.Data);
 		}
 
 		public void ProcessServerBlockUpdate(BlockData block, int x, int y, int z) {
