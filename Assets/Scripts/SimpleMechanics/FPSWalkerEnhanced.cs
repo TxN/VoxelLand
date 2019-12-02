@@ -120,8 +120,9 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 		if ( !_owner.HasAutority ) {
 			return;
 		}
+		var im = ClientInputManager.Instance;
 		float inputX = Input.GetAxis("Horizontal");
-		float inputY = Input.GetAxis("Vertical");
+		float inputY = im.GetInputAxisVertical();
 
 		var movementEnabled = ClientInputManager.Instance.IsMovementEnabled;
 		var middlePos = new Vector3(transform.position.x, Chunk.CHUNK_SIZE_Y / 2, transform.position.z);
@@ -193,7 +194,7 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 			}
 
 			// Jump! But only if the jump button has been released and player has been grounded for a given number of frames
-			if ( !Input.GetButton("Jump") ) {
+			if ( !im.GetJumpButton() ) {
 				m_JumpTimer++;
 			} else if ( m_JumpTimer >= m_AntiBunnyHopFactor && movementEnabled ) {
 				m_MoveDirection.y = m_JumpSpeed;
@@ -228,7 +229,7 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 				m_MoveDirection.y = VertLook.LookSin() * WaterVSpeedLimit.x;
 			}
 
-			if ( Input.GetButton("Jump") && movementEnabled ) {
+			if ( im.GetJumpButton() && movementEnabled ) {
 				m_MoveDirection.y += Time.deltaTime * m_Gravity * 0.8f;
 			}
 			m_MoveDirection.y = Mathf.Clamp(m_MoveDirection.y, WaterVSpeedLimit.y, WaterVSpeedLimit.x);

@@ -17,6 +17,10 @@ namespace Voxels.Networking.Clientside {
 
 		GameObject _mainCanvas = null;
 
+		public GameObject MainCanvas {
+			get { return _mainCanvas; }
+		}
+
 		public Hotbar Hotbar { get; private set; }
 
 		public override void Init() {
