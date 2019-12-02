@@ -11,8 +11,12 @@ namespace Voxels.Networking.Clientside {
 		public ClientWorldStateController(ClientGameManager owner) : base(owner) { }
 
 		const string SKYBOX_CONTROLLER_PATH = "Client/DayNightCycle";
+		const string CLOUDS_CONTROLLER_PATH = "Client/CloudsSystem";
+		const string POSTPROCESS_MAIN       = "Client/MainPostProcess";
 
-		GameObject _skyboxController = null;
+		DaylightCycle _skyboxController = null;
+		CloudAnimator _cloudsAnimator   = null;
+		GameObject    _postprocess      = null;
 
 		ResourceLibrary _library = null;
 
@@ -48,9 +52,13 @@ namespace Voxels.Networking.Clientside {
 
 		public override void Init() {
 			base.Init();
-			_library = VoxelsStatic.Instance.Library;
+			_library  = VoxelsStatic.Instance.Library;
 			var sbFab = Resources.Load(SKYBOX_CONTROLLER_PATH);
-			_skyboxController = Object.Instantiate((GameObject)sbFab, null);
+			var clFab = Resources.Load(CLOUDS_CONTROLLER_PATH);
+			var ppFab = Resources.Load(POSTPROCESS_MAIN);
+			_skyboxController = Object.Instantiate((GameObject)sbFab, null).GetComponent<DaylightCycle>();
+			_cloudsAnimator   = Object.Instantiate((GameObject)clFab, null).GetComponent<CloudAnimator>();
+			_postprocess      = Object.Instantiate((GameObject)ppFab, null);
 		}
 
 		public override void Update() {

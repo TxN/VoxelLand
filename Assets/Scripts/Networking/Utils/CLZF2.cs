@@ -96,7 +96,6 @@ public static class CLZF2 {
 				if ( (off = iidx - reference - 1) < MAX_OFF && iidx + 4 < inputLength && reference > 0 &&
 					(input.LongLength < reference + 2 || input.LongLength < iidx + 2)
 						) {
-					bool freakout = true;
 				}
 
 

@@ -72,7 +72,7 @@ namespace Voxels {
 					return;
 				}
 			}
-			System.Threading.Thread.Sleep(50);
+			System.Threading.Thread.Sleep(10);
 			TryStartClient();
 			StartCoroutine(RareUpdate());
 		}

@@ -78,7 +78,6 @@ MonoBehaviour:
   - {fileID: 8482640808327114550}
   - {fileID: 7998714426072869340}
   - {fileID: -8307233351237880545}
-  - {fileID: 8495508377461044569}
 --- !u!114 &2499926942874542063
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -202,36 +201,4 @@ MonoBehaviour:
     value: 73
   kernelSize:
     overrideState: 0
-    value: 1
---- !u!114 &8495508377461044569
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bba290776795de40be65e06977bd97e, type: 3}
-  m_Name: TextureOverlay
-  m_EditorClassIdentifier: 
-  active: 0
-  enabled:
-    overrideState: 1
-    value: 1
-  texture:
-    overrideState: 1
-    value: {fileID: 2800000, guid: 5f4bd02e994fdfb429885d5f52ca89f3, type: 3}
-    defaultState: 1
-  tiling:
-    overrideState: 1
-    value: {x: 1, y: 1}
-  offset:
-    overrideState: 1
-    value: {x: 0, y: 0}
-  keepAspectRatio:
-    overrideState: 0
-    value: 0
-  alphaIsTransparent:
-    overrideState: 1
     value: 1
