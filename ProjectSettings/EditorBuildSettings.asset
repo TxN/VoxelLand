@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/HeadlessRunner.unity
+    guid: 85fa73c247c955d44ae4278052797810
+  - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 52b342d391763b842b7bde305ffef01a
   - enabled: 1
