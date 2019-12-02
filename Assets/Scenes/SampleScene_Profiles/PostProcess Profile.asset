@@ -28,7 +28,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40b924e2dad56384a8df2a1e111bb675, type: 3}
   m_Name: Vignette
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   enabled:
     overrideState: 1
     value: 1
@@ -43,7 +43,7 @@ MonoBehaviour:
     value: {x: 0.5, y: 0.5}
   intensity:
     overrideState: 1
-    value: 0.247
+    value: 0.346
   smoothness:
     overrideState: 1
     value: 0.163
@@ -96,10 +96,10 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 1.13
+    value: 1.44
   threshold:
     overrideState: 1
-    value: 1.18
+    value: 1.26
   softKnee:
     overrideState: 1
     value: 0.669
@@ -146,7 +146,7 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 0.4
+    value: 0.27
   color:
     overrideState: 1
     value: {r: 0, g: 0, b: 0, a: 1}
@@ -164,10 +164,10 @@ MonoBehaviour:
     value: -12
   thicknessModifier:
     overrideState: 1
-    value: 1
+    value: 1.52
   directLightingStrength:
     overrideState: 1
-    value: 0.124
+    value: 0.116
   radius:
     overrideState: 0
     value: 0.25
@@ -192,13 +192,13 @@ MonoBehaviour:
     value: 1
   focusDistance:
     overrideState: 1
-    value: 2.08
+    value: 2.35
   aperture:
     overrideState: 1
-    value: 9.9
+    value: 14.9
   focalLength:
     overrideState: 1
-    value: 73
+    value: 75
   kernelSize:
     overrideState: 0
     value: 1
