@@ -390,11 +390,12 @@ namespace Voxels.Networking.Serverside {
 			}
 
 			if ( state.SendQueue.Count > 0 ) {
-				var c = state.SendQueue.Peek();
+				var c = state.SendQueue.Dequeue();
 				var chunk = GetChunk(c);
 				if ( chunk != null ) {
-					state.SendQueue.Dequeue();
 					SendChunkToClient(state, chunk.GetData(), c);
+				} else {
+					state.SendQueue.Enqueue(c);
 				}
 			}
 

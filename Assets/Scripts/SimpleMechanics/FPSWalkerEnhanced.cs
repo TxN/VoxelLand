@@ -89,17 +89,16 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 	private void Start() {
 		VertLook = GetComponentInChildren<CameraVerticalLook>();
 		// Saving component references to improve performance.
-		m_Transform = GetComponent<Transform>();
+		m_Transform  = GetComponent<Transform>();
 		m_Controller = GetComponent<CharacterController>();
 
 		// Setting initial values.
-		m_Speed = m_WalkSpeed;
+		m_Speed       = m_WalkSpeed;
 		m_RayDistance = m_Controller.height * .5f + m_Controller.radius;
-		m_SlideLimit = m_Controller.slopeLimit - .1f;
-		m_JumpTimer = m_AntiBunnyHopFactor;
-		_owner = GetComponent<PlayerMovement>();
+		m_SlideLimit  = m_Controller.slopeLimit - .1f;
+		m_JumpTimer   = m_AntiBunnyHopFactor;
+		_owner        = GetComponent<PlayerMovement>();
 	}
-
 
 	private void Update() {
 		if ( !_owner.HasAutority ) {
@@ -117,7 +116,6 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 		}
 	}
 
-
 	private void FixedUpdate() {
 		if ( !_owner.HasAutority ) {
 			return;
@@ -126,13 +124,18 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 		float inputY = Input.GetAxis("Vertical");
 
 		var movementEnabled = ClientInputManager.Instance.IsMovementEnabled;
+		var middlePos = new Vector3(transform.position.x, Chunk.CHUNK_SIZE_Y / 2, transform.position.z);
+		var cm = ClientChunkManager.Instance;
+		if ( cm.GetChunkInCoords(middlePos) == null ) {
+			return;
+		}
 
 		if ( !movementEnabled ) {
 			inputX = 0;
 			inputY = 0;
 		}
 
-		var cm = ClientChunkManager.Instance;
+		
 		var playerBlock = cm.GetBlockIn(transform.position);
 
 		var blockDesc = VoxelsStatic.Instance.Library.GetBlockDescription(playerBlock.Type);
@@ -210,8 +213,6 @@ public sealed class FPSWalkerEnhanced : MonoBehaviour {
 				m_MoveDirection = m_Transform.TransformDirection(m_MoveDirection);
 			}
 		}
-
-
 
 		// Apply gravity
 		if ( !_inWater ) {
