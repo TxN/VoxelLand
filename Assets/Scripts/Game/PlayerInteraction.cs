@@ -16,10 +16,16 @@ namespace Voxels {
 
 		Collider[] _colCache = new Collider[16];
 
+		public Vector3 ViewDirection {
+			get {
+				return transform.TransformDirection(Vector3.forward);
+			}
+		}
+
 		void Update() {
 			var cm = ClientChunkManager.Instance;
 			var hitInfo = new RaycastHit();
-			var dir = transform.TransformDirection(Vector3.forward);
+			var dir = ViewDirection;
 			if ( Physics.Raycast(transform.position, dir, out hitInfo, MAX_SIGHT_DISTANCE) ) { //TODO: Chunk layermask
 				CurrentInPos  = hitInfo.point + dir * 0.03f;
 				CurrentOutPos = hitInfo.point - dir * 0.015f;

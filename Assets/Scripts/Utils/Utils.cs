@@ -57,6 +57,13 @@ namespace Voxels {
 			}
 		}
 
+		[IgnoreFormat]
+		public Vector3 ToVector3 {
+			get {
+				return new Vector3(X, Y, Z);
+			}
+		}
+
 		public static Int3 operator+ (Int3 a, Int3 b) {
 			return a.Add(b);
 		}
