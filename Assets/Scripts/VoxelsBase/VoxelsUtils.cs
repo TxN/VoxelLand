@@ -5,7 +5,12 @@ using UnityEngine;
 namespace Voxels {
 	public static class VoxelsUtils {
 
-		public static Vector3 Cast(Vector3 startPoint, Vector3 direction, float maxDistance, Func<Int3, bool> checkMethod, out Vector3 normal) {
+		public struct CastResult {
+			public Vector3 HitPosition;
+			public Vector3 Normal;
+		}
+
+		public static  bool Cast(Vector3 startPoint, Vector3 direction, float maxDistance, Func<Int3, bool> checkMethod, out CastResult result) {
 			direction = direction.normalized;
 			var t = 0f;
 			var ix = Mathf.FloorToInt(startPoint.x);
@@ -29,17 +34,19 @@ namespace Voxels {
 			var tzMax = (tzDelta < Mathf.Infinity) ? tzDelta * zDist : Mathf.Infinity;
 
 			var steppedIndex = -1;
-			normal = Vector3.zero;
+			var res = new CastResult();
 
 			while ( t < maxDistance ) {
 				var isSolid = checkMethod(new Int3(ix, iy, iz));
 				if ( isSolid ) {
 
 					var point = startPoint + new Vector3(t * direction.x, t * direction.y, t * direction.z);
-					if ( steppedIndex == 0 ) { normal = new Vector3(-stepX, 0, 0); } 
-					if ( steppedIndex == 1 ) { normal = new Vector3(0, -stepY, 0); } 
-					if ( steppedIndex == 2 ) { normal = new Vector3(0, 0, -stepZ); } 
-					return point;
+					res.HitPosition = point;
+					if ( steppedIndex == 0 ) { res.Normal = new Vector3(-stepX, 0, 0); } 
+					if ( steppedIndex == 1 ) { res.Normal = new Vector3(0, -stepY, 0); } 
+					if ( steppedIndex == 2 ) { res.Normal = new Vector3(0, 0, -stepZ); }
+					result = res;
+					return true;
 				}
 
 				if ( txMax < tyMax ) {
@@ -48,8 +55,7 @@ namespace Voxels {
 						t = txMax;
 						txMax += txDelta;
 						steppedIndex = 0;
-					}
-					else {
+					} else {
 						iz += stepZ;
 						t = tzMax;
 						tzMax += tzDelta;
@@ -61,16 +67,16 @@ namespace Voxels {
 						t = tyMax;
 						tyMax += tyDelta;
 						steppedIndex = 1;
-					}
-					else {
+					} else {
 						iz += stepZ;
 						t = tzMax;
 						tzMax += tzDelta;
 						steppedIndex = 2;
 					}
 				}
-			}			
-			return Vector3.zero;
+			}
+			result = res;
+			return false;
 		}
 	}
 }

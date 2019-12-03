@@ -56,17 +56,20 @@ namespace Voxels.Networking.NetDebug {
 			Gizmos.color = Color.cyan;
 
 			Gizmos.DrawRay(view.Interactor.transform.position, view.Interactor.ViewDirection * 15f);
-			var endPos = VoxelsUtils.Cast(view.Interactor.transform.position, view.Interactor.ViewDirection, 15, (pos) => {
+			var result = VoxelsUtils.Cast(view.Interactor.transform.position, view.Interactor.ViewDirection, 15, (pos) => {
 				var p = pos.ToVector3 + new Vector3(0.5f, 0.5f, 0.5f);
 				Gizmos.DrawWireCube(p, Vector3.one);
 				return !ClientChunkManager.Instance.GetBlockIn(pos.X, pos.Y, pos.Z).IsEmpty();
-			}, out var normal);
+			}, out var hit);
+			if ( !result ) {
+				return;
+			}
 			Gizmos.color = Color.yellow;
-			var voxelPos = new Vector3(Mathf.Floor(endPos.x), Mathf.Floor(endPos.y), Mathf.Floor(endPos.z));
-			var outPos = normal * 0.5f + voxelPos;
+			var voxelPos = new Vector3(Mathf.Floor(hit.HitPosition.x), Mathf.Floor(hit.HitPosition.y), Mathf.Floor(hit.HitPosition.z));
+			var outPos = hit.Normal * 0.5f + voxelPos;
 			Gizmos.DrawWireCube(new Vector3(Mathf.Floor(outPos.x), Mathf.Floor(outPos.y), Mathf.Floor(outPos.z)) + new Vector3(0.5f, 0.5f, 0.5f), Vector3.one);
-			Gizmos.DrawWireSphere(endPos, 0.2f);
-			Gizmos.DrawRay(endPos, normal * 0.5f);
+			Gizmos.DrawWireSphere(hit.HitPosition, 0.2f);
+			Gizmos.DrawRay(hit.HitPosition, hit.Normal * 0.5f);
 		}
 #endif
 

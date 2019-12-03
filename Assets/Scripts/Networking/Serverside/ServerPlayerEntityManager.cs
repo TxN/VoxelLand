@@ -33,6 +33,23 @@ namespace Voxels.Networking.Serverside {
 			EventManager.Unsubscribe<OnClientDisconnected>(OnClientDisconnect);
 		}
 
+		public override void Update() {
+			base.Update();
+			foreach ( var p in Players ) {
+				if ( VoxelsUtils.Cast(p.Position, -Vector3.up, 1f, IsBlockSolid, out var result) ) {
+					Debug.DrawLine(p.Position, result.HitPosition);
+					Debug.Log(result.HitPosition);
+				}
+			}
+		}
+
+		bool IsBlockSolid(Int3 index) {
+			var cm = ServerChunkManager.Instance;
+			var lib = VoxelsStatic.Instance.Library;
+			var block = cm.GetBlockIn(index.X, index.Y, index.Z);
+			return !lib.GetBlockDescription(block.Type).IsPassable;
+		}
+
 		public Vector3 GetSpawnPosition(PlayerEntity player) {
 			//Todo: different spawn points
 			return DefaultSpawnPoint;
