@@ -46,6 +46,9 @@ namespace Voxels {
 			return;
 		}
 
+		public void InitData(Chunk data) {
+		}
+
 		public void PrepareMesher() {
 			return;
 		}

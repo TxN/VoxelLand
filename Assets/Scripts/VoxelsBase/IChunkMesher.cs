@@ -12,6 +12,7 @@ namespace Voxels {
 		
 
 		void PrepareMesher();
+		void InitData(Chunk data);
 		void DeInit();
 		void StartAsyncMeshing();
 		void FinalizeBake();

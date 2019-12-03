@@ -176,32 +176,11 @@ namespace Voxels.Networking.Clientside {
 			render.transform.position = Vector3.zero;
 			render.Setup(rawChunk);
 			rawChunk.Renderer = render;
-			rawChunk.ForceUpdateChunk();
 			foreach ( var item in _chunks ) {
 				item.Value.OnChunkLoaded(index);
 			}
 			return rawChunk;
 		}
-
-		/*Chunk InitializeChunk(Int3 index, ChunkData data = null) {
-			if ( _chunks.ContainsKey(index) ) {
-				DeInitChunk(index);
-			}
-			var x = index.X;
-			var y = index.Y;
-			var z = index.Z;
-			var chunk = data == null ?
-					new Chunk(this, x, y, z, new Vector3(x * Chunk.CHUNK_SIZE_X, y * Chunk.CHUNK_SIZE_Y, z * Chunk.CHUNK_SIZE_Z), false) :
-					new Chunk(this, data, false);
-			_chunks[index] = chunk;
-			var render = _renderPool.Get();
-			render.name = string.Format("Chunk {0} {1}", x, z);
-			render.transform.position = Vector3.zero;
-			render.Setup(chunk);
-			chunk.Renderer = render;
-			chunk.ForceUpdateChunk();
-			return chunk;
-		}*/
 
 		void DeInitChunk(Int3 index) {
 			if ( !_chunks.ContainsKey(index) ) {
@@ -299,14 +278,6 @@ namespace Voxels.Networking.Clientside {
 			}
 			DestroyBlock(x, y, z, false);
 		}
-
-		public void FinalizeInitLoad() {
-			foreach ( var chunk in _chunks ) {
-				chunk.Value.ForceUpdateChunk();
-			}
-			_enabled = true;
-		}
-
 	}
 }
 

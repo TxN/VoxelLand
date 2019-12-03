@@ -24,6 +24,11 @@ namespace Voxels.UI {
 			if ( Application.isBatchMode ) {
 				Application.targetFrameRate = 120;
 				StartServer();
+			} else {
+#if UNITY_EDITOR
+				QualitySettings.vSyncCount = 0;
+				Application.targetFrameRate = 60;
+#endif
 			}
 		}
 

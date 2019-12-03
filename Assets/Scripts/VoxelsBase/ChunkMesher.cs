@@ -30,6 +30,7 @@ namespace Voxels {
 		Vector3         _originPos               = Vector3.zero;
 		ResourceLibrary _library                 = null;
 		Task            _currentTask             = null;
+		Chunk _targetChunk = null;
 
 		public ChunkMesher(ResourceLibrary library, int chunkMeshCapacity, int capacity, Vector3 originPos) {
 			_opaqueCollidedMesh      = new GeneratableMesh(chunkMeshCapacity);
@@ -59,6 +60,10 @@ namespace Voxels {
 			Blocks.Clear();
 		}
 
+		public void InitData(Chunk data) {
+			_targetChunk = data;
+		}
+
 		public void DeInit() {
 			_opaqueCollidedMesh.Destroy();
 			_translucentPassableMesh.Destroy();
@@ -77,6 +82,10 @@ namespace Voxels {
 			Ready = false;
 			var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 			stopwatch.Start();
+			if ( _targetChunk == null ) {
+				return;
+			}
+			_targetChunk.PrepareAsyncMeshing();
 			var start = Blocks.Count - 1;
 			for ( int i = start; i >= 0 ; i-- ) {
 				var blockItem = Blocks[i];
