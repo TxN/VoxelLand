@@ -257,10 +257,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxVSpeed: 20
   MoveSpeed: 5
+  SprintSpeed: 9
   RotationSensivity: 2.5
   Gravity: 10
-  Radius: 0.3
-  UpHeight: 0.6
+  Radius: 0.35
+  UpHeight: 0.7
   DownHeight: 0.9
   JumpSpeed: 5
 --- !u!1 &5412122338125951382

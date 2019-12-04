@@ -65,7 +65,17 @@ namespace Voxels.Networking.Clientside {
 			return IsMovementEnabled;
 		}
 
+		public float GetInputAxisHorizontal() {
+			if ( !IsMovementEnabled ) {
+				return 0;
+			}
+			return Input.GetAxis("Horizontal");
+		}
+
 		public float GetInputAxisVertical() {
+			if ( !IsMovementEnabled ) {
+				return 0;
+			}
 			if ( _mobileInputUi ) {
 				if ( _mobileInputUi.ForwardPressed ) {
 					return 1f;
@@ -78,6 +88,9 @@ namespace Voxels.Networking.Clientside {
 		}
 
 		public bool GetJumpButton() {
+			if ( !IsMovementEnabled ) {
+				return false;
+			}
 			if ( _mobileInputUi ) {
 				return _mobileInputUi.JumpPressed;
 			}

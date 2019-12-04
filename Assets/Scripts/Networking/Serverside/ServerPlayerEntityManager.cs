@@ -37,8 +37,7 @@ namespace Voxels.Networking.Serverside {
 			base.Update();
 			foreach ( var p in Players ) {
 				if ( VoxelsUtils.Cast(p.Position, -Vector3.up, 1f, IsBlockSolid, out var result) ) {
-					Debug.DrawLine(p.Position, result.HitPosition);
-					Debug.Log(result.HitPosition);
+					//Debug.DrawLine(p.Position, result.HitPosition);
 				}
 			}
 		}

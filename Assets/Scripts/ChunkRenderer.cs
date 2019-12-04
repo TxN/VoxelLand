@@ -13,7 +13,6 @@ namespace Voxels {
 		public MeshFilter   OpaquePassableFilter   = null;
 
 		Chunk _targetChunk   = null;
-		bool _colliderInited = false;
 
 		public void Setup(Chunk targetChunk) {
 			EventManager.Subscribe<Event_ChunkMeshUpdate>(this, OnChunkUpdate);
@@ -43,11 +42,9 @@ namespace Voxels {
 			MeshFilter.mesh                   = null;
 			TransparentFilter.mesh            = null;
 			OpaquePassableFilter.mesh         = null;
-			_colliderInited = false;
 		}
 
 		void UpdateRenderer() {
-			_colliderInited = false;
 			DeInitRenderer();
 			MeshFilter.mesh           = _targetChunk.OpaqueCollidedMesh.Mesh;
 			TransparentFilter.mesh    = _targetChunk.TranslucentPassableMesh.Mesh;

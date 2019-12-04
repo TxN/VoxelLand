@@ -16,25 +16,19 @@ namespace Voxels {
 
 		PlayerEntity         _info            = null;
 		MovementInterpolator _interpolator    = null;
-		CharacterController  _charController  = null;
-		bool                 _isLocalAutority = false;
-		float                _lastUpdateTime  = 0f;
+		
 		Vector3              _lastSentPos     = Vector3.zero;
 		Vector2              _lastSentDir     = Vector2.zero;
+		float                _lastUpdateTime  = 0f;
 
 		float _lastReceivedHeadPitch = 0f;
 
-		PlayerInteraction _interactor;
+        public PlayerInteraction Interactor { get; private set; }
+		public SimpleVoxelMover  Mover      { get; private set; }
 
-		public PlayerInteraction Interactor {
+        public float HeadPitch {
 			get {
-				return _interactor;
-			}
-		}
-
-		public float HeadPitch {
-			get {
-				if ( _isLocalAutority ) {
+				if ( HasAutority ) {
 					return CameraTransform.rotation.eulerAngles.x;
 				}
 				return _lastReceivedHeadPitch;
@@ -47,26 +41,22 @@ namespace Voxels {
 			}
 		}
 
-		public bool HasAutority {
-			get {
-				return _isLocalAutority;
-			}
-		}
+        public bool HasAutority { get; private set; } = false;
 
 		public void Setup(PlayerEntity info) {
 			EventManager.Subscribe<OnClientPlayerUpdate> (this, OnPosUpdate);
 			EventManager.Subscribe<OnClientPlayerDespawn>(this, OnDespawn);
 			_info = info;
-			_isLocalAutority = ClientPlayerEntityManager.Instance.IsLocalPlayer(info);
+			HasAutority = ClientPlayerEntityManager.Instance.IsLocalPlayer(info);
 			_lastSentPos = info.Position;
 			_lastSentDir = info.LookDir;
 			_lastUpdateTime = Time.time;
-			_charController = GetComponent<CharacterController>();
-			if ( !_isLocalAutority ) {
+			if ( !HasAutority ) {
 				_interpolator = GetComponent<MovementInterpolator>();
 			} else {
 				_lastReceivedHeadPitch = info.LookDir.x;
-				_interactor = GetComponentInChildren<PlayerInteraction>();
+				Interactor = GetComponentInChildren<PlayerInteraction>();
+				Mover = GetComponent<SimpleVoxelMover>();
 			}
 		}
 
@@ -120,9 +110,7 @@ namespace Voxels {
 				return;
 			}
 			if ( _interpolator == null ) {
-				_charController.enabled = false;
 				transform.position = e.Player.Position;
-				_charController.enabled = true;
 				return;
 			}
 			var rot = Quaternion.Euler(0, e.Player.LookDir.y, 0);

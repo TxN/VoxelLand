@@ -1,6 +1,5 @@
 using UnityEngine;
 
-using Voxels.UI;
 using Voxels.Networking.Clientside;
 
 namespace Voxels {
@@ -58,13 +57,15 @@ namespace Voxels {
 		}
 
 		bool HasBlockIn(Int3 pos ) {
-			return !ClientChunkManager.Instance.GetBlockIn(pos.X, pos.Y, pos.Z).IsEmpty();
+			var block = ClientChunkManager.Instance.GetBlockIn(pos.X, pos.Y, pos.Z);
+			var desc = VoxelsStatic.Instance.Library.GetBlockDescription(block.Type);
+			return !block.IsEmpty() && !desc.IsSwimmable;
 		}
 
 		bool CanPlaceBlock(Vector3 pos ) {
-			var floorPos = new Vector3(Mathf.Floor(pos.x), Mathf.Floor(pos.y), Mathf.Floor(pos.z)) + new Vector3(0.5f, 0.5f, 0.5f);
-			var collisions =  Physics.OverlapBoxNonAlloc(floorPos, new Vector3(0.5f, 0.5f, 0.5f), _colCache, Quaternion.identity, EntityColMask);
-			return collisions == 0;
+			var player = ClientPlayerEntityManager.Instance.LocalPlayer;
+			var mover = player.View.Mover;
+			return !mover.IsVoxelOcuppied(pos);
 		}
 
 		void PaintBlockInSight(Color32 color) {
