@@ -2,17 +2,26 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+using NaughtyAttributes;
+
 namespace Voxels.UI {
+	[System.Serializable]
+	public sealed class InventoryBlockDescription {
+		public BlockType Type = BlockType.Air;
+		[Range(0,255)]
+		public byte Subtype = 0;
+	}
+
 	public sealed class Hotbar : MonoBehaviour {
-		public List<BlockType>        SlotsContent      = new List<BlockType>();
-		public List<Block2DPresenter> Slots             = new List<Block2DPresenter>();
-		public RectTransform          SelectedSlotFrame = null;
-		public Vector2                FirstSlotPos      = Vector2.zero;
-		public float                  SlotSizePixels    = 0;
+		public List<InventoryBlockDescription> SlotsContent      = new List<InventoryBlockDescription>();
+		public List<Block2DPresenter>          Slots             = new List<Block2DPresenter>();
+		public RectTransform                   SelectedSlotFrame = null;
+		public Vector2                         FirstSlotPos      = Vector2.zero;
+		public float                           SlotSizePixels    = 0;
 
 		int _curSlot = 0;
 
-		public BlockType SelectedBlock {
+		public InventoryBlockDescription SelectedBlock {
 			get {
 				return SlotsContent[_curSlot];
 			}
@@ -20,7 +29,7 @@ namespace Voxels.UI {
 
 		void Start() {
 			for ( int i = 0; i < 9; i++ ) {
-				Slots[i].ShowBlock(new BlockData(SlotsContent[i],0));
+				Slots[i].ShowBlock(new BlockData(SlotsContent[i].Type, SlotsContent[i].Subtype));
 			}
 			
 		}

@@ -39,7 +39,8 @@ namespace Voxels {
 						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString()));
 					}
 					else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
-						cm.PutBlock(CurrentOutPos, new BlockData(ClientUIManager.Instance.Hotbar.SelectedBlock, 0));
+						var desc = ClientUIManager.Instance.Hotbar.SelectedBlock;
+						cm.PutBlock(CurrentOutPos, new BlockData(desc.Type, desc.Subtype));
 					}
 					else if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) ) {
 						PaintBlockInSight(new Color32(255, 0, 0, 255));

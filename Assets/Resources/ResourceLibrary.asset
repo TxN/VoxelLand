@@ -447,6 +447,128 @@ MonoBehaviour:
         Y: 0
       - X: 6
         Y: 0
+  - Type: 11
+    ModelType: 1
+    HarvestLevel: 1
+    Hardness: 2
+    LightLevel: 0
+    IsSwimmable: 0
+    IsFull: 1
+    IsPassable: 0
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 8
+        Y: 4
+  - Type: 30
+    ModelType: 1
+    HarvestLevel: 2
+    Hardness: 6
+    LightLevel: 0
+    IsSwimmable: 0
+    IsFull: 1
+    IsPassable: 0
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 6
+        Y: 1
+  - Type: 31
+    ModelType: 1
+    HarvestLevel: 2
+    Hardness: 6
+    LightLevel: 0
+    IsSwimmable: 0
+    IsFull: 1
+    IsPassable: 0
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 7
+        Y: 1
+  - Type: 32
+    ModelType: 1
+    HarvestLevel: 3
+    Hardness: 6
+    LightLevel: 0
+    IsSwimmable: 0
+    IsFull: 1
+    IsPassable: 0
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 8
+        Y: 1
+  - Type: 33
+    ModelType: 1
+    HarvestLevel: 2
+    Hardness: 6
+    LightLevel: 0
+    IsSwimmable: 0
+    IsFull: 1
+    IsPassable: 0
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 0
+        Y: 9
+  - Type: 34
+    ModelType: 1
+    HarvestLevel: 4
+    Hardness: 50
+    LightLevel: 0
+    IsSwimmable: 0
+    IsFull: 1
+    IsPassable: 0
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 7
+        Y: 11
+  - Type: 35
+    ModelType: 2
+    HarvestLevel: 2
+    Hardness: 3
+    LightLevel: 0
+    IsSwimmable: 0
+    IsFull: 1
+    IsPassable: 0
+    IsColorable: 0
+    IsTranslucent: 0
+    HasMetadata: 0
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 3
+        Y: 2
+      - X: 4
+        Y: 0
+      - X: 4
+        Y: 0
+      - X: 4
+        Y: 0
+      - X: 4
+        Y: 0
+      - X: 4
+        Y: 0
   - Type: 29
     ModelType: 10
     HarvestLevel: 0

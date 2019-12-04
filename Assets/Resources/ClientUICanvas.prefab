@@ -2914,7 +2914,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db48545628ef97d4ebea892e7467e73f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SlotsContent: 020a0506070f15160c
+  SlotsContent:
+  - Type: 4
+    Subtype: 0
+  - Type: 21
+    Subtype: 1
+  - Type: 14
+    Subtype: 0
+  - Type: 35
+    Subtype: 0
+  - Type: 2
+    Subtype: 0
+  - Type: 30
+    Subtype: 0
+  - Type: 6
+    Subtype: 0
+  - Type: 9
+    Subtype: 0
+  - Type: 22
+    Subtype: 0
   Slots:
   - {fileID: 4656447415608808897}
   - {fileID: 4656447413871469732}

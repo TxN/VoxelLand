@@ -32,6 +32,12 @@ namespace Voxels {
 		RedBlock    = 27,
 		StoneSlab   = 28,
 		Shrub       = 29,
+		IronBlock   = 30,
+		GoldBlock   = 31,
+		DiamondBlock= 32,
+		LapisLazuli = 33,
+		Obsidian    = 34,
+		Bookshelf   = 35,
 	}
 
 	public enum BlockModelType : byte {
@@ -72,6 +78,7 @@ namespace Voxels {
 
 	[System.Serializable]
 	public sealed class BlockDescription {
+
 		public BlockType                Type          = BlockType.Air;
 		public BlockModelType           ModelType     = BlockModelType.FullBlockSimple;
 		public BlockHarvestLevel        HarvestLevel  = BlockHarvestLevel.Any;
