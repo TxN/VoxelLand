@@ -192,10 +192,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 310725489368516742}
-  - component: {fileID: 310725489368516736}
-  - component: {fileID: 310725489368516737}
   - component: {fileID: 310725489368516739}
   - component: {fileID: 7211513122719568008}
+  - component: {fileID: 9071289676508980956}
   m_Layer: 11
   m_Name: Player
   m_TagString: Untagged
@@ -219,53 +218,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!143 &310725489368516736
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 310725489368516743}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 1.68
-  m_Radius: 0.3
-  m_SlopeLimit: 45
-  m_StepOffset: 0.51
-  m_SkinWidth: 0.02
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &310725489368516737
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 310725489368516743}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b45b25e38333a564fa174f2cdc22e7de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AirVSpeedLimit: {x: 20, y: -50}
-  WaterVSpeedLimit: {x: 5, y: -5}
-  VertLook: {fileID: 0}
-  m_WalkSpeed: 6
-  m_RunSpeed: 11
-  m_LimitDiagonalSpeed: 0
-  m_ToggleRun: 0
-  m_JumpSpeed: 8
-  m_Gravity: 20
-  m_FallingThreshold: 10
-  m_SlideWhenOverSlopeLimit: 0
-  m_SlideOnTaggedObjects: 0
-  m_SlideSpeed: 12
-  m_AirControl: 1
-  m_AntiBumpFactor: 0.75
-  m_AntiBunnyHopFactor: 0
-  m_RotationSensivity: 2.5
 --- !u!114 &310725489368516739
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,6 +243,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CameraTransform: {fileID: 310725489361149484}
+--- !u!114 &9071289676508980956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 310725489368516743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac81d34d39e0ddc4fad84d1f3da647a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxVSpeed: 20
+  MoveSpeed: 5
+  RotationSensivity: 2.5
+  Gravity: 10
+  Radius: 0.3
+  UpHeight: 0.6
+  DownHeight: 0.9
+  JumpSpeed: 5
 --- !u!1 &5412122338125951382
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,6 +8,5 @@ namespace Voxels.Networking.Utils {
 		public static int    ChunkUnloadDistance = 12;
 		public static int    UselessChunksMaxAge = 60;
 		public static float  DayLength           = 600f;
-		public static float  PhysXCollisionDist  = 64f;
 	}
 }

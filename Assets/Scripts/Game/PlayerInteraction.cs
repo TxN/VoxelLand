@@ -24,11 +24,10 @@ namespace Voxels {
 
 		void Update() {
 			var cm = ClientChunkManager.Instance;
-			var hitInfo = new RaycastHit();
 			var dir = ViewDirection;
-			if ( Physics.Raycast(transform.position, dir, out hitInfo, MAX_SIGHT_DISTANCE) ) { //TODO: Chunk layermask
-				CurrentInPos  = hitInfo.point + dir * 0.03f;
-				CurrentOutPos = hitInfo.point - dir * 0.015f;
+			if ( VoxelsUtils.Cast(transform.position, dir, MAX_SIGHT_DISTANCE, HasBlockIn, out var castResult) ) {
+				CurrentInPos  = castResult.HitPosition + dir * 0.03f;
+				CurrentOutPos = castResult.HitPosition - dir * 0.015f;
 
 				var chunk = cm.GetChunkInCoords(CurrentInPos);
 				if ( chunk != null ) {
@@ -39,20 +38,27 @@ namespace Voxels {
 					if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(1) ) {
 						var blockIn = cm.GetBlockIn(CurrentInPos);
 						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString()));
-					} else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
+					}
+					else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
 						cm.PutBlock(CurrentOutPos, new BlockData(ClientUIManager.Instance.Hotbar.SelectedBlock, 0));
-					} else if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) ) {
+					}
+					else if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) ) {
 						PaintBlockInSight(new Color32(255, 0, 0, 255));
-					} else if ( Input.GetMouseButtonUp(0) ) {
+					}
+					else if ( Input.GetMouseButtonUp(0) ) {
 						cm.DestroyBlock(CurrentInPos);
 					}
 				}
 			} else {
 				CurrentOutPos = Vector3.zero;
-				CurrentInPos  = Vector3.zero;
-				BlockInSight  = BlockData.Empty;
+				CurrentInPos = Vector3.zero;
+				BlockInSight = BlockData.Empty;
 				BlockOutSight = BlockData.Empty;
 			}
+		}
+
+		bool HasBlockIn(Int3 pos ) {
+			return !ClientChunkManager.Instance.GetBlockIn(pos.X, pos.Y, pos.Z).IsEmpty();
 		}
 
 		bool CanPlaceBlock(Vector3 pos ) {

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4156905493256739379}
   - component: {fileID: 2451739697103424531}
   - component: {fileID: 307744541253723966}
-  - component: {fileID: 7866582575401675654}
   m_Layer: 10
   m_Name: ChunkRender
   m_TagString: Untagged
@@ -50,10 +49,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MeshRenderer: {fileID: 2451739697103424531}
   MeshFilter: {fileID: 307744541253723966}
-  Collider: {fileID: 7866582575401675654}
   TransparentFilter: {fileID: 7023421194200545930}
   OpaquePassableFilter: {fileID: 1327155538548070484}
-  OpaquePassableCollider: {fileID: 8772542460503811061}
 --- !u!23 &2451739697103424531
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -79,6 +76,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -99,20 +97,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4952196662656929061}
   m_Mesh: {fileID: 0}
---- !u!64 &7866582575401675654
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4952196662656929061}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 2
-  m_Mesh: {fileID: 0}
 --- !u!1 &6093644123474241049
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,7 +108,6 @@ GameObject:
   - component: {fileID: 3294025108642918776}
   - component: {fileID: 1327155538548070484}
   - component: {fileID: 6675565031784517338}
-  - component: {fileID: 8772542460503811061}
   m_Layer: 12
   m_Name: OpaquePassable
   m_TagString: Untagged
@@ -179,6 +162,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -191,20 +175,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!64 &8772542460503811061
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6093644123474241049}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 2
-  m_Mesh: {fileID: 0}
 --- !u!1 &6713952293469643194
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,6 +240,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
