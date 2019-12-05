@@ -21,6 +21,9 @@ namespace Voxels.Networking.Serverside {
 			_commands.Add("time_set", new TimeSetChatCommand());
 			_commands.Add("tp",       new TeleportChatCommand());
 			_commands.Add("spawn",    new TeleportToSpawnChatCommand());
+			_commands.Add("home",     new TeleportToHomeChatCommand());
+			_commands.Add("setspawn", new SetSpawnChatCommand());
+			_commands.Add("sethome",  new SetHomeChatCommand());
 		}
 
 		public override void PostLoad() {

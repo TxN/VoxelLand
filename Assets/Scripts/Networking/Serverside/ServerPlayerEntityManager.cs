@@ -1,5 +1,7 @@
-using UnityEngine;
+using System.Linq;
 using System.Collections.Generic;
+
+using UnityEngine;
 
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
@@ -11,20 +13,42 @@ namespace Voxels.Networking.Serverside {
 	public class ServerPlayerEntityManager : ServerSideController<ServerPlayerEntityManager> {
 		public ServerPlayerEntityManager(ServerGameManager owner) : base(owner) { }
 
+		const string SAVE_DATA_FILE_NAME = "players.dat";
+
 		//TODO: Get spawn points from worldgen
 		public Vector3 DefaultSpawnPoint = new Vector3(0, 60, 0);
 
 		public List<PlayerEntity> Players = new List<PlayerEntity>();
 
+		Dictionary<string, PlayerEntitySaveInfo> _playersData = new Dictionary<string, PlayerEntitySaveInfo>();
+
 		//TODO: load player list and spawn points
 		public override void Load() {
 			base.Load();
+			var loadedHolder = ServerSaveLoadController.Instance.LoadSaveFile<PlayerEntityControllerDataHolder>(SAVE_DATA_FILE_NAME);
+			if ( loadedHolder != null ) {
+				_playersData.Clear();
+				foreach ( var item in loadedHolder.DataArray ) {
+					if ( item == null ) {
+						continue;
+					}
+					_playersData.Add(item.Name, item);
+				}
+			}
 		}
 
 		public override void PostLoad() {
 			base.PostLoad();
 			EventManager.Subscribe<OnServerReadyToSpawnNewPlayer>   (this, OnNeedClientSpawn);
 			EventManager.Subscribe<OnClientDisconnected>(this, OnClientDisconnect);
+		}
+
+		public override void Save() {
+			base.Save();
+			var saveData = new PlayerEntityControllerDataHolder {
+				DataArray = _playersData.Values.ToArray()
+			};
+			ServerSaveLoadController.Instance.SaveFileToDisk(SAVE_DATA_FILE_NAME, saveData);
 		}
 
 		public override void Reset() {
@@ -50,12 +74,23 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		public Vector3 GetSpawnPosition(PlayerEntity player) {
-			//Todo: different spawn points
+			if ( _playersData.TryGetValue(player.PlayerName, out var data) ) {
+				return data.SpawnPoint;
+			}
 			return DefaultSpawnPoint;
 		}
 
 		public Vector3 GetSpawnPosition(ClientState client) {
-			//Todo: different spawn points
+			if ( _playersData.TryGetValue(client.UserName, out var data) ) {
+				return data.SpawnPoint;
+			}
+			return DefaultSpawnPoint;
+		}
+
+		public Vector3 GetHomePosition(ClientState client) {
+			if ( _playersData.TryGetValue(client.UserName, out var data) ) {
+				return data.HomePoint;
+			}
 			return DefaultSpawnPoint;
 		}
 
@@ -95,19 +130,46 @@ namespace Voxels.Networking.Serverside {
 			return null;
 		}
 
+		public void SetSpawnPoint(string playerName, Vector3 spawnPoint) {
+			//TODO: check if position is valid
+			if ( _playersData.TryGetValue(playerName, out var data) ) {
+				data.SpawnPoint = spawnPoint;
+			}
+		}
+
+		public void SetHomePoint(string playerName, Vector3 spawnPoint) {
+			//TODO: check if position is valid
+			if ( _playersData.TryGetValue(playerName, out var data) ) {
+				data.HomePoint = spawnPoint;
+			}
+		}
+
 		void SpawnPlayer(ClientState client) {
-			var player = new PlayerEntity { Owner = client, PlayerName = client.UserName, Position = DefaultSpawnPoint, ConId = (ushort)client.ConnectionID };
+			_playersData.TryGetValue(client.UserName, out var data);
+			if ( data == null ) {
+				data = new PlayerEntitySaveInfo {
+					Name = client.UserName,
+					SpawnPoint = DefaultSpawnPoint,
+					HomePoint = DefaultSpawnPoint,
+					LastSavedPos = DefaultSpawnPoint,
+					UsedSkinName = "default"
+				};
+				_playersData.Add(client.UserName, data);
+			}
+			var player = new PlayerEntity { Owner = client, PlayerName = client.UserName, Position = data.LastSavedPos, ConId = (ushort)client.ConnectionID };
 			Players.Add(player);
 			var server = ServerController.Instance;
 			server.SendToAll(ServerPacketID.PlayerSpawn, new S_SpawnPlayerMessage { PlayerToSpawn = player });
-			EventManager.Fire<OnServerPlayerSpawn>(new OnServerPlayerSpawn { Player = player, Client = client });
+			EventManager.Fire(new OnServerPlayerSpawn { Player = player, Client = client });
 		}
 
 		void DespawnPlayer(ClientState client) {
-			var toDespawn = GetPlayerByOwner(client);
+			var toDespawn = GetPlayerByOwner(client);		
 			if ( toDespawn == null ) {
 				return;
 			}
+			var data = _playersData[client.UserName];
+			data.LastSavedPos = toDespawn.Position;
 			EventManager.Fire<OnServerPlayerDespawn>(new OnServerPlayerDespawn { Player = toDespawn });
 			var server = ServerController.Instance;
 			server.SendToAll(ServerPacketID.PlayerDespawn, new S_DespawnPlayerMessage { PlayerToDespawn = toDespawn });
