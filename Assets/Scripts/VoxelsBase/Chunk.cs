@@ -899,7 +899,7 @@ namespace Voxels {
 			var divz = CHUNK_SIZE_X;
 			for ( int i = 0; i < maxVal; i++ ) {
 				var block = _blocks[i];
-				if ( block.IsEmpty() || _visibiltiy[i] == VisibilityFlags.None ) {
+				if ( _visibiltiy[i] == VisibilityFlags.None || block.IsEmpty()  ) {
 					continue;
 				}
 				var y = i / divY;

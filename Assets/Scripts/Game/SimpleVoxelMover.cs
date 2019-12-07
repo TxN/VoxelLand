@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using UnityEngine;
 
 using Voxels.Networking.Clientside;
@@ -37,7 +39,7 @@ namespace Voxels {
 
 		public bool IsInWater {
 			get {
-				return false;
+				return VoxelsStatic.Instance.Library.GetBlockDescription(_chunkManager.GetBlockIn(transform.position).Type).IsSwimmable;
 			}
 		}
 
@@ -62,10 +64,9 @@ namespace Voxels {
 			var inputVector = Vector3.zero;
 			if ( ClientInputManager.Instance.IsMovementEnabled ) {
 				inputVector = new Vector3(inputX, 0, inputY);
-				var rotation = _curRot += new Vector2( 0,Input.GetAxis("Mouse X") * RotationSensivity);
+				var rotation = _curRot += new Vector2(0, Input.GetAxis("Mouse X") * RotationSensivity);
 				transform.eulerAngles = rotation;
 			}
-
 			if ( jump && (IsGrounded || IsInWater) ) {
 				_velocity.y = JumpSpeed;
 			}
@@ -80,21 +81,15 @@ namespace Voxels {
 
 			var yDist = _velocity.y * Time.deltaTime;
 			if ( yDist < 0 ) {
-				 if ( VoxelsUtils.Cast(transform.position, Vector3.down, DownHeight - yDist, IsBlockSolid, out var fallCastResult) ) {
-					var nearBlockDist = Vector3.Distance(transform.position, fallCastResult.HitPosition);
-					resultMoveVector.y = Mathf.Max(yDist, -(nearBlockDist - DownHeight + 0.01f));
-					_velocity.y = 0f;
-				 } else {
-					resultMoveVector.y = yDist;
-				 }
+				var check = CheckHorizontalPoints(Vector3.down, Radius - yDist, out var downDist);
+				resultMoveVector.y = check ? Mathf.Max(yDist, -(downDist - Radius)) : yDist;
+				_velocity.y = check ? 0 : _velocity.y;
 			} else if ( yDist > 0 ) {
-				if ( VoxelsUtils.Cast(transform.position, Vector3.up, UpHeight + yDist, IsBlockSolid, out var jumpCastResult) ) {
-					var nearBlockDist = Vector3.Distance(transform.position, jumpCastResult.HitPosition);
-					resultMoveVector.y = Mathf.Min(yDist, nearBlockDist - UpHeight);
-				} else {
-					resultMoveVector.y = yDist;
-				}
+				var check = CheckHorizontalPoints(Vector3.up, Radius + yDist, out var upDist);
+				resultMoveVector.y = check ? Mathf.Min(yDist, upDist - Radius) : yDist;
+				_velocity.y = check ? 0 : _velocity.y;
 			}
+
 			var xDist = _velocity.x * Time.deltaTime;
 			if ( xDist < 0 ) {
 				resultMoveVector.x = CheckHorizontalPoints(Vector3.left, Radius - xDist, out var leftDist) ? Mathf.Max(xDist, -(leftDist - Radius)) : xDist;
@@ -114,8 +109,8 @@ namespace Voxels {
 
 
 		bool CheckHorizontalPoints(Vector3 direcion, float distance, out float minDistance) {
-			var bottomCheckPos = transform.position - new Vector3(0, DownHeight * 0.7f, 0);
-			var upCheckPos = transform.position + new Vector3(0, UpHeight * 0.85f, 0);
+			var bottomCheckPos = transform.position + new Vector3(0, - DownHeight + Radius, 0);
+			var upCheckPos = transform.position + new Vector3(0, UpHeight - Radius, 0);
 			minDistance = 0f;
 			var a = VoxelsUtils.Cast(bottomCheckPos, direcion, distance, IsBlockSolid, out var bottomCastResult);
 			var b = VoxelsUtils.Cast(upCheckPos, direcion, distance, IsBlockSolid, out var upCastResult);
