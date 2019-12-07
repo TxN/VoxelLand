@@ -4,6 +4,7 @@ using UnityEngine;
 
 using SMGCore.EventSys;
 using Voxels.Events;
+using UnityEngine.Profiling;
 
 namespace Voxels {
 	public sealed partial class Chunk {
@@ -157,6 +158,10 @@ namespace Voxels {
 			get {
 				return _mesher.TranslucentPassableMesh;
 			}
+		}
+
+		public override string ToString() {
+			return string.Format("{0}:{1}", _indexX, _indexY);
 		}
 
 		public float GetDistance(Vector3 pos) {
@@ -916,6 +921,7 @@ namespace Voxels {
 		}
 
 		public void UpdateVisibilityAll(int from, int to) {
+			Profiler.BeginSample(string.Format("Visibility Full Update {0}", ToString()));
 			var watch = System.Diagnostics.Stopwatch.StartNew();
 			_dirtyBlocks.Clear();
 			_needUpdateVisibilityAll = false;
@@ -944,6 +950,7 @@ namespace Voxels {
 				_visibiltiy[i] = _library.IsTranslucentBlock(arr[i].Type) ? CheckVisibilityTranslucent(x, y, z, neighbors) : CheckVisibilityOpaque(x, y, z, neighbors);
 			}
 			watch.Stop();
+			Profiler.EndSample();
 		}
 
 		public void UpdateChunk() {
@@ -1067,18 +1074,6 @@ namespace Voxels {
 			return false;
 		}
 
-
-		/*Unsafe version, only for fast block setting in worldgen
-		public void PutBlockUnsafe(int x, int y, int z, BlockData block ) {
-			var checkY = y + 1;
-			_maxNonEmptyY = checkY > _maxNonEmptyY ? checkY : _maxNonEmptyY;
-			if ( _library.IsEmissiveBlock(block.Type) ) {
-				block.LightLevel = _library.GetBlockDescription(block.Type).LightLevel;
-				_lightAddQueue.Enqueue(new Int3(x, y, z));
-			}
-			_blocks[x, y, z] = block;
-		}
-		*/
 		public void PutBlock(int x, int y, int z, BlockData block) {
 			var checkY = y + 1;
 			_maxNonEmptyY = (checkY) > _maxNonEmptyY ? checkY : _maxNonEmptyY;

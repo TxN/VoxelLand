@@ -11,6 +11,7 @@ namespace Voxels.UI {
 		public Button         StartServerButton = null;
 		public Button         JoinGameButton    = null;
 		public Button         LocalGameButton   = null;
+		public Button         QuitButton        = null;
 		public TMP_InputField IpInput           = null;
 		public TMP_InputField NameInput         = null;
 		public GameObject     LoadingScreen     = null;
@@ -20,6 +21,7 @@ namespace Voxels.UI {
 			StartServerButton.onClick.AddListener(StartServer);
 			JoinGameButton.onClick.AddListener(JoinGame);
 			LocalGameButton.onClick.AddListener(LocalGame);
+			QuitButton.onClick.AddListener(QuitGame);
 
 			if ( Application.isBatchMode ) {
 				Application.targetFrameRate = 120;
@@ -43,6 +45,10 @@ namespace Voxels.UI {
 		void LocalGame() {
 			IpInput.text = NetworkOptions.Localhost;
 			StartGame(true, true);
+		}
+
+		void QuitGame() {
+			Application.Quit();
 		}
 
 		void StartGame(bool isClient, bool isServer) {

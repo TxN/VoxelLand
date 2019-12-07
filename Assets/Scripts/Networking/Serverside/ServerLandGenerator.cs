@@ -6,6 +6,7 @@ using UnityEngine;
 
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
+using UnityEngine.Profiling;
 
 namespace Voxels.Networking.Serverside {
 	public sealed class ServerLandGenerator : ServerSideController<ServerLandGenerator> {
@@ -64,6 +65,7 @@ namespace Voxels.Networking.Serverside {
 
 		IEnumerator ParallelGenRoutine() {
 			while ( _chunkGenQueue.Count > 0 ) {
+				Profiler.BeginSample("Chunk procgen");
 				var chunkPos = _chunkGenQueue.Dequeue();
 				var x = chunkPos.X;
 				var z = chunkPos.Z;
@@ -97,6 +99,7 @@ namespace Voxels.Networking.Serverside {
 						maxY = height[i];
 					}
 				}
+				Profiler.EndSample();
 				if ( !ImmediateMode ) {
 					yield return new WaitForEndOfFrame();
 				}

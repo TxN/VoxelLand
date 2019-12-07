@@ -1,7 +1,9 @@
 using System.Collections.Generic;
-using System.Threading;
+
 using System.Threading.Tasks;
+
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Voxels {
 	public enum BlockMeshType : byte {
@@ -79,6 +81,7 @@ namespace Voxels {
 		}
 
 		void StartMeshing() {
+			Profiler.BeginSample(string.Format("Chunk Meshing of {0} ", _targetChunk));
 			Ready = false;
 			var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 			stopwatch.Start();
@@ -103,6 +106,7 @@ namespace Voxels {
 			Ready = true;
 			Busy  = false;
 			stopwatch.Stop();
+			Profiler.EndSample();
 			AddTime(stopwatch.Elapsed.TotalMilliseconds);
 		}
 
