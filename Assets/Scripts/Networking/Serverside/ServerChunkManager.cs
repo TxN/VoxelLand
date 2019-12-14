@@ -318,7 +318,7 @@ namespace Voxels.Networking.Serverside {
 			var dim = (WorldOptions.ChunkLoadRadius - 1) * 2;
 			ChunkHelper.Spiral(dim, dim, GenOrLoad);
 			ChunkHelper.Spiral(dim, dim, (x,y) => { _keepaliveChunks.Add(new Int3(x, 0, y)); });
-			Debug.LogFormat("Initial world generation. Chunks to load: {0}", lg.QueueCount);
+			Debug.LogFormat("Initial world generation. Chunks total: {0}, to generate: {1}", dim*dim, lg.QueueCount);
 			lg.RunGenRoutine();
 			lg.ImmediateMode = false;
 		}
@@ -359,7 +359,7 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		void CreateInitialSendQueue(PlayerChunkLoadState state) {
-			Vector3 spawnPoint = ServerPlayerEntityManager.Instance.GetSpawnPosition(state.Client);
+			Vector3 spawnPoint = ServerPlayerEntityManager.Instance.GetLastSavedPosition(state.Client);
 			var centerChunk = ChunkHelper.GetChunkIdFromCoords(spawnPoint);
 
 			var queue = state.LoadGenQueue;

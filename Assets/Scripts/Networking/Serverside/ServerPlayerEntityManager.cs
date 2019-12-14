@@ -94,6 +94,13 @@ namespace Voxels.Networking.Serverside {
 			return DefaultSpawnPoint;
 		}
 
+		public Vector3 GetLastSavedPosition(ClientState client) {
+			if ( _playersData.TryGetValue(client.UserName, out var data) ) {
+				return data.LastSavedPos;
+			}
+			return DefaultSpawnPoint;
+		}
+
 		public void BroadcastPlayerUpdate(ClientState client, PlayerEntity newInfo) {
 			var server = ServerController.Instance;
 			var player = GetPlayerByOwner(client);

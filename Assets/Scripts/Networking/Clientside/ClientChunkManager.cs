@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-using SMGCore.EventSys;
 using UnityEngine;
+
+using SMGCore.EventSys;
 using Voxels.Networking.Events;
 
 namespace Voxels.Networking.Clientside {
@@ -194,8 +195,10 @@ namespace Voxels.Networking.Clientside {
 
 		public void UnloadChunk(Int3 pos) {
 			var chunk = GetChunk(pos);
-			_renderPool.Return(chunk.Renderer);
-			chunk.UnloadChunk();
+			if ( chunk != null ) {
+				_renderPool.Return(chunk.Renderer);
+				chunk.UnloadChunk();
+			}			
 			_chunks.Remove(pos);
 		}
 
