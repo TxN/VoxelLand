@@ -8,6 +8,12 @@ using ZeroFormatter;
 
 namespace Voxels.Networking {
 	public class C_HandshakeMessageHandler : BaseClientMessageHandler {
+		public override ClientPacketID CommandId {
+			get {
+				return ClientPacketID.Identification;
+			}
+		}
+
 		public override void ProcessMessage(ClientState client, byte[] rawCommand) {
 			base.ProcessMessage(client, rawCommand);
 			var server = ServerController.Instance;

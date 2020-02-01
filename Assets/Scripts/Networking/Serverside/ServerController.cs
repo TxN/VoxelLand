@@ -3,10 +3,9 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-using SMGCore;
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
-using Voxels.Networking.Serverside;
+using Voxels.Networking.Utils;
 
 using Telepathy;
 using ZeroFormatter;
@@ -68,15 +67,10 @@ namespace Voxels.Networking.Serverside {
 			if ( IsStarted ) {
 				return;
 			}
-			_handlers.Clear();
+			
 			_clients.Clear();
 
-			_handlers.Add(ClientPacketID.Identification,        new C_HandshakeMessageHandler());
-			_handlers.Add(ClientPacketID.Pong,                  new C_PongMessageHandler());
-			_handlers.Add(ClientPacketID.ChatMessage,           new C_ChatMessageHandler());
-			_handlers.Add(ClientPacketID.PlayerUpdate,          new C_PlayerUpdateMessageHandler());
-			_handlers.Add(ClientPacketID.PlayerPosAndRotUpdate, new C_PosAndOrientationUpdateMessageHandler());
-			_handlers.Add(ClientPacketID.PutBlock,              new C_PutBlockMessageHandler());
+			FillHandlers();
 
 			_packetsReceived = 0;
 			_packetsSent     = 0;
@@ -85,6 +79,15 @@ namespace Voxels.Networking.Serverside {
 			_server.Start(port);
 			_port = port;
 			IsStarted = true;
+		}
+
+		void FillHandlers() {
+			_handlers.Clear();
+			var arr = ReflectionUtility.GetSubclasses(typeof(BaseClientMessageHandler));
+			foreach ( var item in arr ) {
+				var handler = (BaseClientMessageHandler)ReflectionUtility.CreateObjectWithActivator(item);
+				_handlers.Add(handler.CommandId, handler);
+			}
 		}
 
 		public void StopServer() {

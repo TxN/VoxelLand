@@ -8,6 +8,13 @@ using ZeroFormatter;
 
 namespace Voxels.Networking {
 	public class S_ForceDisconnectMessageHandler : BaseServerMessageHandler {
+
+		public override ServerPacketID CommandId {
+			get {
+				return ServerPacketID.ForceDisconnect;
+			}
+		}
+
 		public override void ProcessMessage(byte[] rawCommand) {
 			base.ProcessMessage(rawCommand);
 

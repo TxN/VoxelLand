@@ -1,14 +1,22 @@
 namespace Voxels.Networking {
-	public class BaseClientMessageHandler {
-		public virtual void ProcessMessage(Serverside.ClientState client, byte[] rawCommand) {
-			
+	public abstract class BaseClientMessageHandler {
+		public virtual ClientPacketID CommandId {
+			get {
+				return ClientPacketID.None;
+			}
 		}
+
+		public virtual void ProcessMessage(Serverside.ClientState client, byte[] rawCommand) { }
 	}
 
-	public class BaseServerMessageHandler {
-		public virtual void ProcessMessage(byte[] rawCommand) {
-
+	public abstract class BaseServerMessageHandler {
+		public virtual ServerPacketID CommandId {
+			get {
+				return ServerPacketID.None;
+			}
 		}
+
+		public virtual void ProcessMessage(byte[] rawCommand) { }
 	}
 }
 
