@@ -20,21 +20,8 @@ namespace Voxels.Networking.Serverside {
 
 		public List<PlayerEntity> Players = new List<PlayerEntity>();
 
-		Dictionary<string, PlayerEntitySaveInfo> _playersData = new Dictionary<string, PlayerEntitySaveInfo>();
-
-		//TODO: load player list and spawn points
 		public override void Load() {
 			base.Load();
-			var loadedHolder = ServerSaveLoadController.Instance.LoadSaveFile<PlayerEntityControllerDataHolder>(SAVE_DATA_FILE_NAME);
-			if ( loadedHolder != null ) {
-				_playersData.Clear();
-				foreach ( var item in loadedHolder.DataArray ) {
-					if ( item == null ) {
-						continue;
-					}
-					_playersData.Add(item.Name, item);
-				}
-			}
 		}
 
 		public override void PostLoad() {
@@ -45,10 +32,6 @@ namespace Voxels.Networking.Serverside {
 
 		public override void Save() {
 			base.Save();
-			var saveData = new PlayerEntityControllerDataHolder {
-				DataArray = _playersData.Values.ToArray()
-			};
-			ServerSaveLoadController.Instance.SaveFileToDisk(SAVE_DATA_FILE_NAME, saveData);
 		}
 
 		public override void Reset() {
@@ -74,29 +57,33 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		public Vector3 GetSpawnPosition(PlayerEntity player) {
-			if ( _playersData.TryGetValue(player.PlayerName, out var data) ) {
-				return data.SpawnPoint;
+			var info = ServerSaveLoadController.Instance.GetPlayerInfo(player.PlayerName);
+			if ( info != null ) {
+				return info.SpawnPoint;
 			}
 			return DefaultSpawnPoint;
 		}
 
 		public Vector3 GetSpawnPosition(ClientState client) {
-			if ( _playersData.TryGetValue(client.UserName, out var data) ) {
-				return data.SpawnPoint;
+			var info = ServerSaveLoadController.Instance.GetPlayerInfo(client.UserName);
+			if ( info != null ) {
+				return info.SpawnPoint;
 			}
 			return DefaultSpawnPoint;
 		}
 
 		public Vector3 GetHomePosition(ClientState client) {
-			if ( _playersData.TryGetValue(client.UserName, out var data) ) {
-				return data.HomePoint;
+			var info = ServerSaveLoadController.Instance.GetPlayerInfo(client.UserName);
+			if ( info != null ) {
+				return info.HomePoint;
 			}
 			return DefaultSpawnPoint;
 		}
 
 		public Vector3 GetLastSavedPosition(ClientState client) {
-			if ( _playersData.TryGetValue(client.UserName, out var data) ) {
-				return data.LastSavedPos;
+			var info = ServerSaveLoadController.Instance.GetPlayerInfo(client.UserName);
+			if ( info != null ) {
+				return info.LastSavedPos;
 			}
 			return DefaultSpawnPoint;
 		}
@@ -139,31 +126,38 @@ namespace Voxels.Networking.Serverside {
 
 		public void SetSpawnPoint(string playerName, Vector3 spawnPoint) {
 			//TODO: check if position is valid
-			if ( _playersData.TryGetValue(playerName, out var data) ) {
-				data.SpawnPoint = spawnPoint;
-			}
+			var sc = ServerSaveLoadController.Instance;
+			var info = sc.GetPlayerInfo(playerName);
+			if ( info != null ) {
+				info.SpawnPoint = spawnPoint;
+				sc.UpdatePlayerInfo(info);
+			}			
 		}
 
 		public void SetHomePoint(string playerName, Vector3 spawnPoint) {
 			//TODO: check if position is valid
-			if ( _playersData.TryGetValue(playerName, out var data) ) {
-				data.HomePoint = spawnPoint;
+			var sc = ServerSaveLoadController.Instance;
+			var info = sc.GetPlayerInfo(playerName);
+			if ( info != null ) {
+				info.HomePoint = spawnPoint;
+				sc.UpdatePlayerInfo(info);
 			}
 		}
 
 		void SpawnPlayer(ClientState client) {
-			_playersData.TryGetValue(client.UserName, out var data);
-			if ( data == null ) {
-				data = new PlayerEntitySaveInfo {
+			var sc = ServerSaveLoadController.Instance;
+			var info = sc.GetPlayerInfo(client.UserName);
+			if ( info == null ) {
+				info = new PlayerEntitySaveInfo {
 					Name = client.UserName,
 					SpawnPoint = DefaultSpawnPoint,
 					HomePoint = DefaultSpawnPoint,
 					LastSavedPos = DefaultSpawnPoint,
 					UsedSkinName = "default"
 				};
-				_playersData.Add(client.UserName, data);
+				sc.UpdatePlayerInfo(info);
 			}
-			var player = new PlayerEntity { Owner = client, PlayerName = client.UserName, Position = data.LastSavedPos, ConId = (ushort)client.ConnectionID };
+			var player = new PlayerEntity { Owner = client, PlayerName = client.UserName, Position = info.LastSavedPos, ConId = (ushort)client.ConnectionID };
 			Players.Add(player);
 			var server = ServerController.Instance;
 			server.SendToAll(ServerPacketID.PlayerSpawn, new S_SpawnPlayerMessage { PlayerToSpawn = player });
@@ -175,9 +169,12 @@ namespace Voxels.Networking.Serverside {
 			if ( toDespawn == null ) {
 				return;
 			}
-			var data = _playersData[client.UserName];
-			data.LastSavedPos = toDespawn.Position;
-			EventManager.Fire<OnServerPlayerDespawn>(new OnServerPlayerDespawn { Player = toDespawn });
+			var sc = ServerSaveLoadController.Instance;
+			var info = sc.GetPlayerInfo(client.UserName);
+
+			info.LastSavedPos = toDespawn.Position;
+			sc.UpdatePlayerInfo(info);
+			EventManager.Fire(new OnServerPlayerDespawn { Player = toDespawn });
 			var server = ServerController.Instance;
 			server.SendToAll(ServerPacketID.PlayerDespawn, new S_DespawnPlayerMessage { PlayerToDespawn = toDespawn });
 			Players.Remove(toDespawn);

@@ -12,6 +12,7 @@ using Voxels.Utils;
 using Voxels.Networking.Utils;
 
 using ZeroFormatter;
+using LiteDB;
 
 
 namespace Voxels.Networking.Serverside {
@@ -29,6 +30,8 @@ namespace Voxels.Networking.Serverside {
 		ConcurrentQueue<Int3>                          _chunkLoadQueue = new ConcurrentQueue<Int3>();
 		MainDataHolder                                 _saveData       = new MainDataHolder();
 
+		LiteDatabase _db = null;
+
 		public string SavePath {
 			get {
 				return string.Format("{0}{1}/", SaveDirPath, WorldOptions.WorldName);
@@ -43,6 +46,8 @@ namespace Voxels.Networking.Serverside {
 
 		public override void Init() {
 			base.Init();
+
+			CustomTypeMappers.InitMappers();
 
 			_saveData.ChunkLibrary = new HashSet<Int3>();
 
@@ -72,6 +77,7 @@ namespace Voxels.Networking.Serverside {
 					_saveData.ChunkLibrary.Add(item);
 				}
 			}
+			_db = new LiteDatabase(@SavePath + "main.db");
 		}
 
 		public override void Save() {
@@ -90,6 +96,10 @@ namespace Voxels.Networking.Serverside {
 						SaveChunkToDisk(result.Key, result.Value);
 					}
 				}
+			}
+			if ( _db != null ) {
+				_db.Dispose();
+				_db = null;
 			}
 			Save();
 		}
@@ -114,6 +124,28 @@ namespace Voxels.Networking.Serverside {
 			}
 			_chunkLoadQueue.Enqueue(index);
 		}
+
+		public PlayerEntitySaveInfo GetPlayerInfo(string name) {
+			var coll = _db.GetCollection<PlayerEntitySaveInfo>("players");
+			var result = coll.FindOne(x => x.Name == name);
+			return result;
+		}
+
+		public void UpdatePlayerInfo(PlayerEntitySaveInfo info) {
+			if ( info == null || string.IsNullOrEmpty(info.Name) ) {
+				throw new ArgumentNullException("Player info is null or has invalid name");
+			}
+			var coll = _db.GetCollection<PlayerEntitySaveInfo>("players");
+			
+			if ( !coll.Update(info) ) {
+				coll.Insert(info);
+
+			}
+			coll.EnsureIndex(x => x.Name);
+
+			//_db.Commit();
+		}
+
 
 		public T LoadSaveFile<T>(string name) where T: class {
 			return LoadFile<T>(SavePath + name);

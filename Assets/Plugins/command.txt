@@ -1,1 +1,1 @@
-$ ./zfc.exe -i "..\..\Assembly-CSharp.csproj" -o "..\Scripts\Generated\Serializer\ZeroFormatterGenerated.cs"
+./zfc.exe -i "..\..\Assembly-CSharp.csproj" -o "..\Scripts\Generated\Serializer\ZeroFormatterGenerated.cs"

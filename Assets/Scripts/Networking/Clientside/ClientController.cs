@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-using SMGCore;
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
 using Voxels.Networking.Utils;
