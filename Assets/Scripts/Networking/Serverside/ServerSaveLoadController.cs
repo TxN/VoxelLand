@@ -125,6 +125,13 @@ namespace Voxels.Networking.Serverside {
 			_chunkLoadQueue.Enqueue(index);
 		}
 
+		public ILiteCollection<ChatMessage> GetChatDatabase() {
+			var coll = _db.GetCollection<ChatMessage>("chat");
+			coll.EnsureIndex(x => x.PlayerName);
+			coll.EnsureIndex(x => x.Time);
+			return coll;
+		}
+
 		public PlayerEntitySaveInfo GetPlayerInfo(string name) {
 			var coll = _db.GetCollection<PlayerEntitySaveInfo>("players");
 			var result = coll.FindOne(x => x.Name == name);

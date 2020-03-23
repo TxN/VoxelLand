@@ -1,5 +1,7 @@
 using System;
 
+using LiteDB;
+
 namespace Voxels.Networking {
 	public enum ChatMessageType: byte {
 		Raw,
@@ -13,12 +15,14 @@ namespace Voxels.Networking {
 		const string INFO_CHAT_FORMAT     = "<color=\"green\">{0}</color>";
 		const string RAW_CHAT_FORMAT      = "{0}";
 
-		public readonly string          PlayerName  = string.Empty;
-		public readonly string          Message     = string.Empty;
-		public readonly DateTime        Time        = DateTime.MinValue;
-		public readonly ChatMessageType Type        = ChatMessageType.Raw;
+		[BsonId]
+		public int             Id         { get; set; } //for database storage
+		public string          PlayerName { get; set; }
+		public string          Message    { get; set; }
+		public DateTime        Time       { get; set; }
+		public ChatMessageType Type       { get; set; }
 
-		string _cachedString = string.Empty;
+		string _cachedString     = string.Empty;
 		string _cachedChatString = string.Empty;
 
 		public ChatMessage(string playerName, string message, ChatMessageType type, DateTime time) {

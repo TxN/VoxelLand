@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
 
+using LiteDB;
+
 namespace Voxels.Networking.Serverside {
 	public sealed class ServerChatManager : ServerSideController<ServerChatManager> {
 		public ServerChatManager(ServerGameManager owner) : base(owner) { }
@@ -13,6 +15,7 @@ namespace Voxels.Networking.Serverside {
 
 		List<ChatMessage>               _messages = new List<ChatMessage>();
 		Dictionary<string, ChatCommand> _commands = new Dictionary<string, ChatCommand>();
+		ILiteCollection<ChatMessage>    _db       = null;
 
 		public override void Init() {
 			base.Init();
@@ -29,6 +32,7 @@ namespace Voxels.Networking.Serverside {
 		public override void PostLoad() {
 			base.PostLoad();
 			EventManager.Subscribe<OnServerReceivedChatMessage>(this, OnChatMessageReceived);
+			_db = ServerSaveLoadController.Instance.GetChatDatabase();
 		}
 
 		public override void Reset() {
@@ -44,8 +48,10 @@ namespace Voxels.Networking.Serverside {
 
 		public void BroadcastFromServer(ChatMessageType type, string message) {
 			var serverName = "Server";
-			_messages.Add(new ChatMessage(serverName, message, type, DateTime.Now));
+			var msg = new ChatMessage(serverName, message, type, DateTime.Now);
+			_messages.Add(msg);
 			SendToAll(serverName, message, type);
+			_db.Insert(msg);
 		}
 
 		void SendToAll(string senderName, string message, ChatMessageType type) {
@@ -84,6 +90,7 @@ namespace Voxels.Networking.Serverside {
 			var msg = new ChatMessage(e.Sender.UserName, e.Message, ChatMessageType.Player, DateTime.Now);
 			_messages.Add(msg);
 			SendToAll(msg.PlayerName, msg.Message, ChatMessageType.Player);
+			_db.Insert(msg);
 		}
 	}
 }
