@@ -1,6 +1,7 @@
 namespace Voxels.Networking.Utils {
 	public static class NetworkOptions  {
 		public static string PlayerName = "Tester";
+		public static string Password   = "0";
 		public static string ServerIP   = "localhost";
 		public static string Localhost  = "localhost";
 		public static string ServerName = "FirstServer";

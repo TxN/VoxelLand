@@ -37,7 +37,7 @@ namespace Voxels.Networking.Clientside {
 
 		public override void PostLoad() {
 			base.PostLoad();
-			StartClient(NetworkOptions.PlayerName, "" ,NetworkOptions.ServerIP,1337);
+			StartClient(NetworkOptions.PlayerName, NetworkOptions.Password ,NetworkOptions.ServerIP,1337);
 		}
 
 		public override void Update() {

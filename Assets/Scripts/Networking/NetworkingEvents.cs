@@ -14,6 +14,10 @@ namespace Voxels.Networking.Events {
 		public ClientState State;
 	}
 
+	public struct OnNewClientRegistered {
+		public string Name;
+	}
+
 	public struct OnServerReceivedChatMessage {
 		public ClientState Sender;
 		public string      Message;

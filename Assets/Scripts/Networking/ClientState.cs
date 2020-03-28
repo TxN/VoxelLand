@@ -1,6 +1,17 @@
 using System;
 
+using LiteDB;
+
 namespace Voxels.Networking.Serverside {
+	public class ClientProfile {
+		[BsonId]
+		public string   Name          { get; set; }
+		public string   Password      { get; set; }
+		public bool     Op            { get; set; }
+		public DateTime LastLoginTime { get; set; }
+	}
+
+
 	[Serializable]
 	public class ClientState {
 		public CState   CurrentState   = CState.Disconneted;

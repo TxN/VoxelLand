@@ -14,6 +14,7 @@ namespace Voxels.UI {
 		public Button         QuitButton        = null;
 		public TMP_InputField IpInput           = null;
 		public TMP_InputField NameInput         = null;
+		public TMP_InputField PasswordInput     = null;
 		public GameObject     LoadingScreen     = null;
 
 		void Start() {
@@ -57,6 +58,9 @@ namespace Voxels.UI {
 			}
 			if ( !string.IsNullOrEmpty(NameInput.text) ) {
 				NetworkOptions.PlayerName = NameInput.text;
+			}
+			if ( !string.IsNullOrEmpty(PasswordInput.text) ) {
+				NetworkOptions.Password = PasswordInput.text;
 			}
 			NetworkOptions.StartClient = isClient;
 			NetworkOptions.StartServer = isServer;

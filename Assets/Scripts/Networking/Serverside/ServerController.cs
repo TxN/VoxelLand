@@ -7,9 +7,11 @@ using SMGCore.EventSys;
 using Voxels.Networking.Events;
 using Voxels.Networking.Utils;
 
+using LiteDB;
 using Telepathy;
 using ZeroFormatter;
 using JetBrains.Annotations;
+using System;
 
 namespace Voxels.Networking.Serverside {
 	public class ServerController : ServerSideController<ServerController> {
@@ -19,8 +21,9 @@ namespace Voxels.Networking.Serverside {
 		const int   PROTOCOL_VERSION = 1;
 		const float PING_INTERVAL    = 10;
 
-		Dictionary<int,ClientState>                          _clients  = new Dictionary<int, ClientState>();
-		Dictionary<ClientPacketID, BaseClientMessageHandler> _handlers = new Dictionary<ClientPacketID, BaseClientMessageHandler>();
+		ILiteCollection<ClientProfile>                        _clientsDB = null;
+		Dictionary<int,ClientState>                          _clients    = new Dictionary<int, ClientState>();
+		Dictionary<ClientPacketID, BaseClientMessageHandler> _handlers   = new Dictionary<ClientPacketID, BaseClientMessageHandler>();
 
 		int    _port            = 0;
 		Server _server          = null;
@@ -50,6 +53,7 @@ namespace Voxels.Networking.Serverside {
 
 		public override void PostLoad() {
 			base.PostLoad();
+			_clientsDB = ServerSaveLoadController.Instance.GetClientsDatabase();
 			StartServer(1337);
 		}
 
@@ -108,6 +112,23 @@ namespace Voxels.Networking.Serverside {
 				}
 			}
 			return null;
+		}
+
+		public bool TryAuthenticate(string userName, string password, out bool newUser) {
+			newUser = false;
+			var profile = GetClientInfo(userName);
+			if ( profile == null ) {
+				profile = new ClientProfile { Name = userName, Password = password, Op = false };
+				Debug.Log(string.Format("Registering new user with name '{0}'", userName));
+				newUser = true;
+				EventManager.Fire(new OnNewClientRegistered { Name = userName });
+			}
+			if ( profile.Password != password ) {
+				return false;
+			}
+			profile.LastLoginTime = DateTime.Now;
+			UpdateClientInfo(profile);
+			return true;
 		}
 
 		public void ForceDisconnectClient(ClientState client, string message) {
@@ -237,6 +258,22 @@ namespace Voxels.Networking.Serverside {
 			Debug.LogFormat("Player '{0}' with id '{1}' disconnected.", client.UserName, msg.connectionId);
 			ServerChatManager.Instance.BroadcastFromServer(ChatMessageType.Info, string.Format("{0} left the server.", client.UserName));
 			_clients.Remove(msg.connectionId);
+		}
+
+		ClientProfile GetClientInfo(string name) {
+			var result = _clientsDB.FindOne(x => x.Name == name);
+			return result;
+		}
+
+		void UpdateClientInfo(ClientProfile info) {
+			if ( info == null || string.IsNullOrEmpty(info.Name) ) {
+				throw new ArgumentNullException("Client info is null or has invalid name");
+			}
+			if ( !_clientsDB.Update(info) ) {
+				_clientsDB.Insert(info);
+
+			}
+			_clientsDB.EnsureIndex(x => x.Name);
 		}
 	}
 }
