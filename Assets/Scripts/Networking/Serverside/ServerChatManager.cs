@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
+using Voxels.Networking.Utils;
 
 using LiteDB;
 
@@ -19,14 +20,16 @@ namespace Voxels.Networking.Serverside {
 
 		public override void Init() {
 			base.Init();
-			_commands.Add("none",     new NoneChatCommand());
-			_commands.Add("kick",     new KickChatCommand());
-			_commands.Add("time_set", new TimeSetChatCommand());
-			_commands.Add("tp",       new TeleportChatCommand());
-			_commands.Add("spawn",    new TeleportToSpawnChatCommand());
-			_commands.Add("home",     new TeleportToHomeChatCommand());
-			_commands.Add("setspawn", new SetSpawnChatCommand());
-			_commands.Add("sethome",  new SetHomeChatCommand());
+			FillHandlers();
+		}
+
+		void FillHandlers() {
+			_commands.Clear();
+			var arr = ReflectionUtility.GetSubclasses(typeof(ChatCommand));
+			foreach ( var item in arr ) {
+				var handler = (ChatCommand)ReflectionUtility.CreateObjectWithActivator(item);
+				_commands.Add(handler.Keyword, handler);
+			}
 		}
 
 		public override void PostLoad() {
