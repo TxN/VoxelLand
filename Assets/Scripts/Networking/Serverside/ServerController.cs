@@ -117,6 +117,16 @@ namespace Voxels.Networking.Serverside {
 			return null;
 		}
 
+		[CanBeNull]
+		public ClientState GetClientByIP(string ip) {
+			foreach ( var pair in _clients ) {
+				if ( ip == pair.Value.IpAdress ) {
+					return pair.Value;
+				}
+			}
+			return null;
+		}
+
 		public bool TryAuthenticate(string userName, string password, out bool newUser) {
 			newUser = false;
 			var profile = GetClientInfo(userName);
@@ -171,6 +181,14 @@ namespace Voxels.Networking.Serverside {
 				Reason = reason
 			};
 			AddBan(info);
+		}
+
+		public void ClearNameBans(string name) {
+			_bansDB.DeleteMany(x => x.Name == name);
+		}
+
+		public void ClearIpBans(string ip) {
+			_bansDB.DeleteMany(x => x.IP == ip);
 		}
 
 		public void ForceDisconnectClient(ClientState client, string message) {
@@ -323,14 +341,6 @@ namespace Voxels.Networking.Serverside {
 				return;
 			}
 			_bansDB.Insert(ban);
-		}
-
-		void ClearNameBans(string name) {
-			_bansDB.DeleteMany(x => x.Name == name);
-		}
-
-		void ClearIpBans(string ip) {
-			_bansDB.DeleteMany(x => x.IP == ip);
 		}
 	}
 }
