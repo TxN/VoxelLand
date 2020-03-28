@@ -131,6 +131,13 @@ namespace Voxels.Networking.Serverside {
 			return coll;
 		}
 
+		public ILiteCollection<BanInfo> GetBansDatabase() {
+			var coll = _db.GetCollection<BanInfo>("bans");
+			coll.EnsureIndex(x => x.Name, false);
+			coll.EnsureIndex(x => x.IP, false);
+			return coll;
+		}
+
 		public ILiteCollection<ChatMessage> GetChatDatabase() {
 			var coll = _db.GetCollection<ChatMessage>("chat");
 			coll.EnsureIndex(x => x.PlayerName);

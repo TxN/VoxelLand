@@ -26,6 +26,10 @@ namespace Voxels.Networking {
 				server.ForceDisconnectClient(client, string.Format("Wrong protocol version. Server: {0}, yours: {1}", ServerController.ProtocolVersion, command.ProtocolVersion));
 				return;
 			}
+			if ( server.IsClientBanned(client.IpAdress, client.UserName, out var ban) ) {
+				server.ForceDisconnectClient(client, string.Format("You are banned until {0} due to: {1}", ban.BanEnd.ToShortDateString(), ban.Reason));
+				return;
+			}
 			if ( !server.TryAuthenticate(command.ClientName, command.Password, out var isNew) ) {
 				server.ForceDisconnectClient(client, "Wrong password!");
 				return;

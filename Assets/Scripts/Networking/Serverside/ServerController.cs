@@ -21,7 +21,8 @@ namespace Voxels.Networking.Serverside {
 		const int   PROTOCOL_VERSION = 1;
 		const float PING_INTERVAL    = 10;
 
-		ILiteCollection<ClientProfile>                        _clientsDB = null;
+		ILiteCollection<ClientProfile>                       _clientsDB  = null;
+		ILiteCollection<BanInfo>                             _bansDB     = null;
 		Dictionary<int,ClientState>                          _clients    = new Dictionary<int, ClientState>();
 		Dictionary<ClientPacketID, BaseClientMessageHandler> _handlers   = new Dictionary<ClientPacketID, BaseClientMessageHandler>();
 
@@ -53,7 +54,6 @@ namespace Voxels.Networking.Serverside {
 
 		public override void PostLoad() {
 			base.PostLoad();
-			_clientsDB = ServerSaveLoadController.Instance.GetClientsDatabase();
 			StartServer(1337);
 		}
 
@@ -75,6 +75,9 @@ namespace Voxels.Networking.Serverside {
 			_clients.Clear();
 
 			FillHandlers();
+
+			_clientsDB = ServerSaveLoadController.Instance.GetClientsDatabase();
+			_bansDB    = ServerSaveLoadController.Instance.GetBansDatabase();
 
 			_packetsReceived = 0;
 			_packetsSent     = 0;
@@ -129,6 +132,45 @@ namespace Voxels.Networking.Serverside {
 			profile.LastLoginTime = DateTime.Now;
 			UpdateClientInfo(profile);
 			return true;
+		}
+
+		public bool IsClientBanned(string ip, string name, out BanInfo banInfo) {
+			var ipBans = _bansDB.Find(i => i.IP == ip);
+			foreach ( var ban in ipBans ) {
+				if ( ban.BanEnd > DateTime.Now ) {
+					banInfo = ban;
+					return true;
+				}
+			}
+			var nameBans = _bansDB.Find(i => i.Name == name);
+			foreach ( var ban in nameBans ) {
+				if ( ban.BanEnd > DateTime.Now ) {
+					banInfo = ban;
+					return true;
+				}
+			}
+			banInfo = null;
+			return false;
+		}
+
+		public void BanName(string name, DateTime endTime, string reason) {
+			var info = new BanInfo {
+				Name     = name,
+				BanStart = DateTime.Now,
+				BanEnd   = endTime,
+				Reason   = reason
+			};
+			AddBan(info);
+		}
+
+		public void BanIp(string ip, DateTime endTime, string reason) {
+			var info = new BanInfo {
+				IP = ip,
+				BanStart = DateTime.Now,
+				BanEnd = endTime,
+				Reason = reason
+			};
+			AddBan(info);
 		}
 
 		public void ForceDisconnectClient(ClientState client, string message) {
@@ -274,6 +316,21 @@ namespace Voxels.Networking.Serverside {
 
 			}
 			_clientsDB.EnsureIndex(x => x.Name);
+		}
+
+		void AddBan(BanInfo ban) {
+			if ( ban == null ) {
+				return;
+			}
+			_bansDB.Insert(ban);
+		}
+
+		void ClearNameBans(string name) {
+			_bansDB.DeleteMany(x => x.Name == name);
+		}
+
+		void ClearIpBans(string ip) {
+			_bansDB.DeleteMany(x => x.IP == ip);
 		}
 	}
 }
