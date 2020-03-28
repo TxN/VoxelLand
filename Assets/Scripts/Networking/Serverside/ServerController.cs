@@ -127,7 +127,7 @@ namespace Voxels.Networking.Serverside {
 			return null;
 		}
 
-		public bool TryAuthenticate(string userName, string password, out bool newUser) {
+		public bool TryAuthenticate(ClientState client, string userName, string password, out bool newUser) {
 			newUser = false;
 			var profile = GetClientInfo(userName);
 			if ( profile == null ) {
@@ -141,6 +141,8 @@ namespace Voxels.Networking.Serverside {
 			}
 			profile.LastLoginTime = DateTime.Now;
 			UpdateClientInfo(profile);
+			client.UserName = profile.Name;
+			client.IsOp = profile.Op;
 			return true;
 		}
 
