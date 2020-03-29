@@ -18,8 +18,7 @@ namespace Voxels.Networking {
 
 			WorldOptions.Seed = command.Seed;
 			var wsc = ClientWorldStateController.Instance;
-			wsc.SetTimeParameters(command.Time, command.TimeMultiplier);
-			WorldOptions.DayLength = command.DayLength;
+			wsc.SetTimeParameters(command.Time, command.TimeMultiplier, command.DayLength);
 		}
 	}
 }

@@ -162,8 +162,6 @@ namespace Voxels.Networking.Serverside {
 
 			}
 			coll.EnsureIndex(x => x.Name);
-
-			//_db.Commit();
 		}
 
 

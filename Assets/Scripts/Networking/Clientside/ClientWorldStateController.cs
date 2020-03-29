@@ -1,10 +1,4 @@
-using System.Collections.Generic;
-
 using UnityEngine;
-
-using SMGCore.EventSys;
-using Voxels.Networking.Events;
-using Voxels.Networking.Utils;
 
 namespace Voxels.Networking.Clientside {
 	public class ClientWorldStateController : ClientsideController<ClientWorldStateController> {
@@ -30,7 +24,7 @@ namespace Voxels.Networking.Clientside {
 
 		public float DayPercent {
 			get {
-				var days = WorldTime / WorldOptions.DayLength;
+				var days = WorldTime / DayLength;
 				var whole = Mathf.FloorToInt(days);
 				return days - whole;
 			}
@@ -38,11 +32,13 @@ namespace Voxels.Networking.Clientside {
 
 		public int DayNumber {
 			get {
-				var days = WorldTime / WorldOptions.DayLength;
+				var days = WorldTime / DayLength;
 				var whole = Mathf.FloorToInt(days);
 				return whole;
 			}
 		}
+
+		public float DayLength { get; private set; } = 600;
 
 		public float AmbientLightIntensity {
 			get {
@@ -66,9 +62,10 @@ namespace Voxels.Networking.Clientside {
 			WorldTime += Time.deltaTime * TimeScale;
 		}
 
-		public void SetTimeParameters(float time, float timeScale) {
+		public void SetTimeParameters(float time, float timeScale, float dayLength) {
 			WorldTime = time;
 			TimeScale = timeScale;
+			DayLength = dayLength;
 		}
 	}
 }
