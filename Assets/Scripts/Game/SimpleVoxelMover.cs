@@ -19,8 +19,7 @@ namespace Voxels {
 
 		public float JumpSpeed = 5f;
 
-		Vector3 _velocity = Vector3.zero;
-		Vector3 _moveVector = Vector3.zero;
+		Vector3       _velocity     = Vector3.zero;
 		IChunkManager _chunkManager = null;
 
 		Vector2 _curRot = Vector2.zero;

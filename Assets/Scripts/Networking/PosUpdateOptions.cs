@@ -6,6 +6,13 @@ namespace Voxels.Networking {
 		Force    = 2,
 	}
 
+	public enum PosUpdateType : byte {
+		None = 0,
+		PosRot = 1,
+		Pos = 2,
+		Rot = 3
+	}
+
 	public static class PosUpdateOptionsHelper {
 		public static bool IsSet(this PosUpdateOptions flags, PosUpdateOptions flag) {
 			return (flags & flag) != 0;

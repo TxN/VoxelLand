@@ -98,17 +98,16 @@ namespace Voxels {
 		}
 	}
 
+	
 	[Serializable]
+	[ZeroFormattable]
 	public struct Byte3 : System.IEquatable<Byte3> {
+		[Index(0)]
 		public byte X;
+		[Index(1)]
 		public byte Y;
+		[Index(2)]
 		public byte Z;
-
-		public Byte3(int x, int y, int z) {
-			X = (byte) x;
-			Y = (byte) y;
-			Z = (byte) z;
-		}
 
 		public Byte3(byte x, byte y, byte z) {
 			X = x;
@@ -116,6 +115,7 @@ namespace Voxels {
 			Z = z;
 		}
 
+		[IgnoreFormat]
 		public static Byte3 Zero {
 			get {
 				return new Byte3(0, 0, 0);

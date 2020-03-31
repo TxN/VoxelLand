@@ -202,7 +202,7 @@ namespace Voxels.Networking.Serverside {
 		public void SendNetMessage<T>(ClientState client, ServerPacketID id, T message, bool compress = false) where T : BaseMessage {
 			var compressFlag = compress && EnableCompression;
 			var body = ZeroFormatterSerializer.Serialize(message);
-			SendRawNetMessage(client, id, body, compress);
+			SendRawNetMessage(client, id, body, compressFlag);
 		}
 
 		/// <summary>

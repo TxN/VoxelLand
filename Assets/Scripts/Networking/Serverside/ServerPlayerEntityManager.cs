@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -12,8 +11,6 @@ using JetBrains.Annotations;
 namespace Voxels.Networking.Serverside {
 	public class ServerPlayerEntityManager : ServerSideController<ServerPlayerEntityManager> {
 		public ServerPlayerEntityManager(ServerGameManager owner) : base(owner) { }
-
-		const string SAVE_DATA_FILE_NAME = "players.dat";
 
 		//TODO: Get spawn points from worldgen
 		public Vector3 DefaultSpawnPoint = new Vector3(0, 60, 0);
@@ -162,6 +159,9 @@ namespace Voxels.Networking.Serverside {
 			var server = ServerController.Instance;
 			server.SendToAll(ServerPacketID.PlayerSpawn, new S_SpawnPlayerMessage { PlayerToSpawn = player });
 			EventManager.Fire(new OnServerPlayerSpawn { Player = player, Client = client });
+
+			//send all entities
+			ServerDynamicEntityController.Instance.RegisterClient(player, client);
 		}
 
 		void DespawnPlayer(ClientState client) {
@@ -178,6 +178,8 @@ namespace Voxels.Networking.Serverside {
 			var server = ServerController.Instance;
 			server.SendToAll(ServerPacketID.PlayerDespawn, new S_DespawnPlayerMessage { PlayerToDespawn = toDespawn });
 			Players.Remove(toDespawn);
+
+			ServerDynamicEntityController.Instance.UnregisterClient(client);
 		}
 
 		void SendAllPlayers(ClientState receiver) {
@@ -191,6 +193,7 @@ namespace Voxels.Networking.Serverside {
 			Debug.LogFormat("Sending to {0} all player spawn", e.State.UserName);
 			//send all live players to client
 			SendAllPlayers(e.State);
+
 			//spawn new player
 			SpawnPlayer(e.State);
 		}

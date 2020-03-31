@@ -28,7 +28,12 @@ namespace Voxels.Networking.Clientside {
 			}
 		}
 
-		public void UpdatePosition(Vector3 newPos, Quaternion newRot, bool teleport) {
+		public void UpdatePosition(PosUpdateType type, Vector3 newPos, Quaternion newRot, bool teleport) {
+			if ( type == PosUpdateType.Pos ) {
+				newRot = _lastRot;
+			} else if ( type == PosUpdateType.Rot ) {
+				newPos = _lastPos;
+			}
 
 			_prevRot = _lastRot;
 			_lastRot = newRot;

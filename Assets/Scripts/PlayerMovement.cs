@@ -114,7 +114,7 @@ namespace Voxels {
 				return;
 			}
 			var rot = Quaternion.Euler(0, e.Player.LookDir.y, 0);
-			_interpolator.UpdatePosition(e.Player.Position, rot, e.Flags.IsSet(PosUpdateOptions.Teleport));
+			_interpolator.UpdatePosition(PosUpdateType.PosRot, e.Player.Position, rot, e.Flags.IsSet(PosUpdateOptions.Teleport));
 			_lastReceivedHeadPitch = e.Player.LookDir.x;
 		}
 	}

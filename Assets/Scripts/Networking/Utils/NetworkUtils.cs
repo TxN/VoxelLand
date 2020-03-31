@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Voxels.Networking {
 	public static class NetworkUtils {
 		public static byte[] CreateMessageBytes(PacketHeader header, byte[] body) {

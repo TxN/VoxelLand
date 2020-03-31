@@ -908,7 +908,7 @@ namespace Voxels {
 				var x = t % divz;
 				blockList.Add(new MesherBlockInput() {
 					Block = block,
-					Position = new Byte3(x, y, z),
+					Position = new Byte3((byte)x, (byte)y, (byte)z),
 					Lighting = GetLightForBlock(x, y, z, neighbors),
 					Visibility = _visibiltiy[i]
 				});

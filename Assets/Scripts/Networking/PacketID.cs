@@ -16,6 +16,13 @@ namespace Voxels.Networking {
 		ChunkUnload,
 		LoadFinalize,
 		PutBlock,
+		SpawnEntity,
+		DespawnEntity,
+		UpdateEntityPos,
+		UpdateEntityRot,
+		UpdateEntityPosRot,
+		UpdateEntityData,
+		EnityRPC,
 		None = 255
 	}
 
@@ -26,7 +33,8 @@ namespace Voxels.Networking {
 		ChatMessage,
 		PlayerUpdate,
 		PlayerPosAndRotUpdate,
-		PutBlock,		
+		PutBlock,
+		EntityRPC,
 		None = 255
 	}
 }

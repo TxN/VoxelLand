@@ -40,6 +40,15 @@ namespace Voxels.Networking.NetDebug {
 
 #if UNITY_EDITOR
 		void OnDrawGizmos() {
+			if ( !Application.isPlaying ) {
+				return;
+			}
+			var ex = ServerDynamicEntityController.Instance;
+
+			foreach ( var e in ex.AllEntities ) {
+				Gizmos.DrawWireSphere(e.Mover.Position, 0.5f);
+			}
+
 			var pc = ServerPlayerEntityManager.Instance;
 			if ( pc == null ) {
 				return;
@@ -80,6 +89,12 @@ namespace Voxels.Networking.NetDebug {
 			Presenter.gameObject.SetActive(!block.IsEmpty());
 			Presenter.transform.position = BlockPos;
 			Presenter.DrawBlock(block);
+		}
+
+		[Button]
+		void SpawnTestEntity() {
+			var ex = ServerDynamicEntityController.Instance;
+			ex.SpawnEntity<TestEntityServerside>(new Vector3(0, 50, 0), Random.rotation);
 		}
 
 		IEnumerator UpdateValues() {
