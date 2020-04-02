@@ -94,7 +94,7 @@ namespace Voxels.Networking.NetDebug {
 		[Button]
 		void SpawnTestEntity() {
 			var ex = ServerDynamicEntityController.Instance;
-			ex.SpawnEntity<TestEntityServerside>(new Vector3(0, 50, 0), Random.rotation);
+			ex.SpawnEntity<TestEntityServerside>(new Vector3(0, 50, 0), Quaternion.identity);
 		}
 
 		IEnumerator UpdateValues() {

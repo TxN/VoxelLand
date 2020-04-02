@@ -10,13 +10,18 @@ using ZeroFormatter;
 namespace Voxels.Networking.Serverside {
 
 	public class VoxelMoverServerside {
-		const float GRAVITY          = 5f;
+		const float GRAVITY          = 10f;
 		const float POS_MIN_DELTA    = 0.05f;
 		const float ANG_MIN_DELTA    = 2f;
+		const float MAX_SWIM_SPEED   = 4f;
 
-		public float Radius     = 0.3f;
+		public float Radius     = 0.5f;
 		public float UpHeight   = 0.6f;
 		public float DownHeight = 1f;
+		public float JumpSpeed  = 6f;
+		public bool  Buoyant    = true;
+		public bool  AirControl = false;
+		public bool  FreeMove   = true;
 
 		Vector3 _velocity       = Vector3.zero;
 		Vector3 _lastSentPos    = Vector3.zero;
@@ -25,7 +30,7 @@ namespace Voxels.Networking.Serverside {
 		DynamicEntityServerside _owner = null;
 
 		public Vector3    MoveVector     { get; set; }
-		public Vector3    MaxMoveSpeed   { get; set; }
+		public float      MaxMoveSpeed   { get; set; } = 5f;
 		public Vector3    Velocity       { get { return _velocity; } }
 		public Vector3    Position       { get; set; }
 		public Quaternion Rotation       { get; set; }
@@ -72,6 +77,17 @@ namespace Voxels.Networking.Serverside {
 			}
 			
 		}
+		public bool IsGrounded {
+			get {
+				return VoxelsUtils.Cast(Position, Vector3.down, DownHeight + 0.01f, IsBlockSolid, out var downCastResult);
+			}
+		}
+
+		public bool IsInWater {
+			get {
+				return VoxelsStatic.Instance.Library.GetBlockDescription(_chunkManager.GetBlockIn(Position).Type).IsSwimmable;
+			}
+		}
 
 		public byte[] GetPosUpdateMessage(out PosUpdateType type) {
 			var p = NeedSyncPosition;
@@ -95,6 +111,14 @@ namespace Voxels.Networking.Serverside {
 			return null;
 		}
 
+		public void Jump() {
+			var canJump = IsGrounded || (IsInWater && Buoyant);
+			if ( canJump ) {
+				Position += new Vector3(0, 0.1f, 0);
+				_velocity.y = JumpSpeed;
+			}
+		}
+
 		public void UpdateSent() {
 			_lastSentRot = RotationEuler;
 			_lastSentPos = Position;
@@ -108,15 +132,35 @@ namespace Voxels.Networking.Serverside {
 			return (Vector3.Distance(worldPos, bottomCheckPos) < 0.5f + Radius) || (Vector3.Distance(worldPos, upCheckPos) < 0.5f + Radius);
 		}
 
+		public void Move(Vector3 localDirection, float speedMul) {
+			var dir = Rotation * localDirection;
+			MoveVector = dir * speedMul;
+		}
+
 		public void Update() {
 			var tickTime = ServerDynamicEntityController.TICK_TIME;
+			var inWater = IsInWater;
+			var moveFlag = (AirControl || IsGrounded || inWater) && FreeMove;
+			if ( moveFlag ) {
+				_velocity.x = MoveVector.x;
+				_velocity.z = MoveVector.z;
+				MoveVector = Vector3.ClampMagnitude(MoveVector, MaxMoveSpeed);
+			}
 
-			_velocity.x = MoveVector.x * MaxMoveSpeed.x;			
-			_velocity.z = MoveVector.z * MaxMoveSpeed.z;
-			if ( GravityEnabled ) {
+			if ( GravityEnabled && (!Buoyant || !inWater) ) {
 				_velocity.y -= GRAVITY * tickTime;
-			} else {
-				_velocity.y = MoveVector.y * MaxMoveSpeed.y;
+			} else if ( moveFlag ) {
+				_velocity.y = MoveVector.y;
+			}
+
+			if ( inWater ) {
+				_velocity = Vector3.ClampMagnitude(_velocity, MAX_SWIM_SPEED);
+
+				if ( Buoyant ) {
+					_velocity.y += 1f * tickTime;
+				} else {
+					_velocity.y -= GRAVITY * tickTime * 0.3f;
+				}
 			}
 
 			var resultMoveVector = Vector3.zero;
@@ -168,6 +212,10 @@ namespace Voxels.Networking.Serverside {
 			var lib = VoxelsStatic.Instance.Library;
 			var block = _chunkManager.GetBlockIn(index.X, index.Y, index.Z);
 			return !lib.GetBlockDescription(block.Type).IsPassable;
+		}
+
+		public BlockData CurrentBlock( ) {
+			return _chunkManager.GetBlockIn(Position);
 		}
 	}
 }

@@ -17,8 +17,16 @@ namespace Voxels.Networking.Serverside {
 
 		public override void Tick() {
 			base.Tick();
-			var rot = Mover.Rotation;
-			Mover.Rotation = rot * Quaternion.Euler(0, 30 * ServerDynamicEntityController.TICK_TIME, 0);
+			if ( Random.Range(0, 100) < 5 ) {
+				Mover.Jump();
+			}
+
+			if ( Random.Range(0, 100) < 3 ) {
+				var r = Mover.Rotation;
+				Mover.Rotation = r * Quaternion.Euler(0, Random.Range(-60, 60), 0);
+			}
+
+			Mover.Move(Vector3.forward, 3);
 		}
 	}
 }
