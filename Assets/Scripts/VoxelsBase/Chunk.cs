@@ -5,6 +5,7 @@ using UnityEngine;
 using SMGCore.EventSys;
 using Voxels.Events;
 using UnityEngine.Profiling;
+using System.Threading.Tasks;
 
 namespace Voxels {
 	public sealed partial class Chunk {
@@ -965,7 +966,15 @@ namespace Voxels {
 
 		public void UpdateVisibilityForDirtyBlocks() {
 			if ( _needUpdateVisibilityAll ) {
-				UpdateVisibilityAll(0, _maxNonEmptyY + 1);				
+				//UpdateVisibilityAll(0, _maxNonEmptyY + 1);
+				var quarter = _maxNonEmptyY / 4;
+				var half = _maxNonEmptyY / 2;
+				var l = new Task[4];
+				l[0] = (Task.Run(() => UpdateVisibilityAll(0, quarter)));
+				l[1] = (Task.Run(() => UpdateVisibilityAll(quarter, half)));
+				l[2] = (Task.Run(() => UpdateVisibilityAll(half, half + quarter)));
+				l[3] = (Task.Run(() => UpdateVisibilityAll(half + quarter, _maxNonEmptyY)));
+				Task.WaitAll(l); // если бы мы были еще более умные, то тут можно было бы не ждать, а поручить чанк-менеджеру сперва апдейтнуть видимость всех остальных чанков, а потом уже завершить таски.
 			} else {
 				var neighbors = GetNeighborChunks();
 				foreach ( var block in _dirtyBlocks ) {
