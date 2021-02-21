@@ -33,3 +33,6 @@ csharp_space_between_method_call_parameter_list_parentheses=false
 csharp_space_between_parentheses=control_flow_statements
 csharp_space_between_method_declaration_empty_parameter_list_parentheses=false
 csharp_style_var_when_type_is_apparent = true:none
+
+# IDE1006: Стили именования
+dotnet_diagnostic.IDE1006.severity = none
