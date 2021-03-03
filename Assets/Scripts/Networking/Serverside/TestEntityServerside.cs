@@ -23,10 +23,10 @@ namespace Voxels.Networking.Serverside {
 
 			if ( Random.Range(0, 100) < 3 ) {
 				var r = Mover.Rotation;
-				Mover.Rotation = r * Quaternion.Euler(0, Random.Range(-60, 60), 0);
+				Mover.Rotation = r * Quaternion.Euler(0, Random.Range(-100, 100), 0);
 			}
 
-			Mover.Move(Vector3.forward, 3);
+			Mover.Move(Vector3.forward, 1);
 		}
 	}
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 using Voxels.Networking.Clientside;
 
 namespace Voxels {
-	public sealed class VoxelLightingReceiver : MonoBehaviour {
+	public class VoxelLightingReceiver : MonoBehaviour {
 		public byte GetLightLevel() {
 			var cm = ClientChunkManager.Instance;
 			var block = cm.GetBlockIn(transform.position);

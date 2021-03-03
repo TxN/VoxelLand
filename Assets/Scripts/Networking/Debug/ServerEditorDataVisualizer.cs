@@ -34,6 +34,12 @@ namespace Voxels.Networking.NetDebug {
 #endif
 		}
 
+		void Update() {
+			if ( Input.GetKeyDown(KeyCode.J) ) {
+				SpawnTestEntity();
+			}
+		}
+
 		void OnDestroy() {
 			StopAllCoroutines();
 		}

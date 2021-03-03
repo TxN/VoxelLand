@@ -2,8 +2,6 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-using Voxels.Networking.Clientside;
-
 namespace Voxels {
 	public sealed class PlayerProxyAppearance : MonoBehaviour {
 
@@ -22,7 +20,6 @@ namespace Voxels {
 		}
 
 		void Update() {
-			var wsc = ClientWorldStateController.Instance;
 			_material.SetFloat("_LightLevel", LightReceiver.GetLightLevel() / (float) 255);
 		}
 	}

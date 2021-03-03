@@ -78,8 +78,19 @@ namespace Voxels.Networking.Serverside {
 			//TODO:Rebuild
 		}
 
-		public void RegisterClient(PlayerEntity player, ClientState client) {
+		public void RegisterClient(PlayerEntity player, ClientState client) { //TODO: текущий подход конечно очень кривой, но для прототипа сгодится.
 			var state = new PlayerEntityObserver { Client = client, Player = player };
+
+			var sc = ServerController.Instance;
+			//send already spawned entities to new client
+			foreach ( var entity in _entities ) {
+				var estate = entity.Value.SerializeViewState();
+				var e = entity.Value;
+				sc.SendNetMessage(client, ServerPacketID.SpawnEntity, new S_SpawnEntityMessage { UID = entity.Key, Position = e.Mover.Position,
+					Rotation = e.Mover.PackedRotation, TypeName = e.EntityType, State = estate });
+				state.Entities.Add(entity.Key, e);
+			}
+
 			_netObservers.Add(client, state);
 		}
 
@@ -110,7 +121,6 @@ namespace Voxels.Networking.Serverside {
 							} else {
 								sc.SendRawNetMessage(op.Key, ServerPacketID.UpdateEntityPosRot, msg);
 							}
-							
 						}
 					}
 					e.Mover.UpdateSent();
@@ -126,4 +136,3 @@ namespace Voxels.Networking.Serverside {
 		public float LastUpdateTime = 0f;
 	}
 }
-
