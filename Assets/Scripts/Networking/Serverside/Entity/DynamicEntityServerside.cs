@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,11 +25,10 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		public virtual byte[] SerializeViewState() {
-			var result = new byte[0];
+			var result = Array.Empty<byte>();
 
 			return result;
 		}
-
 
 		public void CallMethodOnClient(string methodName) {
 

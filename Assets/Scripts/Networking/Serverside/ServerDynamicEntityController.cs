@@ -10,6 +10,9 @@ namespace Voxels.Networking.Serverside {
 		Dictionary<uint, DynamicEntityServerside>     _entities     = new Dictionary<uint, DynamicEntityServerside>();
 		Dictionary<ClientState, PlayerEntityObserver> _netObservers = new Dictionary<ClientState, PlayerEntityObserver>();
 
+		List<uint>                    _entityDestroyQueue = new List<uint>();
+		List<DynamicEntityServerside> _entitySpawnQueue   = new List<DynamicEntityServerside>();
+
 		public ServerDynamicEntityController(ServerGameManager owner) : base(owner) { }
 
 		float _lastTickTime    = 0f;
@@ -35,6 +38,8 @@ namespace Voxels.Networking.Serverside {
 				NetTick();
 				_lastNetSendTime = Time.time;
 			}
+
+			UpdateEntityChangeLists();
 		}
 
 		public void SpawnEntity<T>(Vector3 pos, Quaternion rot, uint uid = 0, byte[] data = null) where T: DynamicEntityServerside, new() {
@@ -49,16 +54,7 @@ namespace Voxels.Networking.Serverside {
 				entity.DeserializeState(data);
 			}
 			entity.Init();
-			_entities.Add(uid, entity);
-			//TODO: Rebuild
-
-			var sc = ServerController.Instance;
-			var state = entity.SerializeViewState();
-			foreach ( var item in _netObservers ) {
-				sc.SendNetMessage(item.Key, ServerPacketID.SpawnEntity, new S_SpawnEntityMessage { UID = uid, Position = pos,
-					Rotation = entity.Mover.PackedRotation, TypeName = entity.EntityType, State = state });
-				item.Value.Entities.Add(uid, entity);
-			}
+			_entitySpawnQueue.Add(entity);
 		}
 
 		public uint GetNewUID() {
@@ -67,15 +63,7 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		public void DestroyEntity(uint uid) {
-			var sc = ServerController.Instance;
-			foreach ( var item in _netObservers ) {
-				if ( item.Value.Entities.ContainsKey(uid) ) {
-					sc.SendNetMessage(item.Key, ServerPacketID.DespawnEntity, new S_DespawnEntityMessage { UID = uid });
-					item.Value.Entities.Remove(uid);
-				}
-			}
-			_entities.Remove(uid);
-			//TODO:Rebuild
+			_entityDestroyQueue.Add(uid);
 		}
 
 		public void RegisterClient(PlayerEntity player, ClientState client) { //TODO: текущий подход конечно очень кривой, но для прототипа сгодится.
@@ -126,6 +114,50 @@ namespace Voxels.Networking.Serverside {
 					e.Mover.UpdateSent();
 				}
 			}
+		}
+
+		void UpdateEntityChangeLists() {
+			var sc = ServerController.Instance;
+
+			foreach ( var uid in _entityDestroyQueue ) {
+				if ( !_entities.TryGetValue(uid, out var entity) ) {
+					continue;
+				}
+				
+				foreach ( var item in _netObservers ) {
+					if ( item.Value.Entities.ContainsKey(uid) ) {
+						sc.SendNetMessage(item.Key, ServerPacketID.DespawnEntity, new S_DespawnEntityMessage { UID = uid });
+						item.Value.Entities.Remove(uid);
+					}
+				}
+
+				_entities.Remove(uid);
+				//TODO:Rebuild
+			}
+
+			_entityDestroyQueue.Clear();
+
+			foreach ( var entity in _entitySpawnQueue ) {
+				if ( entity == null || _entities.ContainsKey(entity.UID) ) {
+					continue;
+				}
+				var uid = entity.UID;
+				_entities.Add(uid, entity);
+				//TODO: Rebuild
+				var state = entity.SerializeViewState();
+				foreach ( var item in _netObservers ) {
+					sc.SendNetMessage(item.Key, ServerPacketID.SpawnEntity, new S_SpawnEntityMessage {
+						UID = uid,
+						Position = entity.Mover.Position,
+						Rotation = entity.Mover.PackedRotation,
+						TypeName = entity.EntityType,
+						State = state
+					});
+					item.Value.Entities.Add(uid, entity);
+				}
+			}
+
+			_entitySpawnQueue.Clear();
 		}
 	}
 
