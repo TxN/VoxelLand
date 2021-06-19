@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Voxels.Networking.Serverside {
 	public abstract class DynamicEntityServerside {
@@ -19,15 +16,11 @@ namespace Voxels.Networking.Serverside {
 
 		public virtual void DeserializeState(byte[] state) { }
 		public virtual byte[] SerializeState() {
-			var result = new byte[0];
-
-			return result;
+			return Array.Empty<byte>();
 		}
 
 		public virtual byte[] SerializeViewState() {
-			var result = Array.Empty<byte>();
-
-			return result;
+			return Array.Empty<byte>();
 		}
 
 		public void CallMethodOnClient(string methodName) {

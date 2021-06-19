@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Voxels.Networking.Serverside {
+namespace Voxels.Networking.Serverside.Entities {
 	public class TestEntityServerside : DynamicEntityServerside {
 		public override string EntityType {
 			get {

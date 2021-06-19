@@ -10,6 +10,7 @@ using UnityEditor;
 using Voxels.Networking.Serverside;
 
 using NaughtyAttributes;
+using Voxels.Networking.Serverside.Entities;
 
 namespace Voxels.Networking.NetDebug {
 	public sealed class ServerEditorDataVisualizer : MonoBehaviour {
@@ -37,6 +38,9 @@ namespace Voxels.Networking.NetDebug {
 		void Update() {
 			if ( Input.GetKeyDown(KeyCode.J) ) {
 				SpawnTestEntity();
+			}
+			if ( Input.GetKeyDown(KeyCode.M) ) {
+				SpawnFallingBlock();
 			}
 		}
 
@@ -101,6 +105,16 @@ namespace Voxels.Networking.NetDebug {
 		void SpawnTestEntity() {
 			var ex = ServerDynamicEntityController.Instance;
 			ex.SpawnEntity<TestEntityServerside>(new Vector3(0, 50, 0), Quaternion.identity);
+		}
+
+		[Button]
+		void SpawnFallingBlock() {
+			var ex = ServerDynamicEntityController.Instance;
+			ex.SpawnEntity<FlyingBlockServerside>(new Vector3(0, 50, 0), Quaternion.identity, 0, (e) => {
+				e.MaxAge = 80;
+				e.PresentedBlock = new BlockData(BlockType.Bookshelf);
+				e.ContactAction = FlyingBlockContactBehaviour.SpawnBlock;
+			});
 		}
 
 		IEnumerator UpdateValues() {

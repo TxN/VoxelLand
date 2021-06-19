@@ -35,6 +35,7 @@ namespace Voxels.Networking {
 		PlayerPosAndRotUpdate,
 		PutBlock,
 		EntityRPC,
+		PlayerAction,
 		None = 255
 	}
 }

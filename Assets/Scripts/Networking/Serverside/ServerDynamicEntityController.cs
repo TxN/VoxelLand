@@ -42,7 +42,7 @@ namespace Voxels.Networking.Serverside {
 			UpdateEntityChangeLists();
 		}
 
-		public void SpawnEntity<T>(Vector3 pos, Quaternion rot, uint uid = 0, byte[] data = null) where T: DynamicEntityServerside, new() {
+		public void SpawnEntity<T>(Vector3 pos, Quaternion rot, uint uid = 0, System.Action<T> initializer = null, byte[] data = null) where T: DynamicEntityServerside, new() {
 			var entity = new T();
 			if ( uid == 0 ) {
 			 	uid = GetNewUID();
@@ -50,6 +50,9 @@ namespace Voxels.Networking.Serverside {
 			entity.UID = uid;
 			entity.Mover.Position = pos;
 			entity.Mover.Rotation = rot;
+			if ( initializer != null ) {
+				initializer.Invoke(entity);
+			}
 			if ( data != null ) {
 				entity.DeserializeState(data);
 			}

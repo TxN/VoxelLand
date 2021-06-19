@@ -98,7 +98,7 @@ namespace Voxels.Networking.Serverside {
 			var server = ServerController.Instance;
 			var player = GetPlayerByOwner(client);
 			var pitch = MathUtils.Remap(rawPitch, 0, 255, 0, 360);
-			var yaw   = MathUtils.Remap(rawPitch, 0, 255, 0, 360);
+			var yaw   = MathUtils.Remap(rawYaw, 0, 255, 0, 360);
 			player.Position = newPos;
 			player.LookDir  = new Vector2(pitch, yaw);
 			

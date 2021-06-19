@@ -33,12 +33,17 @@ namespace Voxels {
 			_filter.mesh = _genMesh.Mesh;
 		}
 
-		private void OnDestroy() {
+		public void RemoveBlock() {
 			if ( !_inited ) {
 				return;
 			}
 			_filter.mesh = null;
 			_genMesh.Destroy();
+			_inited = false;
+		}
+
+		private void OnDestroy() {
+			RemoveBlock();
 		}
 	}
 }

@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using Voxels.Networking;
 using Voxels.Networking.Clientside;
 
 namespace Voxels {
@@ -12,8 +12,6 @@ namespace Voxels {
         public BlockData BlockOutSight  { get; private set; } = BlockData.Empty;
 
 		public LayerMask EntityColMask;
-
-		Collider[] _colCache = new Collider[16];
 
 		public Vector3 ViewDirection {
 			get {
@@ -37,15 +35,12 @@ namespace Voxels {
 					if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(1) ) {
 						var blockIn = cm.GetBlockIn(CurrentInPos);
 						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString()));
-					}
-					else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
+					} else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
 						var desc = ClientUIManager.Instance.Hotbar.SelectedBlock;
 						cm.PutBlock(CurrentOutPos, new BlockData(desc.Type, desc.Subtype));
-					}
-					else if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) ) {
+					} else if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) ) {
 						PaintBlockInSight(new Color32(255, 0, 0, 255));
-					}
-					else if ( Input.GetMouseButtonUp(0) ) {
+					} else if ( Input.GetMouseButtonUp(0) ) {
 						cm.DestroyBlock(CurrentInPos);
 					}
 				}
@@ -54,6 +49,10 @@ namespace Voxels {
 				CurrentInPos = Vector3.zero;
 				BlockInSight = BlockData.Empty;
 				BlockOutSight = BlockData.Empty;
+			}
+
+			if ( Input.GetKeyUp(KeyCode.N) ) {
+				LaunchBlock();
 			}
 		}
 
@@ -76,6 +75,11 @@ namespace Voxels {
 				blockIn.AddColor = ColorUtils.ConvertTo565(color);
 				cm.PutBlock(CurrentInPos, blockIn);
 			}
+		}
+
+		void LaunchBlock() {
+			var cc = ClientController.Instance;
+			cc.SendNetMessage(ClientPacketID.PlayerAction, new C_PlayerActionMessage() { Action = PlayerActionType.Launch, PayloadInt = (int)BlockType.Sand });
 		}
 
 	}

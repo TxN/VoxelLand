@@ -137,6 +137,10 @@ namespace Voxels.Networking.Serverside {
 			MoveVector = dir * speedMul;
 		}
 
+		public void OverrideVelocity(Vector3 velocity) {
+			_velocity = velocity;
+		}
+		
 		public void Update() {
 			var tickTime = ServerDynamicEntityController.TICK_TIME;
 			var inWater = IsInWater;
