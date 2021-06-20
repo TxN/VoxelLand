@@ -19,8 +19,10 @@ namespace Voxels {
 		public const int MAX_SUNLIGHT_VALUE                   = 255;
 		public const int MESHER_CAPACITY                      = 2048;
 
-		public ChunkRenderer Renderer   { get; set; }
-		public Vector3 OriginPos        { get; }
+		public ChunkRenderer Renderer     { get; set; }
+		public Vector3       OriginPos    { get; }
+		public Int3          OriginPosInt {	get; }
+
 		public bool Dirty               { get; private set; } = false;
 		public bool NeedRebuildGeometry { get; set; }         = false;
 		public Int3 Index {
@@ -54,6 +56,7 @@ namespace Voxels {
 			_visibiltiy   = new VisibilityFlagsHolder(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
 			_blocks       = new BlockDataHolder(b.SizeX, b.SizeY, b.SizeZ, b.Data);
 			OriginPos     = data.Origin;
+			OriginPosInt  = new Int3(Mathf.FloorToInt(data.Origin.x), Mathf.FloorToInt(data.Origin.y), Mathf.FloorToInt(data.Origin.z));
 			_indexX       = data.IndexX;
 			_indexY       = data.IndexY;
 			_indexZ       = data.IndexZ;
@@ -1128,6 +1131,10 @@ namespace Voxels {
 			_lightRemQueue.   Enqueue(new LightRemNode(x, y, z, oldLight));
 			_sunlightRemQueue.Enqueue(new LightRemNode(x, y, z, oldSunlight));
 			AddDirtyBlock(x, y, z);
+		}
+
+		public Int3 LocalToGlobalCoordinates(int x, int y, int z) {
+			return OriginPosInt + new Int3(x, y, z);
 		}
 
 		void AddDirtyBlock(int x, int y, int z) {

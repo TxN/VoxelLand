@@ -231,11 +231,7 @@ namespace Voxels.Networking.Serverside {
 			return PutBlock(x, y, z, block);
 		}
 
-		public bool PutBlock(int x, int y, int z, BlockData block) {
-			var chunk = GetChunkInCoords(x, y, z);
-			if ( chunk == null ) {
-				return false;
-			}
+		public bool PutBlock(int x, int y, int z, BlockData block) {			
 			var inChunkX = x % Chunk.CHUNK_SIZE_X;
 			var inChunkY = y % Chunk.CHUNK_SIZE_Y;
 			var inChunkZ = z % Chunk.CHUNK_SIZE_Z;
@@ -245,14 +241,23 @@ namespace Voxels.Networking.Serverside {
 			if ( inChunkZ < 0 ) {
 				inChunkZ = Chunk.CHUNK_SIZE_Z + inChunkZ;
 			}
+			var chunk = GetChunkInCoords(x, y, z);
+			return PutBlock(inChunkX, inChunkY, inChunkZ, block, chunk);			
+		}
+
+		bool PutBlock(int inChunkX, int inChunkY, int inChunkZ, BlockData block, Chunk chunk) {
+			if ( chunk == null ) {
+				return false;
+			}
 
 			if ( TryPutBlock(chunk, inChunkX, inChunkY, inChunkZ, block) ) {
+				var coords = chunk.LocalToGlobalCoordinates(inChunkX, inChunkY, inChunkZ);
 				ServerController.Instance.SendToAll(ServerPacketID.PutBlock, new S_PutBlockMessage() {
 					Block = block,
 					Put = true,
-					X = x,
-					Y = y,
-					Z = z
+					X = coords.X,
+					Y = coords.Y,
+					Z = coords.Z
 				});
 				return true;
 			}
@@ -272,6 +277,7 @@ namespace Voxels.Networking.Serverside {
 				}
 			}
 			chunk.PutBlock(x, y, z, block);
+			OnBlockPut(chunk, block, desc, x, y, z);
 			return true;
 		}
 
@@ -294,19 +300,17 @@ namespace Voxels.Networking.Serverside {
 				return;
 			}
 			chunk.RemoveBlock(inChunkX, inChunkY, inChunkZ);
-
-			OnRemoveBlockCheck(chunk, inChunkX, inChunkY, inChunkZ);
-			var x = Mathf.FloorToInt(chunk.OriginPos.x) + inChunkX;
-			var y = Mathf.FloorToInt(chunk.OriginPos.y) + inChunkY;
-			var z = Mathf.FloorToInt(chunk.OriginPos.z) + inChunkZ;
+			
+			var coords = chunk.LocalToGlobalCoordinates(inChunkX, inChunkY, inChunkZ);
 			//TODO: send updates only to players which have this chunk loaded
 			ServerController.Instance.SendToAll(ServerPacketID.PutBlock, new S_PutBlockMessage() {
 				Block = BlockData.Empty,
 				Put = false,
-				X = x,
-				Y = y,
-				Z = z
+				X = coords.X,
+				Y = coords.Y,
+				Z = coords.Z
 			});
+			OnRemoveBlockCheck(chunk, inChunkX, inChunkY, inChunkZ);
 		}
 
 		void OnRemoveBlockCheck(Chunk chunk, int x, int y, int z) {
@@ -325,6 +329,22 @@ namespace Voxels.Networking.Serverside {
 			if ( desc.GravityAffected ) {
 				DestroyBlockInChunk(chunk, x, y, z);
 				EntityHelper.SpawnFallingBlock(upperBlock, chunk.OriginPos + new Vector3(x + 0.5f, y, z + 0.5f), Vector3.zero);
+				return;
+			}
+			if ( desc.IsSwimmable ) {
+			
+				PutBlock(x, y - 1, z, upperBlock, chunk);
+				return;
+			}
+		}
+
+		void OnBlockPut(Chunk chunk, BlockData block, BlockDescription blockDesc, int x, int y, int z) {
+			if ( blockDesc.IsSwimmable && y > 0 ) {
+				//water or lava, lets check if there's block underneath to fill
+				var downBlock = chunk.GetBlock(x, y - 1, z);
+				if ( downBlock.IsEmpty() ) {
+					PutBlock(x, y - 1, z, block, chunk);
+				}
 			}
 		}
 
