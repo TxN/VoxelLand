@@ -89,6 +89,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes: []
   - Type: 1
@@ -102,6 +103,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -118,6 +120,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -144,6 +147,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -160,6 +164,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -176,6 +181,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -192,6 +198,7 @@ MonoBehaviour:
     IsColorable: 1
     IsTranslucent: 1
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -208,6 +215,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 1
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -224,6 +232,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -240,6 +249,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -256,6 +266,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -272,6 +283,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -291,6 +303,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -310,6 +323,7 @@ MonoBehaviour:
     IsColorable: 1
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -326,6 +340,7 @@ MonoBehaviour:
     IsColorable: 1
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -352,6 +367,7 @@ MonoBehaviour:
     IsColorable: 1
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -368,6 +384,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -384,6 +401,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -400,6 +418,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -416,6 +435,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -432,6 +452,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -458,6 +479,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -474,6 +496,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -490,6 +513,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -506,6 +530,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -522,6 +547,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -538,6 +564,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -554,6 +581,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -580,6 +608,7 @@ MonoBehaviour:
     IsColorable: 0
     IsTranslucent: 0
     HasMetadata: 0
+    GravityAffected: 0
     ExtraData: 0
     Subtypes:
     - FaceTiles:
@@ -591,3 +620,20 @@ MonoBehaviour:
     - FaceTiles:
       - X: 8
         Y: 3
+  - Type: 8
+    ModelType: 1
+    HarvestLevel: 0
+    Hardness: 1
+    LightLevel: 0
+    IsSwimmable: 0
+    IsFull: 1
+    IsPassable: 0
+    IsColorable: 1
+    IsTranslucent: 0
+    HasMetadata: 0
+    GravityAffected: 1
+    ExtraData: 0
+    Subtypes:
+    - FaceTiles:
+      - X: 3
+        Y: 1

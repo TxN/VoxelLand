@@ -1,14 +1,12 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Concurrent;
+using System.IO;
 
 using UnityEngine;
 
 using SMGCore.EventSys;
-using SMGCore.Utils;
 using Voxels.Networking.Utils;
 using Voxels.Networking.Events;
-using System.Collections.Concurrent;
-using System.IO;
 
 namespace Voxels.Networking.Serverside {
 
@@ -106,7 +104,6 @@ namespace Voxels.Networking.Serverside {
 				_chunks.Add(pair.Key, pair.Value);
 				pair.Value.FinishInitServerChunk(this);
 			}
-
 
 			UpdateDirtyChunks();
 
@@ -227,17 +224,17 @@ namespace Voxels.Networking.Serverside {
 			DestroyBlock(x, y, z);
 		}
 
-		public void PutBlock(Vector3 pos, BlockData block) {
+		public bool PutBlock(Vector3 pos, BlockData block) {
 			var x = Mathf.FloorToInt(pos.x);
 			var y = Mathf.FloorToInt(pos.y);
 			var z = Mathf.FloorToInt(pos.z);
-			PutBlock(x, y, z, block);
+			return PutBlock(x, y, z, block);
 		}
 
-		public void PutBlock(int x, int y, int z, BlockData block) {
+		public bool PutBlock(int x, int y, int z, BlockData block) {
 			var chunk = GetChunkInCoords(x, y, z);
 			if ( chunk == null ) {
-				return;
+				return false;
 			}
 			var inChunkX = x % Chunk.CHUNK_SIZE_X;
 			var inChunkY = y % Chunk.CHUNK_SIZE_Y;
@@ -248,22 +245,38 @@ namespace Voxels.Networking.Serverside {
 			if ( inChunkZ < 0 ) {
 				inChunkZ = Chunk.CHUNK_SIZE_Z + inChunkZ;
 			}
-			chunk.PutBlock(inChunkX, inChunkY, inChunkZ, block);
 
-			ServerController.Instance.SendToAll(ServerPacketID.PutBlock, new S_PutBlockMessage() {
-				Block = block,
-				 Put = true,
-				 X = x,
-				 Y = y,
-				 Z = z
-			});
+			if ( TryPutBlock(chunk, inChunkX, inChunkY, inChunkZ, block) ) {
+				ServerController.Instance.SendToAll(ServerPacketID.PutBlock, new S_PutBlockMessage() {
+					Block = block,
+					Put = true,
+					X = x,
+					Y = y,
+					Z = z
+				});
+				return true;
+			}
+			return false;
+		}
+
+		bool TryPutBlock(Chunk chunk, int x, int y, int z, BlockData block) {
+			var desc = VoxelsStatic.Instance.Library.GetBlockDescription(block.Type);
+			if ( desc == null) {
+				return false;
+			}
+			if ( desc.GravityAffected && y > 0 ) {
+				var underBlock = chunk.GetBlock(x, y - 1, z);
+				if ( underBlock.IsEmpty() ) {
+					EntityHelper.SpawnFallingBlock(block, chunk.OriginPos + new Vector3(x + 0.5f, y, z + 0.5f), Vector3.zero);
+					return false;
+				}
+			}
+			chunk.PutBlock(x, y, z, block);
+			return true;
 		}
 
 		public void DestroyBlock(int x, int y, int z) {
-			var chunk = GetChunkInCoords(x, y, z);
-			if ( chunk == null ) {
-				return;
-			}
+			var chunk = GetChunkInCoords(x, y, z);	
 			var inChunkX = x % Chunk.CHUNK_SIZE_X;
 			var inChunkY = y % Chunk.CHUNK_SIZE_Y;
 			var inChunkZ = z % Chunk.CHUNK_SIZE_Z;
@@ -273,8 +286,20 @@ namespace Voxels.Networking.Serverside {
 			if ( inChunkZ < 0 ) {
 				inChunkZ = Chunk.CHUNK_SIZE_Z + inChunkZ;
 			}
+			DestroyBlockInChunk(chunk, inChunkX, inChunkY, inChunkZ);
+		}
+
+		void DestroyBlockInChunk(Chunk chunk, int inChunkX, int inChunkY, int inChunkZ) {
+			if ( chunk == null ) {
+				return;
+			}
 			chunk.RemoveBlock(inChunkX, inChunkY, inChunkZ);
 
+			OnRemoveBlockCheck(chunk, inChunkX, inChunkY, inChunkZ);
+			var x = Mathf.FloorToInt(chunk.OriginPos.x) + inChunkX;
+			var y = Mathf.FloorToInt(chunk.OriginPos.y) + inChunkY;
+			var z = Mathf.FloorToInt(chunk.OriginPos.z) + inChunkZ;
+			//TODO: send updates only to players which have this chunk loaded
 			ServerController.Instance.SendToAll(ServerPacketID.PutBlock, new S_PutBlockMessage() {
 				Block = BlockData.Empty,
 				Put = false,
@@ -282,6 +307,25 @@ namespace Voxels.Networking.Serverside {
 				Y = y,
 				Z = z
 			});
+		}
+
+		void OnRemoveBlockCheck(Chunk chunk, int x, int y, int z) {
+			if ( y >= Chunk.CHUNK_SIZE_Y - 1 ) {
+				return;
+			}
+			y++;
+			var upperBlock = chunk.GetBlock(x, y, z);
+			if ( upperBlock.IsEmpty() ) {
+				return;
+			}
+			var desc = VoxelsStatic.Instance.Library.GetBlockDescription(upperBlock.Type);
+			if ( desc == null ) {
+				return;
+			}
+			if ( desc.GravityAffected ) {
+				DestroyBlockInChunk(chunk, x, y, z);
+				EntityHelper.SpawnFallingBlock(upperBlock, chunk.OriginPos + new Vector3(x + 0.5f, y, z + 0.5f), Vector3.zero);
+			}
 		}
 
 		Chunk GetOrInitChunk(Int3 index) {
@@ -513,7 +557,6 @@ namespace Voxels.Networking.Serverside {
 			Owner.RemoveFromInitQueue(this);
 			//TODO: trigger finish prepare
 		}
-
 
 		ConcurrentQueue<KeyValuePair<Int3, Chunk>> _chunksToAdd = new ConcurrentQueue<KeyValuePair<Int3, Chunk>>();
 		void OnChunkLoadedFromDisk(OnServerChunkLoadedFromDisk e) {

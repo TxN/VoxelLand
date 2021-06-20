@@ -16,7 +16,18 @@ namespace Voxels.Networking {
 			var cm = ServerChunkManager.Instance;
 
 			if ( command.Put ) {
-				cm.PutBlock(command.X, command.Y, command.Z, command.Block);
+				var result = cm.PutBlock(command.X, command.Y, command.Z, command.Block);
+				if ( !result ) {
+					//rollback
+					var block = cm.GetBlockIn(command.X, command.Y, command.Z);
+					ServerController.Instance.SendNetMessage(client, ServerPacketID.PutBlock, new S_PutBlockMessage() {
+						Block = block,
+						Put = true,
+						X = command.X,
+						Y = command.Y,
+						Z = command.Z
+					});
+				}
 			} else {
 				cm.DestroyBlock(command.X, command.Y, command.Z);
 			}

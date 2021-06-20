@@ -79,19 +79,20 @@ namespace Voxels {
 	[System.Serializable]
 	public sealed class BlockDescription {
 
-		public BlockType                Type          = BlockType.Air;
-		public BlockModelType           ModelType     = BlockModelType.FullBlockSimple;
-		public BlockHarvestLevel        HarvestLevel  = BlockHarvestLevel.Any;
-		public byte                     Hardness      = 5;
-		public byte                     LightLevel    = 0;
-		public bool                     IsSwimmable   = false;
-		public bool                     IsFull        = true;
-		public bool                     IsPassable    = false;
-		public bool                     IsColorable   = true;
-		public bool                     IsTranslucent = false;
-		public bool                     HasMetadata   = false;
-		public byte                     ExtraData     = 0;
-		public List<SubtypeDescription> Subtypes      = new List<SubtypeDescription>();
+		public BlockType                Type            = BlockType.Air;
+		public BlockModelType           ModelType       = BlockModelType.FullBlockSimple;
+		public BlockHarvestLevel        HarvestLevel    = BlockHarvestLevel.Any;
+		public byte                     Hardness        = 5;
+		public byte                     LightLevel      = 0;
+		public bool                     IsSwimmable     = false;
+		public bool                     IsFull          = true;
+		public bool                     IsPassable      = false;
+		public bool                     IsColorable     = true;
+		public bool                     IsTranslucent   = false;
+		public bool                     HasMetadata     = false;
+		public bool                     GravityAffected = false;
+		public byte                     ExtraData       = 0;
+		public List<SubtypeDescription> Subtypes        = new List<SubtypeDescription>();
 
 		public bool IsLightEmitting {
 			get {

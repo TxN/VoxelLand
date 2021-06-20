@@ -79,7 +79,8 @@ namespace Voxels {
 
 		void LaunchBlock() {
 			var cc = ClientController.Instance;
-			cc.SendNetMessage(ClientPacketID.PlayerAction, new C_PlayerActionMessage() { Action = PlayerActionType.Launch, PayloadInt = (int)BlockType.Sand });
+			var desc = ClientUIManager.Instance.Hotbar.SelectedBlock;
+			cc.SendNetMessage(ClientPacketID.PlayerAction, new C_PlayerActionMessage() { Action = PlayerActionType.Launch, PayloadInt = (int)desc.Type });
 		}
 
 	}
