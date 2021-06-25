@@ -23,6 +23,10 @@ namespace Voxels {
 		public void ShowBlock(BlockData block) {
 			_shownBlock = block;
 
+			if ( !_image ) {
+				_image = GetComponent<RawImage>();
+			}
+
 			var preview = VoxelsStatic.Instance.Library.GetBlockPreview(block);
 			if ( preview == null ) {
 				_image.enabled = false;

@@ -22,6 +22,7 @@ namespace Voxels {
 		void Update() {
 			var cm = ClientChunkManager.Instance;
 			var dir = ViewDirection;
+			var im = ClientInputManager.Instance;
 			if ( VoxelsUtils.Cast(transform.position, dir, MAX_SIGHT_DISTANCE, HasBlockIn, out var castResult) ) {
 				CurrentInPos  = castResult.HitPosition + dir * 0.03f;
 				CurrentOutPos = castResult.HitPosition - dir * 0.015f;
@@ -32,16 +33,21 @@ namespace Voxels {
 					BlockInSight = block;
 					var outBlock = cm.GetBlockIn(CurrentOutPos);
 					BlockOutSight = outBlock;
-					if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(1) ) {
-						var blockIn = cm.GetBlockIn(CurrentInPos);
-						Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString()));
-					} else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
-						var desc = ClientUIManager.Instance.Hotbar.SelectedBlock;
-						cm.PutBlock(CurrentOutPos, new BlockData(desc.Type, desc.Subtype));
-					} else if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) ) {
-						PaintBlockInSight(new Color32(255, 0, 0, 255));
-					} else if ( Input.GetMouseButtonUp(0) ) {
-						cm.DestroyBlock(CurrentInPos);
+					if ( im.IsMovementEnabled ) {
+						if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(1) ) {
+							var blockIn = cm.GetBlockIn(CurrentInPos);
+							Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString()));
+						}
+						else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
+							var desc = ClientUIManager.Instance.Hotbar.SelectedBlock;
+							cm.PutBlock(CurrentOutPos, new BlockData(desc.Type, desc.Subtype));
+						}
+						else if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) ) {
+							PaintBlockInSight(new Color32(255, 0, 0, 255));
+						}
+						else if ( Input.GetMouseButtonUp(0) ) {
+							cm.DestroyBlock(CurrentInPos);
+						}
 					}
 				}
 			} else {

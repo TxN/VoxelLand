@@ -27,6 +27,15 @@ namespace Voxels.UI {
 			}
 		}
 
+		public void SetBlockInSelectedSlot(BlockData block) {
+			Debug.Log($"Show block {block.Type}");
+			SlotsContent[_curSlot] = new InventoryBlockDescription {
+				Type = block.Type,
+				Subtype = block.Subtype
+			};
+			Slots[_curSlot].ShowBlock(block);
+		}
+
 		void Start() {
 			for ( int i = 0; i < 9; i++ ) {
 				Slots[i].ShowBlock(new BlockData(SlotsContent[i].Type, SlotsContent[i].Subtype));

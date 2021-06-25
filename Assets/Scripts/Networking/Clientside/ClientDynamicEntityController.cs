@@ -1,14 +1,33 @@
+using System.Threading;
 using System.Collections.Generic;
 
 using UnityEngine;
+using DataStructures.ViliWonka.KDTree;
 
 namespace Voxels.Networking.Clientside {
 	public class ClientDynamicEntityController : ClientsideController<ClientDynamicEntityController> {
 		public ClientDynamicEntityController(ClientGameManager owner) : base(owner) { }
 
 		const string ENTITY_PATH = "Client/DynamicEntities/";
+		const int TREE_UPDATE_INTERVAL = 2000;
 
 		Dictionary<uint, DynamicEntityClientside> _entities = new Dictionary<uint, DynamicEntityClientside>();
+
+		Thread _threeRebuildThread = null;
+		KDTree _entityPosTree = null;
+
+		public override void Init() {
+			base.Init();
+			_threeRebuildThread = new Thread(TreeRebuildThread);
+			_entityPosTree = new KDTree(16);
+		}
+
+		public override void Reset() {
+			base.Reset();
+			if ( _threeRebuildThread != null ) {
+				_threeRebuildThread.Abort();
+			}
+		}
 
 		public void SpawnEntity(uint uid, string typeName, Vector3 pos, Quaternion rot, byte[] data) {
 			var e = GetPrefab(typeName);
@@ -58,6 +77,12 @@ namespace Voxels.Networking.Clientside {
 				Object.Destroy(obj);
 			}
 			return e;
+		}
+
+		void TreeRebuildThread() {
+			while(true) {
+				Thread.Sleep(TREE_UPDATE_INTERVAL);
+			}
 		}
 	}
 }
