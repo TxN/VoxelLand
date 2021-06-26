@@ -51,6 +51,8 @@ namespace Voxels {
 		}
 
 		public void RenderBlockPreview(BlockData block) {
+			block.SunLevel = 255;
+			block.LightLevel = 255;
 			_blockPreviewQueue.Enqueue(block);
 		}
 	}

@@ -308,7 +308,9 @@ namespace Voxels {
 				return;
 			}
 			var pointer = meshInfo.Vertices.Count;
-			var calcColor = new Color32(data.SunLevel, data.LightLevel, 0, 0);
+			var h = (byte)(data.AddColor >> 8);
+			var l = (byte)(data.AddColor % 256);
+			var calcColor = new Color32(data.SunLevel, data.LightLevel, h, l);
 			AddPlane(meshInfo, _horizontalPlaneVerts, desc.Subtypes[Mathf.Clamp(data.Subtype, 0, desc.Subtypes.Count - 1)].FaceTiles[0], rootPos, pointer, calcColor);
 		}
 
