@@ -15,7 +15,7 @@ namespace Voxels.UI {
 		public bool IsShown => gameObject.activeInHierarchy;
 
 		void Start() {
-			if ( _isSetup ) {
+			if ( !_isSetup ) {
 				Setup();
 			}
 		}
@@ -37,10 +37,16 @@ namespace Voxels.UI {
 		void Setup() {
 			ItemFab.gameObject.SetActive(false);
 			var library = VoxelsStatic.Instance.Library;
+			
 			foreach ( var block in library.BlockDescriptions ) {
-				var inst = Instantiate(ItemFab, Layout);
-				inst.Setup(new BlockData(block.Type), OnBlockPicked);
-				inst.gameObject.SetActive(true);
+				byte subtype = 0;
+				foreach ( var s in block.Subtypes ) {
+					var inst = Instantiate(ItemFab, Layout);
+					inst.Setup(new BlockData(block.Type, subtype), OnBlockPicked);
+					inst.gameObject.SetActive(true);
+					subtype++;
+				}
+				
 			}
 
 			Background.onClick.RemoveAllListeners();
