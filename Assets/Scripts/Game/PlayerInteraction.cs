@@ -4,7 +4,7 @@ using Voxels.Networking.Clientside;
 
 namespace Voxels {
 	public sealed class PlayerInteraction : MonoBehaviour {
-		const int MAX_SIGHT_DISTANCE = 32;
+		public const int MAX_SIGHT_DISTANCE = 32;
 		 
 		public Vector3   CurrentInPos   { get; private set; } = Vector3.zero;
         public Vector3   CurrentOutPos  { get; private set; } = Vector3.zero;
@@ -35,8 +35,7 @@ namespace Voxels {
 					BlockOutSight = outBlock;
 					if ( im.IsMovementEnabled ) {
 						if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(1) ) {
-							var blockIn = cm.GetBlockIn(CurrentInPos);
-							Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString()));
+							InteractWithBlock();
 						}
 						else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
 							var desc = ClientUIManager.Instance.Hotbar.SelectedBlock;
@@ -87,6 +86,14 @@ namespace Voxels {
 			var cc = ClientController.Instance;
 			var desc = ClientUIManager.Instance.Hotbar.SelectedBlock;
 			cc.SendNetMessage(ClientPacketID.PlayerAction, new C_PlayerActionMessage() { Action = PlayerActionType.Launch, PayloadInt = (int)desc.Type });
+		}
+
+		void InteractWithBlock() {
+			var cm = ClientChunkManager.Instance;
+			var blockIn = cm.GetBlockIn(CurrentInPos);
+			Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString()));
+			var cc = ClientController.Instance;
+			cc.SendNetMessage(ClientPacketID.PlayerAction, new C_PlayerActionMessage() { Action = PlayerActionType.Use, PayloadInt = (int)blockIn.Type });
 		}
 
 	}

@@ -19,6 +19,7 @@ namespace Voxels.Networking {
 				case PlayerActionType.None:
 					break;
 				case PlayerActionType.Use:
+					ParseBlockInteractionAction(client);
 					break;
 				case PlayerActionType.AltUse:
 					break;
@@ -37,6 +38,19 @@ namespace Voxels.Networking {
 			var player = pc.GetPlayerByOwner(client);
 			var rot = Quaternion.Euler(player.LookDir.x, player.LookDir.y, 0);
 			EntityHelper.SpawnFallingBlock(new BlockData((BlockType)command.PayloadInt), player.Position + Vector3.up, rot * new Vector3(0, 4, 10));
+		}
+
+		void ParseBlockInteractionAction(ClientState client) {
+			var pc = ServerPlayerEntityManager.Instance;
+			var player = pc.GetPlayerByOwner(client);
+			if ( player == null ) {
+				return;
+			}
+			if ( pc.GetBlockInSight(player, out var pos, out var block) ) {
+				Debug.Log($"Player {client.UserName} tried to interact with block of type {block.Type} at {pos} .");
+			} else {
+				Debug.Log($"Player {client.UserName} tried to interact with nothing");
+			}
 		}
 	}
 }

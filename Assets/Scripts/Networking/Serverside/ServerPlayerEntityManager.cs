@@ -39,18 +39,36 @@ namespace Voxels.Networking.Serverside {
 
 		public override void Update() {
 			base.Update();
-			foreach ( var p in Players ) {
-				if ( VoxelsUtils.Cast(p.Position, -Vector3.up, 1f, IsBlockSolid, out var result) ) {
+			/*foreach ( var p in Players ) {
+				if ( VoxelsUtils.Cast(p.Position, -Vector3.up, 1f, VoxelsUtilsServerside.IsBlockSolid, out var result) ) {
 					//Debug.DrawLine(p.Position, result.HitPosition);
 				}
 			}
+			*/
 		}
 
-		bool IsBlockSolid(Int3 index) {
-			var cm = ServerChunkManager.Instance;
-			var lib = VoxelsStatic.Instance.Library;
-			var block = cm.GetBlockIn(index.X, index.Y, index.Z);
-			return !lib.GetBlockDescription(block.Type).IsPassable;
+		public bool GetBlockInSight(PlayerEntity player, out Vector3 blockPos, out BlockData block) {
+			blockPos = Vector3.zero;
+			block = BlockData.Empty;
+			if ( player == null ) {				
+				return false;
+			}
+			var lookDir = GetPlayerLookDirection(player);
+			if ( VoxelsUtils.Cast(player.Position, lookDir, PlayerInteraction.MAX_SIGHT_DISTANCE, VoxelsUtilsServerside.HasAnyBlock, out var result) ) {
+				blockPos = result.HitPosition + lookDir * 0.03f;
+				block = ServerChunkManager.Instance.GetBlockIn(blockPos);
+				return true;
+			}
+			return false;
+		}
+
+		public Vector3 GetPlayerLookDirection(PlayerEntity player) {
+			if ( player == null) {
+				return Vector3.forward;
+			}
+
+			var rot = Quaternion.Euler(player.LookDir.x, player.LookDir.y, 0);
+			return rot * Vector3.forward;
 		}
 
 		public Vector3 GetSpawnPosition(PlayerEntity player) {

@@ -122,7 +122,7 @@ namespace Voxels {
 			return false;
 		}
 
-		bool IsBlockSolid(Int3 index) {
+		public bool IsBlockSolid(Int3 index) {
 			var lib = VoxelsStatic.Instance.Library;
 			var block = _chunkManager.GetBlockIn(index.X, index.Y, index.Z);
 			return !lib.GetBlockDescription(block.Type).IsPassable;
