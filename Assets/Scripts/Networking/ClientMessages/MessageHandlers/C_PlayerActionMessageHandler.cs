@@ -14,7 +14,15 @@ namespace Voxels.Networking {
 
 		public override void ProcessMessage(ClientState client, byte[] rawCommand) {
 			base.ProcessMessage(client, rawCommand);
+			var pc = ServerPlayerEntityManager.Instance;
+			var player = pc.GetPlayerByOwner(client);
+			if ( player == null ) {
+				return;
+			}
+
 			var command = ZeroFormatterSerializer.Deserialize<C_PlayerActionMessage>(rawCommand);
+			player.LookDir = new Vector2(command.LookPitch, command.LookYaw);
+			Debug.Log($"Player pitch = {command.LookPitch}, yaw = {command.LookYaw}");
 			switch ( command.Action ) {
 				case PlayerActionType.None:
 					break;

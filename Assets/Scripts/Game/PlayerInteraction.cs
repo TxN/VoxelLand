@@ -19,6 +19,12 @@ namespace Voxels {
 			}
 		}
 
+		PlayerMovement _mover = null;
+
+		void Awake() {
+			_mover = GetComponentInParent<PlayerMovement>();
+		}
+
 		void Update() {
 			var cm = ClientChunkManager.Instance;
 			var dir = ViewDirection;
@@ -85,7 +91,13 @@ namespace Voxels {
 		void LaunchBlock() {
 			var cc = ClientController.Instance;
 			var desc = ClientUIManager.Instance.Hotbar.SelectedBlock;
-			cc.SendNetMessage(ClientPacketID.PlayerAction, new C_PlayerActionMessage() { Action = PlayerActionType.Launch, PayloadInt = (int)desc.Type });
+			var look = _mover.CurrentLook;
+			cc.SendNetMessage(ClientPacketID.PlayerAction, new C_PlayerActionMessage() {
+				Action = PlayerActionType.Launch,
+				PayloadInt = (int)desc.Type,
+				LookYaw = look.y,
+				LookPitch = look.x,
+			});
 		}
 
 		void InteractWithBlock() {
@@ -93,7 +105,14 @@ namespace Voxels {
 			var blockIn = cm.GetBlockIn(CurrentInPos);
 			Debug.Log(string.Format("Interaction with {0}", blockIn.Type.ToString()));
 			var cc = ClientController.Instance;
-			cc.SendNetMessage(ClientPacketID.PlayerAction, new C_PlayerActionMessage() { Action = PlayerActionType.Use, PayloadInt = (int)blockIn.Type });
+
+			var look = _mover.CurrentLook;
+			cc.SendNetMessage(ClientPacketID.PlayerAction, new C_PlayerActionMessage() {
+				Action = PlayerActionType.Use,
+				PayloadInt = (int)blockIn.Type,
+				LookYaw = look.y,
+				LookPitch = look.x,
+			});
 		}
 
 	}

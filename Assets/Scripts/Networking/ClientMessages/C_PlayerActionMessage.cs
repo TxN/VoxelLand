@@ -9,5 +9,9 @@ namespace Voxels.Networking {
 		public virtual string           PayloadString { get; set; }
 		[Index(3)]
 		public virtual int              PayloadInt    { get; set; }
+		[Index(4)]
+		public virtual float            LookYaw       { get; set; }
+		[Index(5)]
+		public virtual float            LookPitch     { get; set; }
 	}
 }

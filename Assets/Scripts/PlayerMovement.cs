@@ -26,6 +26,13 @@ namespace Voxels {
         public PlayerInteraction Interactor { get; private set; }
 		public SimpleVoxelMover  Mover      { get; private set; }
 
+		public Vector2 CurrentLook {
+			get {
+				var yaw = transform.rotation.eulerAngles.y;
+				return new Vector2(HeadPitch, yaw);
+			}
+		}
+
         public float HeadPitch {
 			get {
 				if ( HasAutority ) {
@@ -83,9 +90,7 @@ namespace Voxels {
 				return;
 			}
 			var moveDelta = transform.position - _lastSentPos;
-
-			var yaw = transform.rotation.eulerAngles.y;
-			var currentLook = new Vector2(HeadPitch, yaw);
+			var currentLook = CurrentLook;
 
 			var lookDelta = Vector2.Distance(_lastSentDir, currentLook);
 			if ( moveDelta.magnitude < POS_MIN_DELTA && lookDelta < ANG_MIN_DELTA ) {
@@ -95,7 +100,7 @@ namespace Voxels {
 
 			_lastSentDir = currentLook;
 			_lastUpdateTime = Time.time;
-			ClientPlayerEntityManager.Instance.SendPosUpdateToServer(_info, _lastSentPos, yaw, HeadPitch);
+			ClientPlayerEntityManager.Instance.SendPosUpdateToServer(_info, _lastSentPos, currentLook.y, currentLook.x);
 		}
 
 		void OnDespawn(OnClientPlayerDespawn e) {
