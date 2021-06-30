@@ -295,6 +295,20 @@ namespace Voxels.Networking.Serverside {
 			DestroyBlockInChunk(chunk, inChunkX, inChunkY, inChunkZ);
 		}
 
+		public void InteractWithBlockAt(Vector3 pos) {
+			var block = GetBlockIn(pos);
+			if ( block.IsEmpty() ) {
+				return;
+			}
+			if ( BlockInteractor.InteractWithBlock(ref block, pos) ) {
+				if ( block.IsEmpty() ) {
+					DestroyBlock(pos);
+				} else {
+					PutBlock(pos, block);
+				}
+			}
+		}
+
 		void DestroyBlockInChunk(Chunk chunk, int inChunkX, int inChunkY, int inChunkZ) {
 			if ( chunk == null ) {
 				return;

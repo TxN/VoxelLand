@@ -1091,9 +1091,9 @@ namespace Voxels {
 			_maxNonEmptyY = (checkY) > _maxNonEmptyY ? checkY : _maxNonEmptyY;
 			var oldBlock = _blocks[x, y, z];
 			var oldLight    = oldBlock.LightLevel;
-			var oldSunlight = oldBlock.SunLevel;	
-			if ( _library.IsEmissiveBlock(block.Type) ) {
-				block.LightLevel = _library.GetBlockDescription(block.Type).LightLevel;
+			var oldSunlight = oldBlock.SunLevel;
+			if ( _library.IsEmissiveBlock(block.Type, block.Subtype) ) {
+				block.LightLevel = _library.GetBlockDescription(block.Type).Subtypes[block.Subtype].LightLevel;
 				_lightAddQueue.Enqueue(new Int3(x, y, z));
 			}
 			if ( !_library.IsLightPassBlock(block.Type) ) {
@@ -1163,9 +1163,9 @@ namespace Voxels {
 			return _library.IsFullBlock(type);
 		}
 
-		bool GetBlockEmissive(BlockType type) {
+		/*bool GetBlockEmissive(BlockType type) {
 			return _library.IsEmissiveBlock(type);
-		}
+		}*/
 
 		bool GetBlockLightPass(BlockType type) {
 			return _library.IsLightPassBlock(type);

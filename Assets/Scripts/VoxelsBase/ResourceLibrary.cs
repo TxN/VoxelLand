@@ -38,7 +38,7 @@ namespace Voxels {
 		}
 
 		void OnPreviewUpdated(Event_BlockPreviewUpdated e) {
-			var hash = (byte)e.Block.Type * 255 + e.Block.Subtype;
+			var hash = (byte)e.Block.Type * 256 + e.Block.Subtype;
 			if ( _blockPreviews.ContainsKey(hash) ) {
 				_blockPreviews[hash] = e.Texture;
 			} else {
@@ -47,7 +47,7 @@ namespace Voxels {
 		}
 
 		public Texture2D GetBlockPreview(BlockData block) {
-			var hash = (byte)block.Type * 255 + block.Subtype;
+			var hash = (byte)block.Type * 256 + block.Subtype;
 			if ( _blockPreviews.ContainsKey(hash) ) {
 				return _blockPreviews[hash];
 			}
@@ -71,10 +71,11 @@ namespace Voxels {
 			return _blockLightPassFlags[(byte)type];
 		}
 
-		public bool IsEmissiveBlock(BlockType type) {
-			return _blockIllumFlags[(ushort)type];
+		public bool IsEmissiveBlock(BlockType type, byte subtype) {
+			var hash = (byte)type * 256 + subtype;
+			return _blockIllumFlags[hash];
 		}
-
+		
 		void GenerateBlockDescDict() {
 			var maxBlockValue = 0;
 			var typeValues = System.Enum.GetValues(typeof(BlockType));
@@ -88,7 +89,7 @@ namespace Voxels {
 			_desc                  = new BlockDescription[byte.MaxValue];
 			_blockFullFlags        = new bool[maxBlockValue];
 			_blockTranslucentFlags = new bool[maxBlockValue];
-			_blockIllumFlags       = new bool[maxBlockValue];
+			_blockIllumFlags       = new bool[maxBlockValue * 256];
 			_blockLightPassFlags   = new bool[maxBlockValue];
 
 			foreach ( var desc in BlockDescriptions ) {				
@@ -96,7 +97,13 @@ namespace Voxels {
 				_desc[key]                  = desc;
 				_blockFullFlags[key]        =  desc.IsFull;
 				_blockTranslucentFlags[key] =  desc.IsTranslucent;
-				_blockIllumFlags[key]       =  desc.IsLightEmitting;
+				var subtypeIndex = 0;
+				foreach ( var subtype in desc.Subtypes ) {
+					var hash = (byte)desc.Type * 256 + subtypeIndex;
+					_blockIllumFlags[hash] = desc.Subtypes[subtypeIndex].IsLightEmitting;
+					subtypeIndex++;
+				}
+				
 				_blockLightPassFlags[key]   = !desc.IsFull || desc.IsTranslucent;
 			}
 		}

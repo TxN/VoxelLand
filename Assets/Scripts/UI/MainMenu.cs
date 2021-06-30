@@ -25,7 +25,7 @@ namespace Voxels.UI {
 			QuitButton.onClick.AddListener(QuitGame);
 
 			if ( Application.isBatchMode ) {
-				Application.targetFrameRate = 120;
+				Application.targetFrameRate = 60;
 				StartServer();
 			} else {
 #if UNITY_EDITOR

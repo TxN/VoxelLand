@@ -83,7 +83,6 @@ namespace Voxels {
 		public BlockModelType           ModelType       = BlockModelType.FullBlockSimple;
 		public BlockHarvestLevel        HarvestLevel    = BlockHarvestLevel.Any;
 		public byte                     Hardness        = 5;
-		public byte                     LightLevel      = 0;
 		public bool                     IsSwimmable     = false;
 		public bool                     IsFull          = true;
 		public bool                     IsPassable      = false;
@@ -92,17 +91,18 @@ namespace Voxels {
 		public bool                     HasMetadata     = false;
 		public bool                     GravityAffected = false;
 		public byte                     ExtraData       = 0;
-		public List<SubtypeDescription> Subtypes        = new List<SubtypeDescription>();
+		public List<SubtypeDescription> Subtypes        = new List<SubtypeDescription>();		
+	}
+
+	[System.Serializable]
+	public sealed class SubtypeDescription {
+		public byte LightLevel = 0;
+		public List<Byte2> FaceTiles = new List<Byte2>();
 
 		public bool IsLightEmitting {
 			get {
 				return LightLevel > 0;
 			}
 		}
-	}
-
-	[System.Serializable]
-	public sealed class SubtypeDescription {
-		public List<Byte2> FaceTiles = new List<Byte2>();
 	}
 }

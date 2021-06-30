@@ -10,7 +10,7 @@ namespace Voxels.Utils {
 				SceneManager.LoadScene("MainMenu");
 				return;
 			}
-			Application.targetFrameRate = 120;
+			Application.targetFrameRate = 60;
 			NetworkOptions.ServerIP = "127.0.0.1";
 			NetworkOptions.StartServer = true;
 			SceneManager.LoadScene("NetworkGame");

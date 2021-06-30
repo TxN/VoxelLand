@@ -22,7 +22,6 @@ namespace Voxels.Networking {
 
 			var command = ZeroFormatterSerializer.Deserialize<C_PlayerActionMessage>(rawCommand);
 			player.LookDir = new Vector2(command.LookPitch, command.LookYaw);
-			Debug.Log($"Player pitch = {command.LookPitch}, yaw = {command.LookYaw}");
 			switch ( command.Action ) {
 				case PlayerActionType.None:
 					break;
@@ -56,6 +55,7 @@ namespace Voxels.Networking {
 			}
 			if ( pc.GetBlockInSight(player, out var pos, out var block) ) {
 				Debug.Log($"Player {client.UserName} tried to interact with block of type {block.Type} at {pos} .");
+				ServerChunkManager.Instance.InteractWithBlockAt(pos);
 			} else {
 				Debug.Log($"Player {client.UserName} tried to interact with nothing");
 			}
