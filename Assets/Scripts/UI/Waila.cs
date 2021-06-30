@@ -18,6 +18,9 @@ namespace Voxels.UI {
 		}
 
 		void Update() {
+			if ( ClientPlayerEntityManager.Instance == null ) {
+				return;
+			}
 			var player = ClientPlayerEntityManager.Instance.LocalPlayer;
 			if ( player == null ) {
 				return;

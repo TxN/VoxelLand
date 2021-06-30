@@ -17,6 +17,9 @@ namespace Voxels {
 
 		void Update() {
 			var wsc = ClientWorldStateController.Instance;
+			if ( wsc == null ) {
+				return;
+			}
 			var dayPercent   = wsc.DayPercent;
 			var skyColor     = SkyColor.Evaluate(dayPercent);
 			var horizonColor = HorizonColor.Evaluate(dayPercent);

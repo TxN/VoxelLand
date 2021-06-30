@@ -14,6 +14,8 @@ namespace Voxels.Networking.Serverside {
 			}
 		}
 
+		public override string Description => "Teleports you to desired place. Usage: /teleport <x> <y> <z>";
+
 		public override string ProcessCommand(ClientState sender, string[] commandWords) {
 
 

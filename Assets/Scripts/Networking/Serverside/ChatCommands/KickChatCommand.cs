@@ -10,6 +10,9 @@ namespace Voxels.Networking.Serverside {
 				return true;
 			}
 		}
+
+		public override string Description => "Kick player. Usage: kick <fullPlayerName>";
+
 		public override string ProcessCommand(ClientState sender, string[] commandWords) {
 
 			if ( commandWords.Length < 2 ) {

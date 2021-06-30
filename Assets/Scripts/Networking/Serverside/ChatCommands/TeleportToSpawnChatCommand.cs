@@ -6,6 +6,8 @@ namespace Voxels.Networking.Serverside {
 			}
 		}
 
+		public override string Description => "Teleport to spawn point.";
+
 		public override string ProcessCommand(ClientState sender, string[] commandWords) {
 
 			var pc = ServerPlayerEntityManager.Instance;

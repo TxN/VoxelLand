@@ -12,6 +12,8 @@ namespace Voxels.Networking.Serverside {
 			}
 		}
 
+		public override string Description => "Set time of a day. Usage: /time_set <time> (time in 0-1 decimal format)";
+
 		public override string ProcessCommand(ClientState sender, string[] commandWords) {
 
 

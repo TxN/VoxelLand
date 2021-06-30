@@ -6,6 +6,8 @@ namespace Voxels.Networking.Serverside {
 			}
 		}
 
+		public override string Description => "Set your main home point (in which you may instantly teleport using 'home' command)";
+
 		public override string ProcessCommand(ClientState sender, string[] commandWords) {
 
 			var pc = ServerPlayerEntityManager.Instance;

@@ -12,6 +12,8 @@ namespace Voxels.Networking.Serverside {
 				return true;
 			}
 		}
+
+		public override string Description => "Ban player with name for selected amount of time. Usage: ban <type(ip/name)> <name/ip> <hours> <reason_one_word></color>";
 		public override string ProcessCommand(ClientState sender, string[] commandWords) {
 
 			if ( commandWords.Length < 5 ) {

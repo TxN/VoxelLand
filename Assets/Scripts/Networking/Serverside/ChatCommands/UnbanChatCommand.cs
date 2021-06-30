@@ -10,10 +10,13 @@ namespace Voxels.Networking.Serverside {
 				return true;
 			}
 		}
+
+		public override string Description => "Remove ban from selected player/ip address. Usage: '/unban <ip/player> <ip/fullPlayerName>'";
+
 		public override string ProcessCommand(ClientState sender, string[] commandWords) {
 
 			if ( commandWords.Length < 3 ) {
-				return "<color=\"red\">Error! Player name is not set.</color>";
+				return "<color=\"red\">Error! Player name is not set or ban type not set.</color>";
 			}
 			var ipBan = commandWords[1] == "ip";
 			var plyName = commandWords[2].ToLower();

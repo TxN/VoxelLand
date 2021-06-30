@@ -6,6 +6,8 @@ namespace Voxels.Networking.Serverside {
 			}
 		}
 
+		public override string Description => "Set your respawn point. You may intantly teleport to this point from everywhere using '/spawn' command.";
+
 		public override string ProcessCommand(ClientState sender, string[] commandWords) {
 
 			var pc = ServerPlayerEntityManager.Instance;
@@ -15,7 +17,7 @@ namespace Voxels.Networking.Serverside {
 			}
 			pc.SetSpawnPoint(playerEntity.PlayerName, playerEntity.Position);
 
-			return "<color=\"blue\">Spawn pos set.</color>";
+			return "<color=\"blue\">Spawn point set.</color>";
 		}
 	}
 }

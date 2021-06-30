@@ -57,6 +57,10 @@ namespace Voxels.Networking.Serverside {
 			_db.Insert(msg);
 		}
 
+		public Dictionary<string, ChatCommand> GetChatCommands() {
+			return _commands;
+		}
+		
 		void SendToAll(string senderName, string message, ChatMessageType type) {
 			ServerController.Instance.SendToAll(ServerPacketID.ChatMessage, new S_ChatMessage { SenderName = senderName, MessageText = message, Type = type });
 		}
