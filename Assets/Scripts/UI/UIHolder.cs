@@ -4,7 +4,8 @@ using Voxels.Networking.Clientside;
 
 namespace Voxels.UI {
 	public sealed class UIHolder : MonoBehaviour {
-		public BlockPicker PickerWindow = null;
+		public BlockPicker PickerWindow  = null;
+		public ColorPicker PaletteWindow = null;
 
 		void Update() {
 			if ( Input.GetKeyDown(KeyCode.B) ) {
@@ -12,6 +13,14 @@ namespace Voxels.UI {
 					PickerWindow.ShowWindow();
 				} else if ( PickerWindow.IsShown ) {
 					PickerWindow.CloseWindow();
+				}
+			}
+			if ( Input.GetKeyDown(KeyCode.P) ) {
+				if ( ClientInputManager.Instance.IsMovementEnabled && !PaletteWindow.IsShown ) {
+					PaletteWindow.ShowWindow();
+				}
+				else if ( PaletteWindow.IsShown ) {
+					PaletteWindow.CloseWindow();
 				}
 			}
 		}

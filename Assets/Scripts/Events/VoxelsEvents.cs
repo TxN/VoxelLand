@@ -21,4 +21,8 @@ namespace Voxels.Events {
 			IsEnabled = flag;
 		}
 	}
+
+	public struct Event_ColorPicked {
+		public Color32 Color;
+	}
 }

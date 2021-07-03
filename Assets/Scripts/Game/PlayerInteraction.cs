@@ -1,6 +1,9 @@
 using UnityEngine;
+
 using Voxels.Networking;
 using Voxels.Networking.Clientside;
+using SMGCore.EventSys;
+using Voxels.Events;
 
 namespace Voxels {
 	public sealed class PlayerInteraction : MonoBehaviour {
@@ -19,10 +22,13 @@ namespace Voxels {
 			}
 		}
 
+		public Color32 PaintColor { get; set; } = Color.white;
+
 		PlayerMovement _mover = null;
 
 		void Awake() {
 			_mover = GetComponentInParent<PlayerMovement>();
+			EventManager.Subscribe<Event_ColorPicked>(this, OnColorPicked);
 		}
 
 		void Update() {
@@ -42,15 +48,12 @@ namespace Voxels {
 					if ( im.IsMovementEnabled ) {
 						if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(1) ) {
 							InteractWithBlock();
-						}
-						else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
+						} else if ( Input.GetMouseButtonUp(1) && CanPlaceBlock(CurrentOutPos) ) {
 							var desc = ClientUIManager.Instance.Hotbar.SelectedBlock;
 							cm.PutBlock(CurrentOutPos, new BlockData(desc.Type, desc.Subtype));
-						}
-						else if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) ) {
-							PaintBlockInSight(new Color32(255, 0, 0, 255));
-						}
-						else if ( Input.GetMouseButtonUp(0) ) {
+						} else if ( Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) ) {
+							PaintBlockInSight(PaintColor);
+						} else if ( Input.GetMouseButtonUp(0) ) {
 							cm.DestroyBlock(CurrentInPos);
 						}
 					}
@@ -62,9 +65,13 @@ namespace Voxels {
 				BlockOutSight = BlockData.Empty;
 			}
 
-			if ( Input.GetKeyUp(KeyCode.N) ) {
+			if ( im.IsMovementEnabled && Input.GetKeyUp(KeyCode.N) ) {
 				LaunchBlock();
 			}
+		}
+
+		private void OnDestroy() {
+			EventManager.Unsubscribe<Event_ColorPicked>(OnColorPicked);
 		}
 
 		bool HasBlockIn(Int3 pos ) {
@@ -113,6 +120,10 @@ namespace Voxels {
 				LookYaw = look.y,
 				LookPitch = look.x,
 			});
+		}
+
+		void OnColorPicked(Event_ColorPicked e) {
+			PaintColor = e.Color;
 		}
 
 	}
