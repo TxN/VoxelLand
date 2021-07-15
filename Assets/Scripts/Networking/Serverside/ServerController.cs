@@ -26,10 +26,12 @@ namespace Voxels.Networking.Serverside {
 		Dictionary<int,ClientState>                          _clients    = new Dictionary<int, ClientState>();
 		Dictionary<ClientPacketID, BaseClientMessageHandler> _handlers   = new Dictionary<ClientPacketID, BaseClientMessageHandler>();
 
-		int    _port            = 0;
-		Server _server          = null;
-		long   _packetsReceived = 0;
-		long   _packetsSent     = 0;
+		int     _port            = 0;
+		Server  _server          = null;
+		ulong   _packetsReceived = 0;
+		ulong   _packetsSent     = 0;
+		ulong   _bytesReceived   = 0;
+		ulong   _bytesSent       = 0;
 
 		public static int ProtocolVersion {
 			get { return PROTOCOL_VERSION; }
@@ -37,20 +39,14 @@ namespace Voxels.Networking.Serverside {
 
 		public bool IsStarted { get; private set; }
 
-		public Dictionary<int,ClientState> Clients {
-			get { return _clients; }
-		}
+		public Dictionary<int, ClientState> Clients => _clients;
 
-		public long PacketsSent {
-			get { return _packetsSent; }
-		}
+		public ulong PacketsSent     => _packetsSent;
+		public ulong PacketsReceived => _packetsReceived;
+		public ulong BytesReceived   => _bytesReceived;
+		public ulong BytesSent       => _bytesSent;
 
-		public long PacketsReceived {
-			get { return _packetsReceived; }
-		}
-
-		public ServerController(ServerGameManager owner) : base(owner) {
-		}
+		public ServerController(ServerGameManager owner) : base(owner) {}
 
 		public override void PostLoad() {
 			base.PostLoad();
@@ -81,6 +77,8 @@ namespace Voxels.Networking.Serverside {
 
 			_packetsReceived = 0;
 			_packetsSent     = 0;
+			_bytesReceived   = 0;
+			_bytesSent       = 0;
 			_server = new Server();
 			_server.MaxMessageSize = 65535;
 			_server.Start(port);
@@ -215,14 +213,17 @@ namespace Voxels.Networking.Serverside {
 		public void SendRawNetMessage(ClientState client, ServerPacketID id, byte[] body, bool compress = false) {
 			var compressFlag = compress && EnableCompression;
 			var header = new PacketHeader((byte)id, compressFlag, (ushort)body.Length);
+			uint size;
 			if ( compressFlag ) {
 				var compressedBody = CLZF2.Compress(body);
 				header.ContentLength = (ushort)compressedBody.Length;
-				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, compressedBody));
+				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, compressedBody, out size));
+				Debug.Log($"Compressed command, before {body.Length}, after {size}");
 			} else {
-				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, body));
+				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, body, out size));
 			}
 			_packetsSent++;
+			_bytesSent = _bytesSent + size;
 		}
 
 		public void SendToAll<T>(ServerPacketID id, T message, bool compress = false) where T : BaseMessage {
@@ -284,6 +285,7 @@ namespace Voxels.Networking.Serverside {
 
 		void OnDataReceived(Message msg) {
 			_packetsReceived++;
+			_bytesReceived += (uint)msg.data.Length;
 			if ( msg.data.Length < PacketHeader.MinPacketLength ) {
 				return;
 			}

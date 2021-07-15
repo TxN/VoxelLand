@@ -16,9 +16,11 @@ namespace Voxels.Networking.Clientside {
 		string     _serverIp         = string.Empty;
 		int        _port             = 0;
 		Client     _client           = null;
-		long       _packetsReceived  = 0;
-		long       _packetsSent      = 0;
-		ServerInfo _serverInfo       = null;
+		ulong       _packetsReceived = 0;
+		ulong       _packetsSent     = 0;
+		ulong       _bytesReceived   = 0;
+		ulong       _bytesSent       = 0;
+		ServerInfo  _serverInfo      = null;
 
 		Dictionary<ServerPacketID, BaseServerMessageHandler> _handlers = new Dictionary<ServerPacketID, BaseServerMessageHandler>();
 
@@ -90,13 +92,15 @@ namespace Voxels.Networking.Clientside {
 		public void SendNetMessage<T>(ClientPacketID id, T message, bool compress = false) where T : BaseMessage {
 			var body = ZeroFormatterSerializer.Serialize(message);
 			var header = new PacketHeader((byte)id, compress, (ushort)body.Length);
+			uint size = 0;
 			if ( compress ) {
 				var compressedBody   = CLZF2.Compress(body);
 				header.ContentLength = (ushort) compressedBody.Length;
-				_client.Send(NetworkUtils.CreateMessageBytes(header, compressedBody));
+				_client.Send(NetworkUtils.CreateMessageBytes(header, compressedBody, out size));
 			} else {
-				_client.Send(NetworkUtils.CreateMessageBytes(header, body));
+				_client.Send(NetworkUtils.CreateMessageBytes(header, body, out size));
 			}
+			_bytesSent += size;
 			_packetsSent++;
 		}
 
@@ -127,6 +131,7 @@ namespace Voxels.Networking.Clientside {
 
 		void OnDataReceived(Message msg) {
 			_packetsReceived++;
+			_bytesReceived += (uint)msg.data.Length;
 			if ( msg.data.Length < PacketHeader.MinPacketLength ) {
 				return;
 			}

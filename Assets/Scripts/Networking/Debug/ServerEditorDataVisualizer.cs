@@ -19,8 +19,10 @@ namespace Voxels.Networking.NetDebug {
 
 		public SingleBlockPresenter Presenter = null;
 		[Header("Data")]
-		public long              ReceivedCommands = 0;
-		public long              SentCommands     = 0;
+		public ulong              ReceivedCommands = 0;
+		public ulong              SentCommands     = 0;
+		public ulong              ReceivedBytes    = 0;
+		public ulong              SentBytes        = 0;
 		public List<ClientState> Clients          = null;
 		[Header("Block preview")]
 		public Vector3           BlockPos         = Vector3.zero;
@@ -123,6 +125,8 @@ namespace Voxels.Networking.NetDebug {
 			while (true) {
 				ReceivedCommands = server.PacketsReceived;
 				SentCommands = server.PacketsSent;
+				ReceivedBytes = server.BytesReceived;
+				SentBytes = server.BytesSent;
 				Clients = server.Clients.Values.ToList();
 
 				yield return new WaitForSeconds(0.5f);
