@@ -9,10 +9,10 @@ namespace Voxels {
 		public Gradient SunColor       = null;
 		public Material SkyboxMaterial = null;
 
-		ResourceLibrary _library = null;
+		VoxelsStatic _statics = null;
 
 		void Start() {
-			_library = VoxelsStatic.Instance.Library;
+			_statics = VoxelsStatic.Instance;
 		}
 
 		void Update() {
@@ -34,8 +34,8 @@ namespace Voxels {
 			SkyboxMaterial.SetVector("_SunVector", sunVec);
 
 			var intensity = ClientWorldStateController.Instance.AmbientLightIntensity;
-			_library.OpaqueMaterial.SetFloat("_Daylight", intensity);
-			_library.TranslucentMaterial.SetFloat("_Daylight", intensity);	
+			_statics.OpaqueMaterial.SetFloat("_Daylight", intensity);
+			_statics.TranslucentMaterial.SetFloat("_Daylight", intensity);	
 		}
 
 		Vector4 SunPosToVector(float az, float al) {

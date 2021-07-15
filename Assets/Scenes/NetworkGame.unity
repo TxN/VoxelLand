@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.073
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 0.073}
+  m_IndirectSpecularColor: {r: 0.12178055, g: 0.2515177, b: 0.30005556, a: 0.073}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -278,6 +278,8 @@ MonoBehaviour:
   Presenter: {fileID: 953483855}
   ReceivedCommands: 0
   SentCommands: 0
+  ReceivedBytes: 0
+  SentBytes: 0
   Clients: []
   BlockPos: {x: 0, y: 0, z: 0}
 --- !u!4 &824784868
@@ -514,8 +516,73 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69ff564b6ff55b043b252a96efbfc5fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AmbientLightIntensity:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.29953465
+      value: 1.0033035
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.3926789
+      value: 0.035077713
+      inSlope: -10.394909
+      outSlope: 0
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.61237395
+      value: 0.036382884
+      inSlope: 0.005940827
+      outSlope: 5.9664392
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.7004717
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  OpaqueMaterial: {fileID: 2100000, guid: 923864d8c47883b4ead13f52be9c02b3, type: 2}
+  TranslucentMaterial: {fileID: 2100000, guid: 98fcef6bf305f0d4a9ecdc8b4cd50c53, type: 2}
   Library: {fileID: 11400000, guid: 2d72ffce4fe1efc4fb0b41692f0eafa4, type: 2}
   PreviewGenerator: {fileID: 161039985}
+  TilesetSize: 512
+  TileSize: 16
+  BlockTilest: {fileID: 2800000, guid: e3f9040ebe2c2284b9117f62154a63ce, type: 3}
 --- !u!4 &1074900902
 Transform:
   m_ObjectHideFlags: 0

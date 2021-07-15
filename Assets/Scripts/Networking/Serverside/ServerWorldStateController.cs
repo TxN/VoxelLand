@@ -45,13 +45,14 @@ namespace Voxels.Networking.Serverside {
 				return whole;
 			}
 		}
-
+		//TODO: daytime check
+		/*
 		public float AmbientLightIntensity {
 			get {
 				return _library.AmbientLightIntensity.Evaluate(DayPercent);
 			}
 		}
-
+		*/
 		public float DayLength {
 			get { return _worldOptions.DayLength; }
 		}

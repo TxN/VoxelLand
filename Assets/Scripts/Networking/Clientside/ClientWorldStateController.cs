@@ -12,7 +12,7 @@ namespace Voxels.Networking.Clientside {
 		CloudAnimator _cloudsAnimator   = null;
 		GameObject    _postprocess      = null;
 
-		ResourceLibrary _library = null;
+		VoxelsStatic _statics = null;
 
 		public float WorldTime {
 			get; private set;
@@ -42,13 +42,13 @@ namespace Voxels.Networking.Clientside {
 
 		public float AmbientLightIntensity {
 			get {
-				return _library.AmbientLightIntensity.Evaluate(DayPercent);
+				return _statics.AmbientLightIntensity.Evaluate(DayPercent);
 			}
 		}
 
 		public override void Init() {
 			base.Init();
-			_library  = VoxelsStatic.Instance.Library;
+			_statics  = VoxelsStatic.Instance;
 			var sbFab = Resources.Load(SKYBOX_CONTROLLER_PATH);
 			var clFab = Resources.Load(CLOUDS_CONTROLLER_PATH);
 			var ppFab = Resources.Load(POSTPROCESS_MAIN);

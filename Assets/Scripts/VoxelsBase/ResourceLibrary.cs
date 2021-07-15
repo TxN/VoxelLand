@@ -2,18 +2,8 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-using SMGCore.EventSys;
-using Voxels.Events;
-
 namespace Voxels {
 	public sealed class ResourceLibrary : ScriptableObject {
-		public AnimationCurve AmbientLightIntensity = new AnimationCurve();
-		public Material       OpaqueMaterial        = null;
-		public Material       TranslucentMaterial   = null;
-		public Texture2D      BlockTilest           = null;
-		public int            TilesetSize           = 512;
-		public int            TileSize              = 16;
-
 		public List<BlockDescription> BlockDescriptions = new List<BlockDescription>();
 
 		BlockDescription[] _desc                  = null;
@@ -22,37 +12,8 @@ namespace Voxels {
 		bool[]             _blockIllumFlags       = null;
 		bool[]             _blockLightPassFlags   = null;
 
-		Dictionary<int, Texture2D> _blockPreviews = new Dictionary<int, Texture2D>();
-		BlockPreviewGenerator _previewGenerator = null;
-
-		//TODO: Я знаю что так делать вообще не хорошо, и в этом объекте не должно быть зависимостей от внешних систем, но щас
-		// четвертый час ночи, а я хочу заставить работать превьюшки.
-		public void Init(BlockPreviewGenerator previewGen) {
-			GenerateBlockDescDict();
-			_previewGenerator = previewGen;
-			EventManager.Subscribe<Event_BlockPreviewUpdated>(this, OnPreviewUpdated);
-		}
-
-		public void DeInit() {
-			EventManager.Unsubscribe<Event_BlockPreviewUpdated>(OnPreviewUpdated);
-		}
-
-		void OnPreviewUpdated(Event_BlockPreviewUpdated e) {
-			var hash = (byte)e.Block.Type * 256 + e.Block.Subtype;
-			if ( _blockPreviews.ContainsKey(hash) ) {
-				_blockPreviews[hash] = e.Texture;
-			} else {
-				_blockPreviews.Add(hash, e.Texture);
-			}
-		}
-
-		public Texture2D GetBlockPreview(BlockData block) {
-			var hash = (byte)block.Type * 256 + block.Subtype;
-			if ( _blockPreviews.ContainsKey(hash) ) {
-				return _blockPreviews[hash];
-			}
-			_previewGenerator.RenderBlockPreview(block);
-			return null;
+		public void Init() {
+			GenerateBlockDescDict();	
 		}
 
 		public BlockDescription GetBlockDescription(BlockType type) {
@@ -105,36 +66,6 @@ namespace Voxels {
 				}
 				
 				_blockLightPassFlags[key]   = !desc.IsFull || desc.IsTranslucent;
-			}
-		}
-	}
-
-	//Only square tilesets are supported
-	public sealed class TilesetHelper {
-		public readonly int TileSizePixels    = 16;
-		public readonly int TilesetSizePixels = 512;
-
-		float _uvPerTile = 1f;
-
-		public TilesetHelper(int tileSize, int tilesetSize) {
-			TilesetSizePixels = tileSize;
-			TilesetSizePixels = tilesetSize;
-			_uvPerTile = 1f / (TilesetSizePixels / TileSizePixels);
-		}
-
-		public Vector2 RelativeToAbsolute(float u, float v, Byte2 tilePos) {
-			return new Vector2(_uvPerTile *  u + tilePos.X * _uvPerTile, 1 - (_uvPerTile *  v + tilePos.Y * _uvPerTile) );
-		}
-
-		public int TilesetWidthTiles {
-			get {
-				return TilesetSizePixels / TileSizePixels;
-			}
-		}
-
-		public int TileCount {
-			get {
-				return TilesetWidthTiles * TilesetWidthTiles;
 			}
 		}
 	}

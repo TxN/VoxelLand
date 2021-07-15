@@ -218,7 +218,6 @@ namespace Voxels.Networking.Serverside {
 				var compressedBody = CLZF2.Compress(body);
 				header.ContentLength = (ushort)compressedBody.Length;
 				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, compressedBody, out size));
-				Debug.Log($"Compressed command, before {body.Length}, after {size}");
 			} else {
 				_server.Send(client.ConnectionID, NetworkUtils.CreateMessageBytes(header, body, out size));
 			}

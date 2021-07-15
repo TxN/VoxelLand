@@ -27,7 +27,7 @@ namespace Voxels {
 				_image = GetComponent<RawImage>();
 			}
 
-			var preview = VoxelsStatic.Instance.Library.GetBlockPreview(block);
+			var preview = VoxelsStatic.Instance.PreviewProvider.GetBlockPreview(block);
 			if ( preview == null ) {
 				_image.enabled = false;
 				return;

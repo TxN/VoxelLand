@@ -24,11 +24,10 @@ namespace Voxels {
 
 		public void DrawBlock(BlockData data) {
 			_genMesh.ClearAll();
-			var library = VoxelsStatic.Instance.Library;
-			var desc = library.GetBlockDescription(data.Type);
+			var desc = VoxelsStatic.Instance.Library.GetBlockDescription(data.Type);
 			var inp = new MesherBlockInput() { Block = data, Lighting = LightInfo.FullLit, Position = Byte3.Zero, Visibility = VisibilityFlags.All };
 			BlockModelGenerator.AddBlock(_genMesh, desc, ref Offset,ref inp);
-			_renderer.material = library.OpaqueMaterial;
+			_renderer.material = VoxelsStatic.Instance.OpaqueMaterial;
 			_genMesh.BakeMesh();
 			_filter.mesh = _genMesh.Mesh;
 		}
