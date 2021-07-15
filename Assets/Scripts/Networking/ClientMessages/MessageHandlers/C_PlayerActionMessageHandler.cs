@@ -54,10 +54,10 @@ namespace Voxels.Networking {
 				return;
 			}
 			if ( pc.GetBlockInSight(player, out var pos, out var block) ) {
-				Debug.Log($"Player {client.UserName} tried to interact with block of type {block.Type} at {pos} .");
+				DebugOutput.Log($"Player {client.UserName} tried to interact with block of type {block.Type} at {pos} .");
 				ServerChunkManager.Instance.InteractWithBlockAt(pos);
 			} else {
-				Debug.Log($"Player {client.UserName} tried to interact with nothing");
+				DebugOutput.Log($"Player {client.UserName} tried to interact with nothing");
 			}
 		}
 	}

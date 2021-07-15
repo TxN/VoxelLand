@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-using UnityEngine;
-
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
 using Voxels.Networking.Serverside;
@@ -50,7 +48,7 @@ namespace Voxels.Networking {
 					pair.Value.Reset();
 				}
 				catch ( Exception e ) {
-					Debug.LogError(e);
+					DebugOutput.LogError(e);
 				}
 			}
 		}
@@ -61,7 +59,7 @@ namespace Voxels.Networking {
 					pair.Value.Init();
 				}
 				catch ( Exception e ) {
-					Debug.LogError(e);
+					DebugOutput.LogError(e);
 				}
 			}
 		}
@@ -72,7 +70,7 @@ namespace Voxels.Networking {
 					pair.Value.PostInit();
 				}
 				catch ( Exception e ) {
-					Debug.LogError(e);
+					DebugOutput.LogError(e);
 				}
 			}
 		}

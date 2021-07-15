@@ -1,18 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using ZeroFormatter;
 
-public class C_EntityRPCMessage : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+namespace Voxels.Networking {
+	public class C_EntityRPCMessage : BaseMessage {
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	}
 }

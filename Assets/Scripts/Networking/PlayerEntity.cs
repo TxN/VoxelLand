@@ -4,7 +4,6 @@ using Voxels.Utils;
 using Voxels.Networking.Clientside;
 
 using ZeroFormatter;
-using Voxels.Networking.Serverside;
 
 namespace Voxels.Networking {
 	[ZeroFormattable]
