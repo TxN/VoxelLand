@@ -40,7 +40,7 @@ namespace Voxels.UI {
 
 		void Setup() {
 			ItemFab.gameObject.SetActive(false);
-			var library = VoxelsStatic.Instance.Library;
+			var library = StaticResources.BlocksInfo;
 
 			foreach ( var color in Colors ) {
 				var inst = Instantiate(ItemFab, Layout);

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-
 using System.Threading.Tasks;
 
 using UnityEngine;
@@ -26,15 +25,15 @@ namespace Voxels {
 
 		public List<MesherBlockInput> Blocks { get; private set; }
 
-		GeneratableMesh _opaqueCollidedMesh      = null;
-		GeneratableMesh _opaquePassableMesh      = null;
-		GeneratableMesh _translucentPassableMesh = null;
-		Vector3         _originPos               = Vector3.zero;
-		ResourceLibrary _library                 = null;
-		Task            _currentTask             = null;
-		Chunk _targetChunk = null;
+		GeneratableMesh   _opaqueCollidedMesh      = null;
+		GeneratableMesh   _opaquePassableMesh      = null;
+		GeneratableMesh   _translucentPassableMesh = null;
+		Vector3           _originPos               = Vector3.zero;
+		BlockInfoProvider _library                 = null;
+		Task              _currentTask             = null;
+		Chunk             _targetChunk             = null;
 
-		public ChunkMesher(ResourceLibrary library, int chunkMeshCapacity, int capacity, Vector3 originPos) {
+		public ChunkMesher(BlockInfoProvider library, int chunkMeshCapacity, int capacity, Vector3 originPos) {
 			_opaqueCollidedMesh      = new GeneratableMesh(chunkMeshCapacity);
 			_translucentPassableMesh = new GeneratableMesh(chunkMeshCapacity / 8);
 			_opaquePassableMesh      = new GeneratableMesh(chunkMeshCapacity / 8);

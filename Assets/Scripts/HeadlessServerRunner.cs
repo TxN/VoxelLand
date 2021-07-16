@@ -14,6 +14,10 @@ namespace Voxels.Utils {
 			NetworkOptions.ServerIP = "127.0.0.1";
 			NetworkOptions.StartServer = true;
 			SceneManager.LoadScene("NetworkGame");
+
+
+			var blockLib = Resources.Load<ResourceLibrary>("ResourceLibrary");
+			StaticResources.BlocksInfo = new BlockInfoProvider(blockLib.BlockDescriptions);
 		}
 	}
 }

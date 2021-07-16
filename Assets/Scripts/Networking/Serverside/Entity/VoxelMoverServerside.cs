@@ -85,7 +85,7 @@ namespace Voxels.Networking.Serverside {
 
 		public bool IsInWater {
 			get {
-				return VoxelsStatic.Instance.Library.GetBlockDescription(_chunkManager.GetBlockIn(Position).Type).IsSwimmable;
+				return StaticResources.BlocksInfo.GetBlockDescription(_chunkManager.GetBlockIn(Position).Type).IsSwimmable;
 			}
 		}
 
@@ -213,7 +213,7 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		bool IsBlockSolid(Int3 index) {
-			var lib = VoxelsStatic.Instance.Library;
+			var lib = StaticResources.BlocksInfo;
 			var block = _chunkManager.GetBlockIn(index.X, index.Y, index.Z);
 			return !lib.GetBlockDescription(block.Type).IsPassable;
 		}

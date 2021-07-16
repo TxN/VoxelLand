@@ -19,7 +19,7 @@ namespace Voxels {
 				Init();
 			}
 			gameObject.SetActive(true);
-			var desc = VoxelsStatic.Instance.Library.GetBlockDescription(data.Type);
+			var desc = StaticResources.BlocksInfo.GetBlockDescription(data.Type);
 			if ( desc.Subtypes.Count == 0 ) {
 				Return();
 				return;

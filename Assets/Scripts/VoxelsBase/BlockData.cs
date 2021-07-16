@@ -22,7 +22,7 @@ namespace Voxels {
 		[IgnoreFormat]
 		public BlockDescription Info {
 			get {
-				return VoxelsStatic.Instance.Library.GetBlockDescription(Type);
+				return StaticResources.BlocksInfo.GetBlockDescription(Type);
 			}
 		}
 

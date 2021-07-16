@@ -38,7 +38,7 @@ namespace Voxels {
 
 		public bool IsInWater {
 			get {
-				return VoxelsStatic.Instance.Library.GetBlockDescription(_chunkManager.GetBlockIn(transform.position).Type).IsSwimmable;
+				return StaticResources.BlocksInfo.GetBlockDescription(_chunkManager.GetBlockIn(transform.position).Type).IsSwimmable;
 			}
 		}
 
@@ -123,7 +123,7 @@ namespace Voxels {
 		}
 
 		public bool IsBlockSolid(Int3 index) {
-			var lib = VoxelsStatic.Instance.Library;
+			var lib = StaticResources.BlocksInfo;
 			var block = _chunkManager.GetBlockIn(index.X, index.Y, index.Z);
 			return !lib.GetBlockDescription(block.Type).IsPassable;
 		}

@@ -7,7 +7,7 @@ namespace Voxels.Networking.Serverside {
 		public ServerWorldStateController(ServerGameManager owner) : base(owner) { }
 		const string SAVE_DATA_FILE_NAME = "world.opts";
 
-		ResourceLibrary        _library      = null;
+		BlockInfoProvider      _library      = null;
 		WorldOptionsDataHolder _worldOptions = null;
 
 		public float WorldTime {
@@ -68,7 +68,7 @@ namespace Voxels.Networking.Serverside {
 
 		public override void Init() {
 			base.Init();
-			_library = VoxelsStatic.Instance.Library;
+			_library = StaticResources.BlocksInfo;
 		}
 
 		public override void Load() {

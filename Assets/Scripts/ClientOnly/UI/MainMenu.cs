@@ -18,6 +18,9 @@ namespace Voxels.UI {
 		public GameObject     LoadingScreen     = null;
 
 		void Start() {
+			var blockLib = Resources.Load<ResourceLibrary>("ResourceLibrary");
+			StaticResources.BlocksInfo = new BlockInfoProvider(blockLib.BlockDescriptions);
+
 			LoadingScreen.SetActive(false);
 			StartServerButton.onClick.AddListener(StartServer);
 			JoinGameButton.onClick.AddListener(JoinGame);

@@ -24,7 +24,7 @@ namespace Voxels {
 
 		public void DrawBlock(BlockData data) {
 			_genMesh.ClearAll();
-			var desc = VoxelsStatic.Instance.Library.GetBlockDescription(data.Type);
+			var desc = StaticResources.BlocksInfo.GetBlockDescription(data.Type);
 			var inp = new MesherBlockInput() { Block = data, Lighting = LightInfo.FullLit, Position = Byte3.Zero, Visibility = VisibilityFlags.All };
 			BlockModelGenerator.AddBlock(_genMesh, desc, ref Offset,ref inp);
 			_renderer.material = VoxelsStatic.Instance.OpaqueMaterial;

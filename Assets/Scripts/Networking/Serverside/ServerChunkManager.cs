@@ -265,7 +265,7 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		bool TryPutBlock(Chunk chunk, int x, int y, int z, BlockData block) {
-			var desc = VoxelsStatic.Instance.Library.GetBlockDescription(block.Type);
+			var desc = StaticResources.BlocksInfo.GetBlockDescription(block.Type);
 			if ( desc == null) {
 				return false;
 			}
@@ -336,7 +336,7 @@ namespace Voxels.Networking.Serverside {
 			if ( upperBlock.IsEmpty() ) {
 				return;
 			}
-			var desc = VoxelsStatic.Instance.Library.GetBlockDescription(upperBlock.Type);
+			var desc = StaticResources.BlocksInfo.GetBlockDescription(upperBlock.Type);
 			if ( desc == null ) {
 				return;
 			}
@@ -397,7 +397,7 @@ namespace Voxels.Networking.Serverside {
 			ChunkHelper.Spiral(dim, dim, GenOrLoad);
 			ChunkHelper.Spiral(dim, dim, (x,y) => { _keepaliveChunks.Add(new Int3(x, 0, y)); });
 			Debug.LogFormat("Initial world generation. Chunks total: {0}, to generate: {1}", dim*dim, lg.QueueCount);
-			lg.RunGenRoutine();
+			lg.TryStartGeneration();
 			lg.ImmediateMode = false;
 		}
 
@@ -578,12 +578,12 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		void OnChunkGenerated(OnServerChunkGenerated e) {
-			var c = e.WorldCoords;
+			var c = e.ChunkData.WorldCoords;
 			_requestedChunks.Remove(new Int3(c.X, c.Y, c.Z));
 			var chunk = GetOrInitChunkInCoords(c.X, c.Y, c.Z);
 			if ( chunk != null ) {
-				chunk.SetAllBlocks(e.Blocks, e.MaxHeight);
-				ServerLandGenerator.Instance.PostProcessGeneration(chunk, e.Heightmap, e.WaterLevel);
+				chunk.SetAllBlocks(e.ChunkData.Blocks, e.ChunkData.MaxHeight);
+				ServerLandGenerator.PostProcessGeneration(chunk, e.ChunkData.Heightmap, e.ChunkData.WaterLevel);
 			}
 		}
 

@@ -12,7 +12,6 @@ namespace Voxels {
 		public Material       TranslucentMaterial   = null;
 
 		[Header("Blocks data")]
-		public ResourceLibrary       Library          = null;
 		public BlockPreviewGenerator PreviewGenerator = null;
 		public BlockPreviewProvider  PreviewProvider  = null;
 		
@@ -26,7 +25,6 @@ namespace Voxels {
 		protected override void Awake() {
 			base.Awake();
 			TilesetHelper = new TilesetHelper(TileSize, TilesetSize);
-			Library.Init();
 			BlockModelGenerator.PrepareGenerator(TilesetHelper);
 			PreviewProvider = new BlockPreviewProvider(PreviewGenerator);
 		}
@@ -35,5 +33,4 @@ namespace Voxels {
 			PreviewProvider.DeInit();
 		}
 	}
-
 }

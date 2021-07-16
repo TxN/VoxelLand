@@ -76,7 +76,7 @@ namespace Voxels {
 
 		bool HasBlockIn(Int3 pos ) {
 			var block = ClientChunkManager.Instance.GetBlockIn(pos.X, pos.Y, pos.Z);
-			var desc = VoxelsStatic.Instance.Library.GetBlockDescription(block.Type);
+			var desc = StaticResources.BlocksInfo.GetBlockDescription(block.Type);
 			return !block.IsEmpty() && !desc.IsSwimmable;
 		}
 

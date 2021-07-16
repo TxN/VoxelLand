@@ -33,11 +33,7 @@ namespace Voxels.Networking.Events {
 	}
 
 	public struct OnServerChunkGenerated {
-		public Int3        WorldCoords;
-		public BlockData[] Blocks;
-		public byte[]      Heightmap;
-		public int         MaxHeight;
-		public int         WaterLevel;
+		public GeneratedChunkData ChunkData;
 	}
 
 	public struct OnServerChunkLoadedFromDisk {

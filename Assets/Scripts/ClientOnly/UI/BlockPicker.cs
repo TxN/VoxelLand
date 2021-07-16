@@ -36,7 +36,7 @@ namespace Voxels.UI {
 
 		void Setup() {
 			ItemFab.gameObject.SetActive(false);
-			var library = VoxelsStatic.Instance.Library;
+			var library = StaticResources.BlocksInfo;
 			
 			foreach ( var block in library.BlockDescriptions ) {
 				byte subtype = 0;

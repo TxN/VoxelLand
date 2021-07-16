@@ -1,131 +1,79 @@
-using System.Collections;
+using SMGCore.EventSys;
+
 using System.Collections.Generic;
 
-using Unity.Jobs;
-using UnityEngine;
-
-using SMGCore.EventSys;
 using Voxels.Networking.Events;
-using UnityEngine.Profiling;
 
 namespace Voxels.Networking.Serverside {
 	public sealed class ServerLandGenerator : ServerSideController<ServerLandGenerator> {
-		public ServerLandGenerator(ServerGameManager owner) : base(owner) { }
+		const int MAX_CHUNK_PER_TICK = 2; //сколько максимум чанков можно отдать из генератора за один тик
 
-		Unity.Mathematics.Random _random;
-		Queue<Int3> _chunkGenQueue  = new Queue<Int3>(16);
-		bool        _routineRuuning = false;
+		static System.Random RandomGenerator;
 
-		//If true, gen coroutine runs without skipping a frame on heightmap generation
+		BaseLandGenerator _landGenerator = null;
+
+		public ServerLandGenerator(ServerGameManager owner) : base(owner) {
+			_landGenerator = new UnityLandGenerator();
+		}		
+
+		//If true, gen coroutine runs without skipping a frame on heightmap generation (if applicable)
 		public bool ImmediateMode {
-			get; set;
+			get => _landGenerator.ImmediateMode;
+			set => _landGenerator.ImmediateMode = value;
 		}
+
+		public int QueueCount => _landGenerator.QueueCount;
 
 		public int Seed { get; private set; }
 
-		public int QueueCount { get { return _chunkGenQueue.Count; } }
-
 		public override void Load() {
 			Seed = Utils.WorldOptions.Seed;
-			Random.InitState(Seed);
-			_random.InitState((uint)Seed);
+			RandomGenerator = new System.Random(Seed);
+			_landGenerator.Init(Seed);
 			base.Load();
 		}
 
-		public override void PostLoad() {
-			base.PostLoad();
+		public override void Update() {
+			base.Update();
+
+			var receivedChunks = 0;
+			while ( receivedChunks < MAX_CHUNK_PER_TICK ) {
+				var c = _landGenerator.TryGetGeneratedChunk();
+				if ( c == null ) {
+					break;
+				}
+				receivedChunks++;
+				EventManager.Fire(new OnServerChunkGenerated {ChunkData = c});
+			}
+			if ( receivedChunks > 0 && _landGenerator.QueueCount == 0 && !_landGenerator.IsRunning ) {
+				//если мы забрали последний чанк из генерированной очереди и генератор больше неактивен, бросаем ивент завершения генерации
+				//Здесь возможна потенциальная гонка, но ее вероятность должна быть очень скромной
+				EventManager.Fire(new OnServerChunkGenQueueEmpty());
+			}
+		}
+
+		public void TryStartGeneration() {
+			_landGenerator.RunGenRoutine();
 		}
 
 		public void ClearQueue() {
-			_chunkGenQueue.Clear();
+			_landGenerator?.ClearQueue();		
 		}
 
 		public void AddToQueue(Int3 newChunk, bool run) {
-			_chunkGenQueue.Enqueue(newChunk);
-			if ( run ) {
-				RunGenRoutine();
-			}			
+			_landGenerator.AddToQueue(newChunk, run);	
 		}
 
 		public void RefreshQueue(List<Int3> newChunks) {
-			ClearQueue();
-			foreach ( var item in newChunks ) {
-				_chunkGenQueue.Enqueue(item);
-			}
-			RunGenRoutine();
-		}
-
-		public void RunGenRoutine() {
-			if ( _routineRuuning ) {
-				return;
-			}
-			_routineRuuning = true;
-			GameManager.Instance.StartCoroutine(ParallelGenRoutine());
-		}
-
-		IEnumerator ParallelGenRoutine() {
-			while ( _chunkGenQueue.Count > 0 ) {
-				Profiler.BeginSample("Chunk procgen");
-				var chunkPos = _chunkGenQueue.Dequeue();
-				var x = chunkPos.X;
-				var z = chunkPos.Z;
-				var heightmapJob = new HeightGenJob() {
-					BaseScale = 20,
-					Seed      = this.Seed,
-					SizeX     = Chunk.CHUNK_SIZE_X,
-					SizeY     = Chunk.CHUNK_SIZE_Z,
-					OffsetX   = Chunk.CHUNK_SIZE_X * x,
-					OffsetY   = Chunk.CHUNK_SIZE_Z * z,
-					Height    = new Unity.Collections.NativeArray<byte>(Chunk.CHUNK_SIZE_X * Chunk.CHUNK_SIZE_Z, Unity.Collections.Allocator.Persistent)
-				};
-				var hHandle = heightmapJob.Schedule(256, 128);
-				hHandle.Complete();
-				var waterLevel = Utils.WorldOptions.WaterLevel;
-				var blockCount = Chunk.CHUNK_SIZE_X * Chunk.CHUNK_SIZE_Y * Chunk.CHUNK_SIZE_Z;
-				var fillJob    = new ChunkGenJob() {
-					SizeH      = Chunk.CHUNK_SIZE_X,
-					SizeY      = Chunk.CHUNK_SIZE_Y,
-					Random     = _random,
-					SeaLevel   = waterLevel,
-					HeightMap  = heightmapJob.Height,
-					Blocks     = new Unity.Collections.NativeArray<BlockData>(blockCount, Unity.Collections.Allocator.Persistent)
-				};
-
-				var fillHandler = fillJob.Schedule(blockCount, 512);
-				var height      = heightmapJob.Height.ToArray();
-				var maxY        = waterLevel;
-				for ( int i = 0; i < height.Length; i++ ) {
-					if ( height[i] > maxY ) {
-						maxY = height[i];
-					}
-				}
-				Profiler.EndSample();
-				if ( !ImmediateMode ) {
-					yield return new WaitForEndOfFrame();
-				}
-				fillHandler.Complete();
-
-				EventManager.Fire(new OnServerChunkGenerated {
-					Blocks      = fillJob.Blocks.ToArray(),
-					Heightmap   = heightmapJob.Height.ToArray(),
-					MaxHeight   = maxY + 1,
-					WorldCoords = new Int3(x * Chunk.CHUNK_SIZE_X, 0, z * Chunk.CHUNK_SIZE_Z),
-					WaterLevel  = waterLevel
-				});
-				heightmapJob.Height.Dispose();
-				fillJob.Blocks.Dispose();
-			}
-			_routineRuuning = false;
-			EventManager.Fire(new OnServerChunkGenQueueEmpty());
-			yield break;
-		}
+			_landGenerator.RefreshQueue(newChunks);
+		}	
 
 		//Need to be called after set all blocks function call
-		public void PostProcessGeneration(Chunk chunk, byte[] heightMap, int waterLevel) {
-			var maxTreeSpawnAttempts = Random.Range(3, 6);
+		public static void PostProcessGeneration(Chunk chunk, byte[] heightMap, int waterLevel) {
+			var maxTreeSpawnAttempts = RandomGenerator.Next(3,7);
 			for ( int i = 0; i < maxTreeSpawnAttempts; i++ ) {
-				var x = Random.Range(2, Chunk.CHUNK_SIZE_X - 3); // TODO: fix to support placing blocks in neighbor chunks
-				var z = Random.Range(2, Chunk.CHUNK_SIZE_Z - 3);
+				var x = RandomGenerator.Next(2, Chunk.CHUNK_SIZE_X - 2); // TODO: fix to support placing blocks in neighbor chunks
+				var z = RandomGenerator.Next(2, Chunk.CHUNK_SIZE_Z - 2);
 
 				var pointer = x * Chunk.CHUNK_SIZE_X + z;
 				var h = heightMap[pointer] + 1;
@@ -136,12 +84,12 @@ namespace Voxels.Networking.Serverside {
 			chunk.SetDirtyAll();
 		}
 
-		void SpawnTree(Chunk chunk, Int3 startPos) {
+		static void SpawnTree(Chunk chunk, Int3 startPos) {
 			var x = startPos.X;
 			var y = startPos.Y;
 			var z = startPos.Z;
 
-			var trunkHeight = Random.Range(1, 5);
+			var trunkHeight = RandomGenerator.Next(1, 5);
 			for ( int i = 0; i < trunkHeight; i++ ) {
 				chunk.PutBlock(x, y + i, z, new BlockData(BlockType.Log, 0));
 			}

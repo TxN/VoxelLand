@@ -33,7 +33,7 @@ namespace Voxels {
 
 		IChunkManager       _owner           = null;
 		IChunkMesher        _mesher          = null;
-		ResourceLibrary    _library          = null;
+		BlockInfoProvider   _library          = null;
 
 		int     _indexX                      = 0;
 		int     _indexY                      = 0;
@@ -65,7 +65,7 @@ namespace Voxels {
 
 		public void FinishInitClientChunk(IChunkManager owner) {
 			_owner = owner;
-			_library = VoxelsStatic.Instance.Library;
+			_library = StaticResources.BlocksInfo;
 			_mesher = new ChunkMesher(_library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, OriginPos);
 			_loadedNeighbors = _owner.GatherNeighbors(new Int3(_indexX, _indexY, _indexZ));
 			if ( _loadedNeighbors == 15 ) {				
@@ -77,7 +77,7 @@ namespace Voxels {
 
 		public void FinishInitServerChunk(IChunkManager owner) {
 			_owner = owner;
-			_library = VoxelsStatic.Instance.Library;
+			_library = StaticResources.BlocksInfo;
 			_mesher = new EmptyChunkMesher();
 			InitSunlight();
 		}
@@ -92,7 +92,7 @@ namespace Voxels {
 			_indexY       = data.IndexY;
 			_indexZ       = data.IndexZ;
 			_maxNonEmptyY = data.Height;
-			_library      = VoxelsStatic.Instance.Library;
+			_library      = StaticResources.BlocksInfo;
 
 			if ( isServerChunk ) {
 				_mesher = new EmptyChunkMesher();
@@ -115,7 +115,7 @@ namespace Voxels {
 			_indexX       = x;
 			_indexY       = y;
 			_indexZ       = z;
-			_library      = VoxelsStatic.Instance.Library;
+			_library      = StaticResources.BlocksInfo;
 
 			if ( isServerChunk ) {
 				_mesher = new EmptyChunkMesher();
