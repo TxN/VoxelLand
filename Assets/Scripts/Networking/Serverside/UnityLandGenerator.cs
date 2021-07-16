@@ -11,11 +11,10 @@ namespace Voxels.Networking.Serverside {
 		public override bool IsRunning => _routineRuuning;
 
 		bool _routineRuuning = false;
+		bool _isRandomInited = false;
 
 		public override void Init(int seed) {
 			base.Init(seed);
-			Random.InitState(seed);
-			_random.InitState((uint)seed);
 		}
 
 		public override void RunGenRoutine() {
@@ -23,10 +22,15 @@ namespace Voxels.Networking.Serverside {
 				return;
 			}
 			_routineRuuning = true;
-			GameManager.Instance.StartCoroutine(ParallelGenRoutine());
+			GameManager.Instance.StartCoroutineThreadSafe(ParallelGenRoutine);
 		}
 
 		IEnumerator ParallelGenRoutine() {
+			if ( !_isRandomInited ) {
+				_isRandomInited = true;
+				Random.InitState(_seed);
+				_random.InitState((uint)_seed);
+			}
 			while ( _chunkGenQueue.Count > 0 ) {
 				Profiler.BeginSample("Chunk procgen");
 

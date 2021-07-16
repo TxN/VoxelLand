@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Concurrent;
 
 using UnityEngine;
 
@@ -9,11 +10,14 @@ using Voxels.Networking;
 
 using Voxels.Networking.Utils;
 using UnityEngine.SceneManagement;
+using System;
 
 namespace Voxels {
 	public sealed class GameManager : ManualSingleton<GameManager> {
 
 		const float RARE_UPDATE_INTERVAL = 1f;
+
+		ConcurrentQueue<Func<IEnumerator>> _coroutineRequests = new ConcurrentQueue<Func<IEnumerator>>();
 
 		public bool IsServer { get; private set; }
 		public bool IsClient { get; private set; }
@@ -30,6 +34,7 @@ namespace Voxels {
 			}
 		}
 
+		ServerThreadRunner _serverRunner;
 		ServerGameManager _serverManager = null;
 		ClientGameManager _clientManager = null;
 
@@ -48,12 +53,20 @@ namespace Voxels {
 		public void GoToMainMenu() {
 			//TODO: quit more properly.
 			if ( ServerAlive ) {
-				_serverManager.Reset();
+				_serverRunner.Cancel();
+				System.Threading.Thread.Sleep(20);
 			}
 			if ( ClientAlive ) {
 				_clientManager.Reset();
 			}
 			SceneManager.LoadScene("MainMenu");
+		}
+
+		public void StartCoroutineThreadSafe(Func<IEnumerator> enumerator) {
+			if ( enumerator == null ) {
+				return;
+			}
+			_coroutineRequests.Enqueue(enumerator);
 		}
 
 		void Start() {
@@ -62,12 +75,15 @@ namespace Voxels {
 
 			if ( IsServer ) {
 				_serverManager = new ServerGameManager();
-				_serverManager.Create();
-				_serverManager.Init();
-				_serverManager.PostInit();
-				_serverManager.Load();
-				_serverManager.PostLoad();
+				_serverRunner  = new ServerThreadRunner();
+				
+				var thread = new System.Threading.Thread( ()=> {
+					_serverRunner.Run(_serverManager, 50, 1000, new System.Threading.CancellationTokenSource());
+					});
+				thread.Start();
+				System.Threading.Thread.Sleep(50);
 				if ( !_serverManager.Initialized ) {
+					Debug.Log("not Initialized");
 					EventManager.Subscribe<OnServerInitializationFinished>(this, OnServerInitializationFinished);
 					return;
 				}
@@ -78,20 +94,16 @@ namespace Voxels {
 		}
 
 		void Update() {
-			if ( ServerAlive ) {
-				_serverManager.UpdateControllers();
+			while ( _coroutineRequests.TryDequeue(out var func) ) {
+				var e = func();
+				StartCoroutine(e);
 			}
-
 			if ( ClientAlive ) {
 				_clientManager.UpdateControllers();
 			}
 		}
 
 		void LateUpdate() {
-			if ( ServerAlive ) {
-				_serverManager.LateUpdateControllers();
-			}
-
 			if ( ClientAlive ) {
 				_clientManager.LateUpdateControllers();
 			}
@@ -112,17 +124,13 @@ namespace Voxels {
 
 			if ( ServerAlive ) {
 				Debug.Log("Shutting down server.");
-				_serverManager.Save();
-				_serverManager.Reset();
+				_serverRunner.Cancel();
+				System.Threading.Thread.Sleep(20);
 			}
 		}
 
 		IEnumerator RareUpdate() {
 			while (true) {
-				if ( ServerAlive ) {
-					_serverManager.RareUpdateControllers();
-				}
-
 				if ( ClientAlive ) {
 					_clientManager.LateUpdateControllers();
 				}
@@ -147,4 +155,3 @@ namespace Voxels {
 		}
 	}
 }
-

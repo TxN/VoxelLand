@@ -532,11 +532,11 @@ namespace Voxels.Networking.Serverside {
 					continue;
 				}
 				if ( ! _uselessChunks.ContainsKey(id) && !_chunkUnloadSet.Contains(id) ) {
-					_uselessChunks.Add(id, Time.time);
+					_uselessChunks.Add(id, ServerGameManager.Time);
 				}
 			}
 			var maxAge = WorldOptions.UselessChunksMaxAge;
-			var curTime = Time.time;
+			var curTime = ServerGameManager.Time;
 			foreach ( var c in _uselessChunks ) {
 				if ( curTime - c.Value > maxAge ) {
 					_chunkUnloadSet.Add(c.Key);

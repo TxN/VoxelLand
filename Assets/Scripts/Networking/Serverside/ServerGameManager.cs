@@ -7,6 +7,10 @@ using Voxels.Networking.Serverside;
 
 namespace Voxels.Networking {
 	public sealed class ServerGameManager {
+		public static float Time = 0f;
+
+		public static float TickTimeSeconds { get; private set; }
+
 		Dictionary<string, BaseServersideController> _controllers = new Dictionary<string, BaseServersideController>();
 
 		HashSet<BaseServersideController> _initQueue = new HashSet<BaseServersideController>();
@@ -17,7 +21,9 @@ namespace Voxels.Networking {
 			}
 		}
 
-		public void Create() {
+		public void Create(float tickTimeSeconds) {
+			TickTimeSeconds = tickTimeSeconds;
+			Time = 0f;
 			_controllers.Add("save-load",      new ServerSaveLoadController(this));
 			_controllers.Add("server",         new ServerController(this));
 			_controllers.Add("chat-server",    new ServerChatManager(this));
@@ -99,6 +105,7 @@ namespace Voxels.Networking {
 			foreach ( var pair in _controllers ) {
 				pair.Value.Update();
 			}
+			Time += TickTimeSeconds;
 		}
 
 		public void LateUpdateControllers() {

@@ -82,7 +82,7 @@ namespace Voxels.Networking.Serverside {
 
 		public override void Update() {
 			base.Update();
-			WorldTime += Time.deltaTime * TimeScale;
+			WorldTime += ServerGameManager.TickTimeSeconds * TimeScale;
 		}
 
 		public override void Save() {

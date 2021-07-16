@@ -142,7 +142,7 @@ namespace Voxels.Networking.Serverside {
 		}
 		
 		public void Update() {
-			var tickTime = ServerDynamicEntityController.TICK_TIME;
+			var tickTime = ServerGameManager.TickTimeSeconds;
 			var inWater = IsInWater;
 			var moveFlag = (AirControl || IsGrounded || inWater) && FreeMove;
 			if ( moveFlag ) {

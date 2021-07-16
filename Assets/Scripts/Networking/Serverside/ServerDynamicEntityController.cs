@@ -5,7 +5,6 @@ using UnityEngine;
 namespace Voxels.Networking.Serverside {
 	public class ServerDynamicEntityController : ServerSideController<ServerDynamicEntityController> {
 		public const float NET_TICK_TIME = 0.1f;
-		public const float TICK_TIME     = 0.05f;
 
 		Dictionary<uint, DynamicEntityServerside>     _entities     = new Dictionary<uint, DynamicEntityServerside>();
 		Dictionary<ClientState, PlayerEntityObserver> _netObservers = new Dictionary<ClientState, PlayerEntityObserver>();
@@ -28,15 +27,12 @@ namespace Voxels.Networking.Serverside {
 
 		public override void Update() {
 			base.Update();
-
-			if ( Time.time > _lastTickTime + TICK_TIME ) {
-				Tick();
-				_lastTickTime = Time.time;
-			}
-
-			if ( Time.time > _lastNetSendTime + NET_TICK_TIME ) {
+			_lastTickTime = ServerGameManager.Time;
+			Tick();
+			var time = ServerGameManager.Time;
+			if ( time > _lastNetSendTime + NET_TICK_TIME ) {
 				NetTick();
-				_lastNetSendTime = Time.time;
+				_lastNetSendTime = time;
 			}
 
 			UpdateEntityChangeLists();
