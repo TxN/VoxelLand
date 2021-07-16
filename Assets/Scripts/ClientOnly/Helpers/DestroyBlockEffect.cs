@@ -5,7 +5,7 @@ using UnityEngine;
 using SMGCore;
 
 namespace Voxels {
-	public class DestroyBlockEffect : MonoBehaviour, IPoolItem {
+	public class DestroyBlockEffect : PoolItem {
 		ParticleSystem         _pSystem       = null;
 		ParticleSystemRenderer _pRenderer     = null;
 		Material               _instanceMat   = null;
@@ -30,7 +30,7 @@ namespace Voxels {
 			StartCoroutine(Show());
 		}
 
-		public void DeInit() {
+		public override void DeInit() {
 			_pSystem.Stop();
 			gameObject.SetActive(false);
 		}

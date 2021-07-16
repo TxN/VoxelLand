@@ -6,7 +6,7 @@ using Voxels.Events;
 using Voxels.Networking.Clientside;
 
 namespace Voxels {
-	public sealed class ChunkRenderer : MonoBehaviour, IPoolItem {
+	public sealed class ChunkRenderer : PoolItem {
 		public MeshRenderer MeshRenderer           = null;
 		public MeshFilter   MeshFilter             = null;
 		public MeshFilter   TransparentFilter      = null;
@@ -21,7 +21,7 @@ namespace Voxels {
 			gameObject.SetActive(true);
 		}
 
-		public void DeInit() {
+		public override void DeInit() {
 			EventManager.Unsubscribe<Event_ChunkMeshUpdate>(OnChunkUpdate);
 			DeInitRenderer();
 			_targetChunk = null;
