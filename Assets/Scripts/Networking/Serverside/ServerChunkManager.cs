@@ -396,7 +396,7 @@ namespace Voxels.Networking.Serverside {
 			var dim = (WorldOptions.ChunkLoadRadius - 1) * 2;
 			ChunkHelper.Spiral(dim, dim, GenOrLoad);
 			ChunkHelper.Spiral(dim, dim, (x,y) => { _keepaliveChunks.Add(new Int3(x, 0, y)); });
-			Debug.LogFormat("Initial world generation. Chunks total: {0}, to generate: {1}", dim*dim, lg.QueueCount);
+			DebugOutput.LogFormat("Initial world generation. Chunks total: {0}, to generate: {1}", dim*dim, lg.QueueCount);
 			lg.TryStartGeneration();
 			lg.ImmediateMode = false;
 		}
@@ -598,7 +598,7 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		void OnPlayerJoin(OnClientConnected e) {
-			Debug.LogFormat("Player {0} joined. Starting to send world info.", e.State.UserName);
+			DebugOutput.LogFormat("Player {0} joined. Starting to send world info.", e.State.UserName);
 
 			var state = new PlayerChunkLoadState() {
 				Client       = e.State,

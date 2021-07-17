@@ -12,13 +12,6 @@ namespace Voxels {
 		PassableOpaque      = 3,
 	}
 
-	public struct MesherBlockInput {
-		public BlockData       Block;
-		public Byte3           Position;
-		public LightInfo       Lighting;
-		public VisibilityFlags Visibility;
-	}
-
 	public sealed class ChunkMesher : IChunkMesher {
 		public bool Busy  { get; private set; }
 		public bool Ready { get; private set; }

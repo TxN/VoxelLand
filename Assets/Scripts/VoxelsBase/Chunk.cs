@@ -88,6 +88,7 @@ namespace Voxels {
 			_visibiltiy   = new VisibilityFlagsHolder(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
 			_blocks       = new BlockDataHolder(b.SizeX, b.SizeY, b.SizeZ, b.Data);
 			OriginPos     = data.Origin;
+			OriginPosInt = new Int3(Mathf.FloorToInt(data.Origin.x), Mathf.FloorToInt(data.Origin.y), Mathf.FloorToInt(data.Origin.z));
 			_indexX       = data.IndexX;
 			_indexY       = data.IndexY;
 			_indexZ       = data.IndexZ;
@@ -112,6 +113,7 @@ namespace Voxels {
 			_visibiltiy   = new VisibilityFlagsHolder(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
 			_blocks       = new BlockDataHolder      (CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
 			OriginPos     = originPos;
+			OriginPosInt = new Int3(Mathf.FloorToInt(originPos.x), Mathf.FloorToInt(originPos.y), Mathf.FloorToInt(originPos.z));
 			_indexX       = x;
 			_indexY       = y;
 			_indexZ       = z;

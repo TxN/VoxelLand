@@ -32,7 +32,7 @@ namespace Voxels {
 
 		public bool IsGrounded {
 			get {
-				return VoxelsUtils.Cast(transform.position, Vector3.down, DownHeight, IsBlockSolid, out var downCastResult);
+				return VoxelsUtils.Cast(transform.position, Vector3.down, DownHeight + 0.05f, IsBlockSolid, out var downCastResult);
 			}
 		}
 
