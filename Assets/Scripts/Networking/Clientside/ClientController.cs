@@ -12,7 +12,8 @@ using ZeroFormatter;
 
 namespace Voxels.Networking.Clientside {
 	public class ClientController : ClientsideController<ClientController> {
-		const int PROTOCOL_VERSION   = 1;
+		const int PROTOCOL_VERSION      = 1;
+		const int MAX_MESSAGES_PER_TICK = 500;
 		string     _serverIp         = string.Empty;
 		int        _port             = 0;
 		Client     _client           = null;
@@ -64,11 +65,13 @@ namespace Voxels.Networking.Clientside {
 			_serverInfo.Ip   = ip;
 			_packetsReceived = 0;
 			_packetsSent = 0;
-			_client = new Client();
-			_client.MaxMessageSize = 65535;
+			_client = new Client(65535);
+			_client.OnConnected += OnConnect;
+			_client.OnDisconnected += OnDisconnect;
+			_client.OnData += OnDataReceived;
 			_client.Connect(ip, port);
 			_port = port;
-			IsStarted = true;
+			IsStarted = true;	
 		}
 
 		void FillHandlers() {
@@ -108,42 +111,27 @@ namespace Voxels.Networking.Clientside {
 			if ( !IsStarted ) {
 				return;
 			}
-			while ( _client.GetNextMessage(out Message msg) ) {
-				switch ( msg.eventType ) {
-					case Telepathy.EventType.Connected:
-						OnConnect(msg);
-						break;
-					case Telepathy.EventType.Data:
-						OnDataReceived(msg);
-						break;
-					case Telepathy.EventType.Disconnected:
-						OnDisconnect(msg);
-						break;
-					default:
-						break;
-				}
-			}
+			_client.Tick(MAX_MESSAGES_PER_TICK);
 		}
 
-		void OnConnect(Message msg) {
+		void OnConnect() {
 			Debug.Log("Conneted to server. Awaiting handshake.");
 		}
 
-		void OnDataReceived(Message msg) {
+		void OnDataReceived(System.ArraySegment<byte> msg) {
 			_packetsReceived++;
-			_bytesReceived += (uint)msg.data.Length;
-			if ( msg.data.Length < PacketHeader.MinPacketLength ) {
+			_bytesReceived += (uint)msg.Array.Length;
+			if ( msg.Array.Length < PacketHeader.MinPacketLength ) {
 				return;
 			}
-			using ( var str = new MemoryStream(msg.data) ) {
-				var header = new PacketHeader(msg.data);
+			using ( var str = new MemoryStream(msg.Array) ) {
+				var header = new PacketHeader(msg.Array);
 				var data = new byte[header.ContentLength];
 				str.Seek(PacketHeader.MinPacketLength, SeekOrigin.Begin);
 				str.Read(data, 0, header.ContentLength);
 				if ( header.Compressed ) {
 					ProcessReceivedMessage((ServerPacketID)header.PacketID, CLZF2.Decompress(data));
-				}
-				else {
+				} else {
 					ProcessReceivedMessage((ServerPacketID)header.PacketID, data);
 				}
 			}
@@ -156,7 +144,7 @@ namespace Voxels.Networking.Clientside {
 			}
 		}
 
-		void OnDisconnect(Message msg) {
+		void OnDisconnect() {
 			if ( IsStarted ) {
 				Disconnect();
 			}

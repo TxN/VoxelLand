@@ -15,6 +15,7 @@ using System;
 
 namespace Voxels.Networking.Serverside {
 	public class ServerController : ServerSideController<ServerController> {
+		const int MAX_MESSAGES_PER_TICK = 1500;
 
 		public bool EnableCompression = true;
 
@@ -79,8 +80,10 @@ namespace Voxels.Networking.Serverside {
 			_packetsSent     = 0;
 			_bytesReceived   = 0;
 			_bytesSent       = 0;
-			_server = new Server();
-			_server.MaxMessageSize = 65535;
+			_server = new Server(65535);
+			_server.OnConnected += OnNewConnection;
+			_server.OnDisconnected += OnClientDisconnect;
+			_server.OnData += OnDataReceived;
 			_server.Start(port);
 			_port = port;
 			IsStarted = true;
@@ -235,21 +238,8 @@ namespace Voxels.Networking.Serverside {
 			if ( !IsStarted ) {
 				return;
 			}
-			while ( _server.GetNextMessage(out Message msg) ) {
-				switch ( msg.eventType ) {
-					case Telepathy.EventType.Connected:
-						OnNewConnection(msg);
-						break;
-					case Telepathy.EventType.Data:
-						OnDataReceived(msg);
-						break;
-					case Telepathy.EventType.Disconnected:
-						OnClientDisconnect(msg);
-						break;
-					default:
-						break;
-				}
-			}
+
+			_server.Tick(MAX_MESSAGES_PER_TICK);
 			SendPing();
 		}
 
@@ -266,31 +256,31 @@ namespace Voxels.Networking.Serverside {
 			}
 		}
 
-		void OnNewConnection(Message msg) {
+		void OnNewConnection(int connectionId) {
 			var state = new ClientState {
-				ConnectionID = msg.connectionId,
-				IpAdress = _server.GetClientAddress(msg.connectionId),
+				ConnectionID = connectionId,
+				IpAdress = _server.GetClientAddress(connectionId),
 				CurrentState = CState.Handshake
 			};
-			_clients.Add(msg.connectionId, state);
+			_clients.Add(connectionId, state);
 
 			var motd       = Utils.NetworkOptions.Motd;
 			var serverName = Utils.NetworkOptions.ServerName;
 			SendNetMessage(state, ServerPacketID.Identification, new S_HandshakeMessage {
 				CommandID = (byte)ServerPacketID.Identification, MOTD = motd, ProtocolVersion = PROTOCOL_VERSION, ServerName = serverName
 			});
-			Debug.LogFormat("Client with id {0} connecting. Sending handshake command.", msg.connectionId);
+			Debug.LogFormat("Client with id {0} connecting. Sending handshake command.", connectionId);
 		}
 
-		void OnDataReceived(Message msg) {
+		void OnDataReceived(int connectionId, System.ArraySegment<byte> msg) {
 			_packetsReceived++;
-			_bytesReceived += (uint)msg.data.Length;
-			if ( msg.data.Length < PacketHeader.MinPacketLength ) {
+			_bytesReceived += (uint)msg.Array.Length;
+			if ( msg.Array.Length < PacketHeader.MinPacketLength ) {
 				return;
 			}
-			_clients.TryGetValue(msg.connectionId, out var client);
-			using ( var str = new MemoryStream(msg.data)) {
-				var header = new PacketHeader(msg.data);
+			_clients.TryGetValue(connectionId, out var client);
+			using ( var str = new MemoryStream(msg.Array)) {
+				var header = new PacketHeader(msg.Array);
 				var data = new byte[header.ContentLength];
 				str.Seek(PacketHeader.MinPacketLength, SeekOrigin.Begin);
 				str.Read(data, 0, header.ContentLength);
@@ -309,18 +299,18 @@ namespace Voxels.Networking.Serverside {
 			}
 		}
 
-		void OnClientDisconnect(Message msg) {
-			_clients.TryGetValue(msg.connectionId, out ClientState client);
+		void OnClientDisconnect(int connectionId) {
+			_clients.TryGetValue(connectionId, out ClientState client);
 			if ( client == null ) {
 				return;
 			}
 			EventManager.Fire(new OnClientDisconnected() {
-				ConnectionId = msg.connectionId,
+				ConnectionId = connectionId,
 				State = client
 			});
-			Debug.LogFormat("Player '{0}' with id '{1}' disconnected.", client.UserName, msg.connectionId);
+			Debug.LogFormat("Player '{0}' with id '{1}' disconnected.", client.UserName, connectionId);
 			ServerChatManager.Instance.BroadcastFromServer(ChatMessageType.Info, string.Format("{0} left the server.", client.UserName));
-			_clients.Remove(msg.connectionId);
+			_clients.Remove(connectionId);
 		}
 
 		ClientProfile GetClientInfo(string name) {
