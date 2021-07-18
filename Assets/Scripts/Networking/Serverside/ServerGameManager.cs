@@ -7,7 +7,8 @@ using Voxels.Networking.Serverside;
 
 namespace Voxels.Networking {
 	public sealed class ServerGameManager {
-		public static float Time = 0f;
+		public static float  Time = 0f;
+		public static Random Random;
 
 		public static float TickTimeSeconds { get; private set; }
 
@@ -24,6 +25,7 @@ namespace Voxels.Networking {
 		public void Create(float tickTimeSeconds) {
 			TickTimeSeconds = tickTimeSeconds;
 			Time = 0f;
+			Random = new Random();
 			_controllers.Add("save-load",      new ServerSaveLoadController(this));
 			_controllers.Add("server",         new ServerController(this));
 			_controllers.Add("chat-server",    new ServerChatManager(this));

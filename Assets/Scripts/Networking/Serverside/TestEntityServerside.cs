@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Voxels.Networking.Serverside.Entities {
-	public class TestEntityServerside : DynamicEntityServerside {
+	public sealed class TestEntityServerside : DynamicEntityServerside {
 		public override string EntityType {
 			get {
 				return "TestEntity";
@@ -17,17 +15,16 @@ namespace Voxels.Networking.Serverside.Entities {
 
 		public override void Tick() {
 			base.Tick();
-			if ( Random.Range(0, 100) < 5 ) {
+			if ( ServerGameManager.Random.Next(0, 100) < 5 ) {
 				Mover.Jump();
 			}
 
-			if ( Random.Range(0, 100) < 3 ) {
+			if ( ServerGameManager.Random.Next(0, 100) < 3 ) {
 				var r = Mover.Rotation;
-				Mover.Rotation = r * Quaternion.Euler(0, Random.Range(-100, 100), 0);
+				Mover.Rotation = r * Quaternion.Euler(0, ServerGameManager.Random.Next(-100, 100), 0);
 			}
 
 			Mover.Move(Vector3.forward, 1);
 		}
 	}
 }
-
