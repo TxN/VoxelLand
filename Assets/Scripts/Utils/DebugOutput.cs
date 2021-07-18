@@ -1,3 +1,4 @@
+using System;
 #if UNITY_2017_3_OR_NEWER
 using UnityEngine;
 #endif
@@ -58,6 +59,14 @@ public static class DebugOutput {
 		Debug.LogError(message);
 #else
 		System.Console.WriteLine($"[ERR]: {message.ToString()}");
+#endif
+	}
+
+	public static void LogException(Exception e) {
+#if UNITY_2017_3_OR_NEWER
+		Debug.LogException(e);
+#else
+		System.Console.WriteLine($"[EXCEPTION]: {e.ToString()}");
 #endif
 	}
 }

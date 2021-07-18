@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using SMGCore.EventSys;
+#if UNITY_2017_3_OR_NEWER
 using Voxels.Events;
 using UnityEngine.Profiling;
+#endif
 using System.Threading.Tasks;
 
 namespace Voxels {
@@ -19,7 +21,9 @@ namespace Voxels {
 		public const int MAX_SUNLIGHT_VALUE                   = 255;
 		public const int MESHER_CAPACITY                      = 2048;
 
+#if UNITY_2017_3_OR_NEWER
 		public ChunkRenderer Renderer     { get; set; }
+#endif
 		public Vector3       OriginPos    { get; }
 		public Int3          OriginPosInt {	get; }
 
@@ -98,7 +102,9 @@ namespace Voxels {
 			if ( isServerChunk ) {
 				_mesher = new EmptyChunkMesher();
 			} else {
+#if UNITY_2017_3_OR_NEWER
 				_mesher = new ChunkMesher(_library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, OriginPos);
+#endif
 			}
 
 			_loadedNeighbors = _owner.GatherNeighbors(new Int3(_indexX, _indexY, _indexZ));
@@ -122,7 +128,9 @@ namespace Voxels {
 			if ( isServerChunk ) {
 				_mesher = new EmptyChunkMesher();
 			} else {
+#if UNITY_2017_3_OR_NEWER
 				_mesher = new ChunkMesher(_library, CHUNK_MESH_CAPACITY, MESHER_CAPACITY, originPos);
+#endif
 			}
 
 			_loadedNeighbors = _owner.GatherNeighbors(new Int3(_indexX, _indexY, _indexZ));
@@ -206,7 +214,9 @@ namespace Voxels {
 		}
 
 		public void UnloadChunk() {
+#if UNITY_2017_3_OR_NEWER
 			Renderer = null;
+#endif
 			_mesher.DeInit();
 		}
 
@@ -923,11 +933,15 @@ namespace Voxels {
 
 		public void FinalizeMeshUpdate() {
 			_mesher.FinalizeBake();
+#if UNITY_2017_3_OR_NEWER
 			EventManager.Fire(new Event_ChunkMeshUpdate() { UpdatedChunk = this });
+#endif
 		}
 
 		public void UpdateVisibilityAll(int from, int to) {
+#if UNITY_2017_3_OR_NEWER
 			Profiler.BeginSample(string.Format("Visibility Full Update {0}", ToString()));
+#endif
 			var watch = System.Diagnostics.Stopwatch.StartNew();
 			_dirtyBlocks.Clear();
 			_needUpdateVisibilityAll = false;
@@ -956,7 +970,9 @@ namespace Voxels {
 				_visibiltiy[i] = _library.IsTranslucentBlock(arr[i].Type) ? CheckVisibilityTranslucent(x, y, z, neighbors) : CheckVisibilityOpaque(x, y, z, neighbors);
 			}
 			watch.Stop();
+#if UNITY_2017_3_OR_NEWER
 			Profiler.EndSample();
+#endif
 		}
 
 		public void UpdateChunk() {
@@ -1164,10 +1180,6 @@ namespace Voxels {
 		bool GetBlockFull(BlockType type) {
 			return _library.IsFullBlock(type);
 		}
-
-		/*bool GetBlockEmissive(BlockType type) {
-			return _library.IsEmissiveBlock(type);
-		}*/
 
 		bool GetBlockLightPass(BlockType type) {
 			return _library.IsLightPassBlock(type);

@@ -75,19 +75,34 @@ namespace Voxels.Networking {
 
 		public void UpdateControllers() {
 			foreach ( var pair in _controllers ) {
-				pair.Value.Update();
+				try {
+					pair.Value.Update();
+				}
+				catch ( Exception e ) {
+					DebugOutput.LogException(e);
+				}
 			}
 		}
 
 		public void LateUpdateControllers() {
 			foreach ( var pair in _controllers ) {
-				pair.Value.LateUpdate();
+				try {
+					pair.Value.LateUpdate();
+				}
+				catch ( Exception e ) {
+					DebugOutput.LogException(e);
+				}
 			}
 		}
 
 		public void RareUpdateControllers() {
 			foreach ( var pair in _controllers ) {
-				pair.Value.RareUpdate();
+				try {
+					pair.Value.RareUpdate();
+				}
+				catch ( Exception e ) {
+					DebugOutput.LogException(e);
+				}
 			}
 		}
 
