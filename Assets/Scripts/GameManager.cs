@@ -72,6 +72,7 @@ namespace Voxels {
 		void Start() {
 			IsServer = NetworkOptions.StartServer;
 			IsClient = NetworkOptions.StartClient;
+			var inst = Instance;
 
 			if ( IsServer ) {
 				_serverManager = new ServerGameManager();
