@@ -72,7 +72,7 @@ Material:
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Rotation: 0
-    - _SkyExponent1: 30
+    - _SkyExponent1: 5
     - _SkyExponent2: 3
     - _SkyIntensity: 1
     - _Smoothness: 0.5

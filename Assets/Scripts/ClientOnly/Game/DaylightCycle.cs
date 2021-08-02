@@ -4,10 +4,16 @@ using Voxels.Networking.Clientside;
 
 namespace Voxels {
 	public sealed class DaylightCycle : MonoBehaviour {
-		public Gradient SkyColor       = null;
-		public Gradient HorizonColor   = null;
-		public Gradient SunColor       = null;
-		public Material SkyboxMaterial = null;
+		public Gradient SkyColor        = null;
+		public Gradient HorizonColor    = null;
+		public Gradient SunColor        = null;
+		public Gradient UnderwaterColor = null;
+		public Material SkyboxMaterial  = null;
+		public Material CloudMaterial   = null;
+
+		public Vector2 NormalFogParams     = new Vector2(60, 160);
+		public Vector2 NightFogParams      = new Vector2(30, 110);
+		public Vector2 UnderwaterFogParams = new Vector2(0, 20);
 
 		VoxelsStatic _statics = null;
 
@@ -34,8 +40,24 @@ namespace Voxels {
 			SkyboxMaterial.SetVector("_SunVector", sunVec);
 
 			var intensity = ClientWorldStateController.Instance.AmbientLightIntensity;
+			var fogParams = Vector2.Lerp(NightFogParams, NormalFogParams, intensity);
+
 			_statics.OpaqueMaterial.SetFloat("_Daylight", intensity);
-			_statics.TranslucentMaterial.SetFloat("_Daylight", intensity);	
+			_statics.TranslucentMaterial.SetFloat("_Daylight", intensity);
+
+			var isUnderwater = ClientPlayerEntityManager.Instance.LocalPlayer?.View?.Mover?.IsUnderwater ?? false;
+			if ( isUnderwater ) {
+				var underwaterColor = UnderwaterColor.Evaluate(dayPercent);
+				RenderSettings.fogStartDistance = UnderwaterFogParams.x;
+				RenderSettings.fogEndDistance = UnderwaterFogParams.y;
+				RenderSettings.fogColor = underwaterColor;
+			} else {
+				RenderSettings.fogColor = skyColor;
+				RenderSettings.fogStartDistance = fogParams.x;
+				RenderSettings.fogEndDistance = fogParams.y;
+			}
+
+			
 		}
 
 		Vector4 SunPosToVector(float az, float al) {

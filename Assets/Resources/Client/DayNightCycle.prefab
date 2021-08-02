@@ -43,75 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1220903290b5e8345aede26a1eabe77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LightIntensityCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.2692424
-      value: 0.9965598
-      inSlope: 0.00030088943
-      outSlope: 0.00030088943
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.24794742
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.36523378
-      value: 0.006943941
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.4999621
-      value: 0.0012924727
-      inSlope: 0.07886176
-      outSlope: 0.07886176
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33090597
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.60911524
-      value: 0.009850353
-      inSlope: 0.4097816
-      outSlope: 0.4097816
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.60702044
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.69967955
-      value: 0.98346156
-      inSlope: 0.048515774
-      outSlope: 0.048515774
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.2766964
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   SkyColor:
     serializedVersion: 2
     key0: {r: 0.4666667, g: 0.854902, b: 1, a: 1}
@@ -199,6 +130,37 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 7
     m_NumAlphaKeys: 2
+  UnderwaterColor:
+    serializedVersion: 2
+    key0: {r: 0, g: 0.27484524, b: 0.49056602, a: 1}
+    key1: {r: 0, g: 0.05193412, b: 0.3584906, a: 1}
+    key2: {r: 0.01326626, g: 0.0010679746, b: 0.16981131, a: 0}
+    key3: {r: 0, g: 0.12254583, b: 0.3584906, a: 0}
+    key4: {r: 0, g: 0.27450982, b: 0.4901961, a: 0}
+    key5: {r: 0, g: 0.27450982, b: 0.4901961, a: 0}
+    key6: {r: 0, g: 0.27450982, b: 0.4901961, a: 0}
+    key7: {r: 0.4666667, g: 0.854902, b: 1, a: 0}
+    ctime0: 17471
+    ctime1: 26821
+    ctime2: 31865
+    ctime3: 37402
+    ctime4: 45875
+    ctime5: 65535
+    ctime6: 65535
+    ctime7: 65535
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 2
   SkyboxMaterial: {fileID: 2100000, guid: 1b2db7f374b50c24f82d2a5cc7451246, type: 2}
-  TimeScale: 1
-  DayLength: 1200
+  CloudMaterial: {fileID: 2100000, guid: f0cdf93865194504f8de4711d3d37c62, type: 2}
+  NormalFogParams: {x: 60, y: 160}
+  NightFogParams: {x: 30, y: 110}
+  UnderwaterFogParams: {x: 0, y: 20}

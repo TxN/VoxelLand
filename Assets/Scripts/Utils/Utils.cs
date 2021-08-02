@@ -6,6 +6,7 @@ using ZeroFormatter;
 
 namespace Voxels {
 	[Serializable]
+	[StructLayout(LayoutKind.Sequential)]
 	public struct Byte2: System.IEquatable<Byte2> {
 		public byte X;
 		public byte Y;
@@ -36,6 +37,7 @@ namespace Voxels {
 
 	[Serializable]
 	[ZeroFormattable]
+	[StructLayout(LayoutKind.Sequential)]
 	public struct Int3: System.IEquatable<Int3> {
 		[Index(0)]
 		public int X;
