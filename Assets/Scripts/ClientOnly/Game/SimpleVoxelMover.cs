@@ -44,7 +44,7 @@ namespace Voxels {
 
 		public bool IsUnderwater {
 			get {
-				return StaticResources.BlocksInfo.GetBlockDescription(_chunkManager.GetBlockIn(transform.position + (Vector3.up * 0.5f)).Type)?.IsSwimmable ?? false;
+				return StaticResources.BlocksInfo?.GetBlockDescription((_chunkManager?.GetBlockIn(transform.position + (Vector3.up * 0.4f)) ?? BlockData.Empty).Type)?.IsSwimmable ?? false;
 			}
 		}
 
