@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 using Voxels.Networking.Clientside;
+using Voxels.Utils.Collisions;
 
 namespace Voxels.Networking.NetDebug {
 	public sealed class ClientEditorDataVisualizer : MonoBehaviour {
@@ -59,7 +60,25 @@ namespace Voxels.Networking.NetDebug {
 			var result = VoxelsUtils.Cast(view.Interactor.transform.position, view.Interactor.ViewDirection, 15, (pos) => {
 				var p = pos.ToVector3 + new Vector3(0.5f, 0.5f, 0.5f);
 				Gizmos.DrawWireCube(p, Vector3.one);
-				return !ClientChunkManager.Instance.GetBlockIn(pos.X, pos.Y, pos.Z).IsEmpty();
+				var result = ClientChunkManager.Instance.GetBlockIn(pos.X, pos.Y, pos.Z).IsEmpty();
+				if ( !result ) {
+					var ray = new Voxels.Utils.Collisions.Ray(view.Interactor.transform.position, view.Interactor.ViewDirection.normalized);
+					var size = new Vector3(1, 0.5f, 1);
+					var center = new Vector3(0.5f, 0.25f, 0.5f);
+					var voxPos = new Vector3(pos.X, pos.Y, pos.Z);
+					var checkCen = center + voxPos;
+					var cube = new AABB(checkCen + size*0.5f, checkCen - size*0.5f);
+					Gizmos.DrawWireCube(cube.Center, size);
+					if ( Intersection.Intersects(ray, cube, out var dist) ) {
+						Gizmos.color = Color.red;
+						var colPoint = ray.Point + ray.Dir.normalized * dist;
+						Gizmos.DrawWireSphere(colPoint, 0.1f);
+					}
+
+
+					Gizmos.DrawCube(cube.Center, size);
+				}
+				return !result;
 			}, out var hit);
 			if ( !result ) {
 				return;
