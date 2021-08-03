@@ -22,6 +22,8 @@ namespace Voxels {
 		public bool IsServer { get; private set; }
 		public bool IsClient { get; private set; }
 
+		bool _needStartClient = false;
+
 		public bool ServerAlive {
 			get {
 				return IsServer && _serverManager != null;
@@ -73,16 +75,18 @@ namespace Voxels {
 			IsServer = NetworkOptions.StartServer;
 			IsClient = NetworkOptions.StartClient;
 			var inst = Instance;
-
+			if ( !inst ) {
+				Debug.LogError("GameManager.Start: GameManager singleton instance is null!");
+			}
 			if ( IsServer ) {
 				_serverManager = new ServerGameManager();
 				_serverRunner  = new ServerThreadRunner();
-				
+				System.Threading.Thread.Sleep(10); //just in case
 				var thread = new System.Threading.Thread( ()=> {
 					_serverRunner.Run(_serverManager, 50, 1000, new System.Threading.CancellationTokenSource());
 					});
 				thread.Start();
-				System.Threading.Thread.Sleep(50);
+				System.Threading.Thread.Sleep(500);
 				if ( !_serverManager.Initialized ) {
 					Debug.Log("not Initialized");
 					EventManager.Subscribe<OnServerInitializationFinished>(this, OnServerInitializationFinished);
@@ -91,10 +95,13 @@ namespace Voxels {
 			}
 			System.Threading.Thread.Sleep(10);
 			TryStartClient();
-			StartCoroutine(RareUpdate());
 		}
 
 		void Update() {
+			if ( _needStartClient ) {
+				TryStartClient();
+				_needStartClient = false;
+			}
 			while ( _coroutineRequests.TryDequeue(out var func) ) {
 				var e = func();
 				StartCoroutine(e);
@@ -130,7 +137,7 @@ namespace Voxels {
 			}
 		}
 
-		IEnumerator RareUpdate() {
+		IEnumerator ClientRareUpdate() {
 			while (true) {
 				if ( ClientAlive ) {
 					_clientManager.LateUpdateControllers();
@@ -149,10 +156,14 @@ namespace Voxels {
 			_clientManager.PostInit();
 			_clientManager.Load();
 			_clientManager.PostLoad();
+			StartCoroutine(ClientRareUpdate());
 		}
 
 		void OnServerInitializationFinished(OnServerInitializationFinished e) {
-			TryStartClient();
+			EventManager.Unsubscribe<OnServerInitializationFinished>(OnServerInitializationFinished);
+			Debug.Log("Server init finished");
+			_needStartClient = true;
+			
 		}
 	}
 }

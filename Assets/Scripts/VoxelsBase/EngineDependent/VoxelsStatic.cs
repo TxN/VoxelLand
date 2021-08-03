@@ -29,7 +29,7 @@ namespace Voxels {
 			PreviewProvider = new BlockPreviewProvider(PreviewGenerator);
 		}
 
-		private void OnDestroy() {
+		void OnDestroy() {
 			PreviewProvider.DeInit();
 		}
 	}

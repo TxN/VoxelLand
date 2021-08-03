@@ -76,8 +76,6 @@ namespace Voxels.Networking.Serverside {
 			EventManager.Subscribe<OnClientConnected>          (this, OnPlayerJoin);
 			EventManager.Subscribe<OnServerPlayerSpawn>        (this, OnPlayerSpawned);
 
-			Owner.AddToInitQueue(this);
-
 			LoadGenWorldOrigin();
 		}
 
@@ -397,6 +395,9 @@ namespace Voxels.Networking.Serverside {
 			ChunkHelper.Spiral(dim, dim, GenOrLoad);
 			ChunkHelper.Spiral(dim, dim, (x,y) => { _keepaliveChunks.Add(new Int3(x, 0, y)); });
 			DebugOutput.LogFormat("Initial world generation. Chunks total: {0}, to generate: {1}", dim*dim, lg.QueueCount);
+			if ( lg.QueueCount > 0 ) {
+				Owner.AddToInitQueue(this);
+			}
 			lg.TryStartGeneration();
 			lg.ImmediateMode = false;
 		}

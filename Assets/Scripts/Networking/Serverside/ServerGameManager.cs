@@ -44,6 +44,9 @@ namespace Voxels.Networking {
 		}
 
 		public void RemoveFromInitQueue(BaseServersideController controller) {
+			if ( !_initQueue.Contains(controller) ) {
+				return;
+			}
 			_initQueue.Remove(controller);
 			if ( _initQueue.Count == 0 ) {
 				EventManager.Fire(new OnServerInitializationFinished());
