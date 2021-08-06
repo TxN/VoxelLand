@@ -44,6 +44,7 @@ namespace Voxels {
 
 			_statics.OpaqueMaterial.SetFloat("_Daylight", intensity);
 			_statics.TranslucentMaterial.SetFloat("_Daylight", intensity);
+			SkyboxMaterial.SetFloat("_LightLevel", intensity);
 
 			var isUnderwater = ClientPlayerEntityManager.Instance.LocalPlayer?.View?.Mover?.IsUnderwater ?? false;
 			if ( isUnderwater ) {

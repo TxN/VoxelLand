@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.073
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.15394914, g: 0.2056647, b: 0.27391434, a: 0.073}
+  m_IndirectSpecularColor: {r: 0.10952719, g: 0.24303454, b: 0.29305255, a: 0.073}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -539,19 +539,19 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 0.3926789
-      value: 0.035077713
-      inSlope: -10.394909
+      value: 0.05
+      inSlope: -10.234702
       outSlope: 0
       tangentMode: 5
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.61237395
-      value: 0.036382884
-      inSlope: 0.005940827
-      outSlope: 5.9664392
-      tangentMode: 5
+      time: 0.6
+      value: 0.05
+      inSlope: -0
+      outSlope: 9.455401
+      tangentMode: 69
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334

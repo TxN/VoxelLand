@@ -24,6 +24,9 @@ Shader "Skybox/Horizon With Sun Skybox"
 
         _SunAzimuth("Sun Azimuth (editor only)", float) = 20
         _SunAltitude("Sun Altitude (editor only)", float) = 38
+		_Rotation ("StarsRotation", Range(0, 360)) = 0
+		_LightLevel ("LightLevel", Range(0, 1)) = 1
+		[NoScaleOffset] _Tex ("StarsTex", Cube) = "grey" {}
     }
 
     CGINCLUDE
@@ -59,6 +62,10 @@ Shader "Skybox/Horizon With Sun Skybox"
     half _SunBeta;
 
     half3 _SunVector;
+	
+	samplerCUBE _Tex;
+	float _Rotation;
+	float _LightLevel;
     
     v2f vert(appdata v)
     {
@@ -70,6 +77,7 @@ Shader "Skybox/Horizon With Sun Skybox"
     
     half4 frag(v2f i) : COLOR
     {
+		half4 tex = texCUBE (_Tex, i.texcoord);
         float3 v = normalize(i.texcoord);
 
         float p = v.y;
@@ -79,8 +87,8 @@ Shader "Skybox/Horizon With Sun Skybox"
 
         half3 c_sky = _SkyColor1 * p1 + _SkyColor2 * p2 + _SkyColor3 * p3;
         half3 c_sun = _SunColor * min(pow(max(0, dot(v, _SunVector)), _SunAlpha) * _SunBeta, 1);
-
-        return half4(c_sky * _SkyIntensity + c_sun * _SunIntensity, 0);
+		
+        return lerp(tex, half4(c_sky * _SkyIntensity + c_sun * _SunIntensity, 0), _LightLevel);
     }
 
     ENDCG

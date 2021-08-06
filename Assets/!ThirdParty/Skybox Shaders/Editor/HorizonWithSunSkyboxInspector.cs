@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 public class HorizonWithSunSkyboxInspector : MaterialEditor
@@ -50,7 +50,12 @@ public class HorizonWithSunSkyboxInspector : MaterialEditor
             var az = GetMaterialProperty (targets, "_SunAzimuth");
             var al = GetMaterialProperty (targets, "_SunAltitude");
 
-            if (az.hasMixedValue || al.hasMixedValue )
+			EditorGUILayout.Space();
+
+			TextureProperty(GetMaterialProperty(targets, "_Tex"), "Stars");
+			FloatProperty(GetMaterialProperty(targets, "_Rotation"), "StarsRotation");
+
+			if (az.hasMixedValue || al.hasMixedValue )
             {
                 EditorGUILayout.HelpBox ("Editing angles is disabled because they have mixed values.", MessageType.Warning);
             }
