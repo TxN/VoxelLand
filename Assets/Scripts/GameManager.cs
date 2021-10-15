@@ -19,6 +19,7 @@ namespace Voxels {
 
 		ConcurrentQueue<Func<IEnumerator>> _coroutineRequests = new ConcurrentQueue<Func<IEnumerator>>();
 
+		public static string PersistentDataPath;
 		public bool IsServer { get; private set; }
 		public bool IsClient { get; private set; }
 
@@ -72,6 +73,7 @@ namespace Voxels {
 		}
 
 		void Start() {
+			PersistentDataPath = Application.persistentDataPath;
 			IsServer = NetworkOptions.StartServer;
 			IsClient = NetworkOptions.StartClient;
 			var inst = Instance;
