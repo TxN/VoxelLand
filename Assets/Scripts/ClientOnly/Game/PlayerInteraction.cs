@@ -35,7 +35,8 @@ namespace Voxels {
 			var cm = ClientChunkManager.Instance;
 			var dir = ViewDirection;
 			var im = ClientInputManager.Instance;
-			if ( VoxelsUtils.Cast(transform.position, dir, MAX_SIGHT_DISTANCE, HasBlockIn, out var castResult) ) {
+			var isCast = ClientChunkManager.Instance.CollisionHelper.Cast(Utils.CastType.Solid | Utils.CastType.Passable, transform.position, dir, MAX_SIGHT_DISTANCE, out var castResult);
+			if ( isCast ) {
 				CurrentInPos  = castResult.HitPosition + dir * 0.03f;
 				CurrentOutPos = castResult.HitPosition - dir * 0.015f;
 

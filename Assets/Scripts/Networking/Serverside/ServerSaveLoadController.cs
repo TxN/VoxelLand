@@ -21,7 +21,7 @@ namespace Voxels.Networking.Serverside {
 
 		const string SAVE_DATA_FILE_NAME = "chunks.list";
 
-		const string SaveDirPath = "Save/";
+		string SaveDirPath => GameManager.PersistentDataPath + "/Save/";
 
 		bool   _ioAlive  = false;
 		Thread _ioThread = null;

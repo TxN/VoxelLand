@@ -14,5 +14,11 @@ namespace Voxels {
 			File.WriteAllText("VoxelServer/VoxelServer/Resources/blockInfo.json", serialized);
 			Debug.Log("Exported");
 		}
+
+		private void OnValidate() {
+			foreach ( var desc in BlockDescriptions ) {
+				desc.Name = desc.Type.ToString();
+			}
+		}
 	}
 }

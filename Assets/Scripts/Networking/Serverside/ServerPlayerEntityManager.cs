@@ -54,7 +54,8 @@ namespace Voxels.Networking.Serverside {
 				return false;
 			}
 			var lookDir = GetPlayerLookDirection(player);
-			if ( VoxelsUtils.Cast(player.Position + Vector3.up * 0.5f, lookDir, PlayerInteraction.MAX_SIGHT_DISTANCE, VoxelsUtilsServerside.HasAnyBlock, out var result) ) {
+			var isCast = ServerChunkManager.Instance.CollisionHelper.Cast(CastType.AnyBlock, player.Position + Vector3.up * 0.5f, lookDir, PlayerInteraction.MAX_SIGHT_DISTANCE, out var result);
+			if ( isCast ) {
 				blockPos = result.HitPosition + lookDir * 0.03f;
 				block = ServerChunkManager.Instance.GetBlockIn(blockPos);
 				return true;

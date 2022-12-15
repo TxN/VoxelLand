@@ -9,6 +9,7 @@ namespace Voxels {
 		bool[]             _blockTranslucentFlags = null;
 		bool[]             _blockIllumFlags       = null;
 		bool[]             _blockLightPassFlags   = null;
+		CollisionInfo[]    _collisionModels       = null;
 
 		public BlockInfoProvider(List<BlockDescription> blockData) {
 			BlockDescriptions = blockData;
@@ -36,6 +37,10 @@ namespace Voxels {
 			return _blockIllumFlags[hash];
 		}
 
+		public CollisionInfo GetCollisionInfo(BlockCollisionModel type) {
+			return _collisionModels[(int)type];
+		}
+
 		void GenerateBlockDescDict() {
 			var maxBlockValue = 0;
 			var typeValues = System.Enum.GetValues(typeof(BlockType));
@@ -51,6 +56,14 @@ namespace Voxels {
 			_blockTranslucentFlags = new bool[maxBlockValue];
 			_blockIllumFlags = new bool[maxBlockValue * 256];
 			_blockLightPassFlags = new bool[maxBlockValue];
+			var colTypes = System.Enum.GetValues(typeof(BlockCollisionModel));
+			_collisionModels = new CollisionInfo[colTypes.Length];
+
+			foreach ( var coltype in colTypes ) {
+				var info = CollisionInfo.GetForBlock((BlockCollisionModel)coltype);
+				var index = (int) coltype;
+				_collisionModels[index] = info;
+			}
 
 			foreach ( var desc in BlockDescriptions ) {
 				var key = (int)desc.Type;

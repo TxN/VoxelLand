@@ -57,7 +57,7 @@ namespace Voxels.Networking.NetDebug {
 			Gizmos.color = Color.cyan;
 
 			Gizmos.DrawRay(view.Interactor.transform.position, view.Interactor.ViewDirection * 15f);
-			var result = VoxelsUtils.Cast(view.Interactor.transform.position, view.Interactor.ViewDirection, 15, (pos) => {
+			/*var result = VoxelsUtils.Cast(view.Interactor.transform.position, view.Interactor.ViewDirection, 15, (pos) => {
 				var p = pos.ToVector3 + new Vector3(0.5f, 0.5f, 0.5f);
 				Gizmos.DrawWireCube(p, Vector3.one);
 				var result = ClientChunkManager.Instance.GetBlockIn(pos.X, pos.Y, pos.Z).IsEmpty();
@@ -79,7 +79,10 @@ namespace Voxels.Networking.NetDebug {
 					Gizmos.DrawCube(cube.Center, size);
 				}
 				return !result;
-			}, out var hit);
+			}, out var hit);*/
+
+			var result = ClientChunkManager.Instance.CollisionHelper.Cast(Voxels.Utils.CastType.AnyBlock, view.Interactor.transform.position, view.Interactor.ViewDirection, 15, out var hit);
+
 			if ( !result ) {
 				return;
 			}

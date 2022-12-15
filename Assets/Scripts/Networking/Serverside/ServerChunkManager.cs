@@ -7,6 +7,7 @@ using UnityEngine;
 using SMGCore.EventSys;
 using Voxels.Networking.Utils;
 using Voxels.Networking.Events;
+using Voxels.Utils;
 
 namespace Voxels.Networking.Serverside {
 
@@ -63,12 +64,15 @@ namespace Voxels.Networking.Serverside {
 		HashSet<Int3>          _keepaliveChunks = new HashSet<Int3>();
 		int                    _sizeY   = 1;
 
+		CollisionHelper _collisionHelper = new CollisionHelper();
+
 		public override void Load() {
 			base.Load();
 		}
 
 		public override void PostLoad() {
 			base.PostLoad();
+			_collisionHelper.Init(this);
 			EventManager.Subscribe<OnServerChunkGenerated>     (this, OnChunkGenerated);
 			EventManager.Subscribe<OnServerChunkGenQueueEmpty> (this, OnGenerationFinished);
 			EventManager.Subscribe<OnServerChunkLoadedFromDisk>(this, OnChunkLoadedFromDisk);
@@ -119,6 +123,9 @@ namespace Voxels.Networking.Serverside {
 		}
 
 		DebugDataHolder _debugHolder = null;
+
+		public CollisionHelper CollisionHelper => _collisionHelper;
+
 		public DebugDataHolder DebugData {
 			get {
 				if ( _debugHolder == null ) {
@@ -562,7 +569,7 @@ namespace Voxels.Networking.Serverside {
 					var count = ChunkSerializer.Serialize(data, writer, true);
 					var dst = new byte[count];
 					System.Array.Copy(_chunkSendBuffer, dst, count);
-					ServerController.Instance.SendRawNetMessage(state.Client, ServerPacketID.ChunkInit, dst, false);
+					ServerController.Instance.SendRawNetMessage(state.Client, ServerPacketID.ChunkInit, dst, true);
 				}
 			}
 		}

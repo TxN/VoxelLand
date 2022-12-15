@@ -54,6 +54,21 @@ namespace Voxels {
 		CrossedVPlanes   = 10,
 	}
 
+	public enum BlockCollisionModel {
+		None = 0,
+		FullBlock = 1,
+		HalfBlockDown = 2,
+		HalfBlockUp = 3,
+		PlateDown = 4,
+		PlateUp = 5,
+		DoorLeft = 6,
+		DoorRight = 7,
+		DoorDown = 8,
+		DoorUp = 9,
+		Torch = 10,
+		Pillar = 11,
+	}
+
 	public enum BlockHarvestLevel : byte {
 		Any = 0,
 		T1 = 1,
@@ -78,7 +93,7 @@ namespace Voxels {
 
 	[System.Serializable]
 	public sealed class BlockDescription {
-
+		public string Name ; //For descriptive purposes only
 		public BlockType                Type            = BlockType.Air;
 		public BlockModelType           ModelType       = BlockModelType.FullBlockSimple;
 		public BlockHarvestLevel        HarvestLevel    = BlockHarvestLevel.Any;
@@ -98,6 +113,7 @@ namespace Voxels {
 	public sealed class SubtypeDescription {
 		public byte LightLevel = 0;
 		public List<Byte2> FaceTiles = new List<Byte2>();
+		public BlockCollisionModel CollisionModel = BlockCollisionModel.FullBlock;
 
 		public bool IsLightEmitting {
 			get {

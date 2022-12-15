@@ -79,7 +79,7 @@ namespace Voxels.Networking.Serverside {
 		}
 		public bool IsGrounded {
 			get {
-				return VoxelsUtils.Cast(Position, Vector3.down, DownHeight + 0.01f, IsBlockSolid, out var downCastResult);
+				return _chunkManager.CollisionHelper.Cast(CastType.AnySolid, Position, Vector3.down, DownHeight + 0.01f, out var downCastResult);
 			}
 		}
 
@@ -201,8 +201,9 @@ namespace Voxels.Networking.Serverside {
 			var bottomCheckPos = Position + new Vector3(0, -DownHeight + Radius, 0);
 			var upCheckPos = Position + new Vector3(0, UpHeight - Radius, 0);
 			minDistance = 0f;
-			var a = VoxelsUtils.Cast(bottomCheckPos, direcion, distance, IsBlockSolid, out var bottomCastResult);
-			var b = VoxelsUtils.Cast(upCheckPos, direcion, distance, IsBlockSolid, out var upCastResult);
+			var ch = _chunkManager.CollisionHelper;
+			var a = ch.Cast(CastType.Solid, bottomCheckPos, direcion, distance, out var bottomCastResult);
+			var b = ch.Cast(CastType.Solid, upCheckPos, direcion, distance, out var upCastResult);
 			if ( a || b ) {
 				var upD = Vector3.Distance(upCheckPos, upCastResult.HitPosition);
 				var dnD = Vector3.Distance(bottomCheckPos, bottomCastResult.HitPosition);

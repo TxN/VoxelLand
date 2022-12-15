@@ -5,6 +5,7 @@ using UnityEngine;
 
 using SMGCore.EventSys;
 using Voxels.Networking.Events;
+using Voxels.Utils;
 
 namespace Voxels.Networking.Clientside {
 	public class ClientChunkManager : ClientsideController<ClientChunkManager>, IChunkManager {
@@ -17,6 +18,8 @@ namespace Voxels.Networking.Clientside {
 		ChunkRendererPool      _renderPool        = new ChunkRendererPool();
 		DestroyBlockEffectPool _destroyEffectPool = new DestroyBlockEffectPool();
 
+		CollisionHelper _collisionHelper = new CollisionHelper();
+
 		bool _enabled = true;
 		int _sizeY    = 0;
 
@@ -28,6 +31,7 @@ namespace Voxels.Networking.Clientside {
 
 		public override void PostLoad() {
 			base.PostLoad();
+			_collisionHelper.Init(this);
 			_renderPool.Init();
 			_destroyEffectPool.Init();
 
@@ -66,6 +70,8 @@ namespace Voxels.Networking.Clientside {
 
 			EventManager.Unsubscribe<OnClientReceiveChunk>(OnChunkReceived);
 		}
+
+		public CollisionHelper CollisionHelper => _collisionHelper;
 
 		public Chunk GetChunkInCoords(Vector3 pos) {
 			var posX = Mathf.FloorToInt(pos.x);

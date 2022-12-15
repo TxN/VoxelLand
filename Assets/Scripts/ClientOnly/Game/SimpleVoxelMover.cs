@@ -32,7 +32,7 @@ namespace Voxels {
 
 		public bool IsGrounded {
 			get {
-				return VoxelsUtils.Cast(transform.position, Vector3.down, DownHeight + 0.05f, IsBlockSolid, out var downCastResult);
+				return _chunkManager.CollisionHelper.Cast(Utils.CastType.AnySolid, transform.position, Vector3.down, DownHeight + 0.05f, out var downCastResult);
 			}
 		}
 
@@ -90,9 +90,13 @@ namespace Voxels {
 				resultMoveVector.y = check ? Mathf.Max(yDist, -(downDist - Radius)) : yDist;
 				_velocity.y = check ? 0 : _velocity.y;
 			} else if ( yDist > 0 ) {
-				var check = CheckHorizontalPoints(Vector3.up, Radius + yDist, out var upDist);
-				resultMoveVector.y = check ? Mathf.Min(yDist, upDist - Radius) : yDist;
-				_velocity.y = check ? 0 : _velocity.y;
+				var upCheckPos = transform.position + new Vector3(0, UpHeight - Radius, 0);
+				var ch = _chunkManager.CollisionHelper;
+				var b = ch.Cast(Utils.CastType.Solid, upCheckPos, Vector3.up, Radius + yDist, out var upCastResult);
+				var upD = Vector3.Distance(upCheckPos, upCastResult.HitPosition);
+
+				resultMoveVector.y = b ? Mathf.Min(yDist, upD - Radius) : yDist;
+				//_velocity.y = check ? 0 : _velocity.y;
 			}
 
 			var xDist = _velocity.x * Time.deltaTime;
@@ -117,8 +121,9 @@ namespace Voxels {
 			var bottomCheckPos = transform.position + new Vector3(0, - DownHeight + Radius, 0);
 			var upCheckPos = transform.position + new Vector3(0, UpHeight - Radius, 0);
 			minDistance = 0f;
-			var a = VoxelsUtils.Cast(bottomCheckPos, direcion, distance, IsBlockSolid, out var bottomCastResult);
-			var b = VoxelsUtils.Cast(upCheckPos, direcion, distance, IsBlockSolid, out var upCastResult);
+			var ch = _chunkManager.CollisionHelper;
+			var a = ch.Cast(Utils.CastType.Solid, bottomCheckPos, direcion, distance, out var bottomCastResult);
+			var b = ch.Cast(Utils.CastType.Solid, upCheckPos, direcion, distance, out var upCastResult);
 			if ( a || b ) {
 				var upD = Vector3.Distance(upCheckPos, upCastResult.HitPosition);
 				var dnD = Vector3.Distance(bottomCheckPos, bottomCastResult.HitPosition);
@@ -126,12 +131,6 @@ namespace Voxels {
 				return true;
 			}
 			return false;
-		}
-
-		public bool IsBlockSolid(Int3 index) {
-			var lib = StaticResources.BlocksInfo;
-			var block = _chunkManager.GetBlockIn(index.X, index.Y, index.Z);
-			return !lib.GetBlockDescription(block.Type).IsPassable;
 		}
 	}
 }

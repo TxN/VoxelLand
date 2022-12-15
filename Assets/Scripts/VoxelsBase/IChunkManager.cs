@@ -1,4 +1,5 @@
 using UnityEngine;
+using Voxels.Utils;
 
 namespace Voxels {
 	public interface IChunkManager {
@@ -7,6 +8,8 @@ namespace Voxels {
 		Chunk GetChunk(int x, int y, int z);
 		BlockData GetBlockIn(int x, int y, int z);
 		BlockData GetBlockIn(Vector3 pos);
+
+		CollisionHelper CollisionHelper { get; }
 	}
 }
 
