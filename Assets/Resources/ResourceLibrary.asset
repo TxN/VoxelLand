@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ResourceLibrary
   m_EditorClassIdentifier: 
   BlockDescriptions:
-  - Type: 0
+  - Name: Air
+    Type: 0
     ModelType: 0
     HarvestLevel: 0
     Hardness: 0
@@ -26,7 +27,8 @@ MonoBehaviour:
     GravityAffected: 0
     ExtraData: 0
     Subtypes: []
-  - Type: 1
+  - Name: Bedrock
+    Type: 1
     ModelType: 1
     HarvestLevel: 255
     Hardness: 255
@@ -43,7 +45,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 1
         Y: 1
-  - Type: 2
+      CollisionModel: 1
+  - Name: Grass
+    Type: 2
     ModelType: 2
     HarvestLevel: 0
     Hardness: 5
@@ -70,7 +74,9 @@ MonoBehaviour:
         Y: 0
       - X: 2
         Y: 0
-  - Type: 3
+      CollisionModel: 1
+  - Name: Dirt
+    Type: 3
     ModelType: 1
     HarvestLevel: 0
     Hardness: 5
@@ -87,7 +93,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 2
         Y: 0
-  - Type: 4
+      CollisionModel: 1
+  - Name: Stone
+    Type: 4
     ModelType: 1
     HarvestLevel: 0
     Hardness: 20
@@ -104,7 +112,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 1
         Y: 0
-  - Type: 5
+      CollisionModel: 1
+  - Name: Cobblestone
+    Type: 5
     ModelType: 1
     HarvestLevel: 0
     Hardness: 20
@@ -121,7 +131,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 0
         Y: 1
-  - Type: 16
+      CollisionModel: 1
+  - Name: WaterStill
+    Type: 16
     ModelType: 1
     HarvestLevel: 255
     Hardness: 5
@@ -138,7 +150,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 22
         Y: 3
-  - Type: 7
+      CollisionModel: 1
+  - Name: Sand
+    Type: 7
     ModelType: 1
     HarvestLevel: 0
     Hardness: 5
@@ -155,7 +169,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 2
         Y: 1
-  - Type: 18
+      CollisionModel: 1
+  - Name: WaterLily
+    Type: 18
     ModelType: 8
     HarvestLevel: 0
     Hardness: 5
@@ -172,7 +188,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 12
         Y: 4
-  - Type: 15
+      CollisionModel: 4
+  - Name: Bricks
+    Type: 15
     ModelType: 1
     HarvestLevel: 2
     Hardness: 25
@@ -189,7 +207,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 7
         Y: 0
-  - Type: 19
+      CollisionModel: 1
+  - Name: Weed
+    Type: 19
     ModelType: 10
     HarvestLevel: 0
     Hardness: 1
@@ -206,7 +226,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 8
         Y: 2
-  - Type: 20
+      CollisionModel: 1
+  - Name: Mushroom
+    Type: 20
     ModelType: 10
     HarvestLevel: 0
     Hardness: 1
@@ -223,11 +245,14 @@ MonoBehaviour:
       FaceTiles:
       - X: 12
         Y: 1
+      CollisionModel: 1
     - LightLevel: 0
       FaceTiles:
       - X: 13
         Y: 1
-  - Type: 21
+      CollisionModel: 1
+  - Name: RedstoneLamp
+    Type: 21
     ModelType: 1
     HarvestLevel: 0
     Hardness: 1
@@ -244,11 +269,14 @@ MonoBehaviour:
       FaceTiles:
       - X: 3
         Y: 13
+      CollisionModel: 1
     - LightLevel: 255
       FaceTiles:
       - X: 4
         Y: 13
-  - Type: 14
+      CollisionModel: 1
+  - Name: Wool
+    Type: 14
     ModelType: 1
     HarvestLevel: 0
     Hardness: 1
@@ -265,7 +293,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 0
         Y: 4
-  - Type: 9
+      CollisionModel: 1
+  - Name: Log
+    Type: 9
     ModelType: 2
     HarvestLevel: 0
     Hardness: 1
@@ -292,7 +322,9 @@ MonoBehaviour:
         Y: 1
       - X: 5
         Y: 1
-  - Type: 10
+      CollisionModel: 1
+  - Name: Leaves
+    Type: 10
     ModelType: 1
     HarvestLevel: 0
     Hardness: 1
@@ -309,7 +341,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 4
         Y: 3
-  - Type: 12
+      CollisionModel: 1
+  - Name: IronOre
+    Type: 12
     ModelType: 1
     HarvestLevel: 2
     Hardness: 5
@@ -326,7 +360,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 1
         Y: 2
-  - Type: 6
+      CollisionModel: 1
+  - Name: Wood
+    Type: 6
     ModelType: 1
     HarvestLevel: 0
     Hardness: 3
@@ -343,7 +379,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 4
         Y: 0
-  - Type: 22
+      CollisionModel: 1
+  - Name: Glass
+    Type: 22
     ModelType: 1
     HarvestLevel: 0
     Hardness: 1
@@ -360,7 +398,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 1
         Y: 3
-  - Type: 27
+      CollisionModel: 1
+  - Name: RedBlock
+    Type: 27
     ModelType: 1
     HarvestLevel: 1
     Hardness: 2
@@ -377,7 +417,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 10
         Y: 1
-  - Type: 28
+      CollisionModel: 1
+  - Name: StoneSlab
+    Type: 28
     ModelType: 3
     HarvestLevel: 1
     Hardness: 3
@@ -404,7 +446,9 @@ MonoBehaviour:
         Y: 0
       - X: 6
         Y: 0
-  - Type: 11
+      CollisionModel: 2
+  - Name: Clay
+    Type: 11
     ModelType: 1
     HarvestLevel: 1
     Hardness: 2
@@ -421,7 +465,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 8
         Y: 4
-  - Type: 30
+      CollisionModel: 1
+  - Name: IronBlock
+    Type: 30
     ModelType: 1
     HarvestLevel: 2
     Hardness: 6
@@ -438,7 +484,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 6
         Y: 1
-  - Type: 31
+      CollisionModel: 1
+  - Name: GoldBlock
+    Type: 31
     ModelType: 1
     HarvestLevel: 2
     Hardness: 6
@@ -455,7 +503,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 7
         Y: 1
-  - Type: 32
+      CollisionModel: 1
+  - Name: DiamondBlock
+    Type: 32
     ModelType: 1
     HarvestLevel: 3
     Hardness: 6
@@ -472,7 +522,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 8
         Y: 1
-  - Type: 33
+      CollisionModel: 1
+  - Name: LapisLazuli
+    Type: 33
     ModelType: 1
     HarvestLevel: 2
     Hardness: 6
@@ -489,7 +541,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 0
         Y: 9
-  - Type: 34
+      CollisionModel: 1
+  - Name: Obsidian
+    Type: 34
     ModelType: 1
     HarvestLevel: 4
     Hardness: 50
@@ -506,7 +560,9 @@ MonoBehaviour:
       FaceTiles:
       - X: 7
         Y: 11
-  - Type: 35
+      CollisionModel: 1
+  - Name: Bookshelf
+    Type: 35
     ModelType: 2
     HarvestLevel: 2
     Hardness: 3
@@ -533,7 +589,9 @@ MonoBehaviour:
         Y: 0
       - X: 4
         Y: 0
-  - Type: 29
+      CollisionModel: 1
+  - Name: Shrub
+    Type: 29
     ModelType: 10
     HarvestLevel: 0
     Hardness: 1
@@ -550,15 +608,19 @@ MonoBehaviour:
       FaceTiles:
       - X: 7
         Y: 2
+      CollisionModel: 1
     - LightLevel: 0
       FaceTiles:
       - X: 7
         Y: 3
+      CollisionModel: 1
     - LightLevel: 0
       FaceTiles:
       - X: 8
         Y: 3
-  - Type: 8
+      CollisionModel: 1
+  - Name: Gravel
+    Type: 8
     ModelType: 1
     HarvestLevel: 0
     Hardness: 1
@@ -575,3 +637,4 @@ MonoBehaviour:
       FaceTiles:
       - X: 3
         Y: 1
+      CollisionModel: 1
