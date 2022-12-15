@@ -1,0 +1,1 @@
+./zfc.exe -i "VoxelServer\VoxelServer.csproj" -o VoxelServer\Src\Generated\ZeroFormatterGenerated.cs"
