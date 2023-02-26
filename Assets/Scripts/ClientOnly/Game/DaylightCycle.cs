@@ -38,7 +38,8 @@ namespace Voxels {
 			var sunAlt = (360f * dayPercent) + 85;
 			var sunVec = SunPosToVector(2f, sunAlt);
 			SkyboxMaterial.SetVector("_SunVector", sunVec);
-
+			Shader.SetGlobalVector("_SunDirection", sunVec);
+			Shader.SetGlobalColor("_SunGlobalColor", sunColor);
 			var intensity = ClientWorldStateController.Instance.AmbientLightIntensity;
 			var fogParams = Vector2.Lerp(NightFogParams, NormalFogParams, intensity);
 
@@ -71,7 +72,7 @@ namespace Voxels {
 				Mathf.Cos(ral) * Mathf.Cos(raz),
 				0.0f
 			);
-			return upVector;
+			return upVector.normalized;
 		}
 	}
 }

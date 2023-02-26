@@ -50,7 +50,7 @@ Material:
     - Vector1_114497C3: 0
     - Vector1_9ED5AA56: 0.3
     - _AlphaCutoff: 0.05
-    - _Daylight: 0.05
+    - _Daylight: 1.0030226
     - _LightLevel: 1
     - _QueueControl: 1
     - _QueueOffset: 0
@@ -59,6 +59,7 @@ Material:
     - Color_B3BEC4F6: {r: 1, g: 0.96672755, b: 0.8066038, a: 0}
     - Color_C90622FA: {r: 0.09803922, g: 0.105882354, b: 0.16078432, a: 0}
     - _DarknessColor: {r: 0.01960784, g: 0.01960784, b: 0.07058824, a: 0}
+    - _SunDirection: {r: 0, g: 0, b: 1, a: 0}
     - _Torchiligt: {r: 1, g: 0.8988529, b: 0.759434, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &893687330288616370

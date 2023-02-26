@@ -81,7 +81,7 @@ Material:
     - _AlphaCutoff: 0.05
     - _BumpScale: 1
     - _Cutoff: 0.5
-    - _Daylight: 0.05
+    - _Daylight: 1.0030226
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
     - _GlossMapScale: 1
