@@ -73,7 +73,7 @@ Material:
     - _ImageType: 0
     - _Intensity: 1
     - _Layout: 0
-    - _LightLevel: 1.0030226
+    - _LightLevel: 1.0000054
     - _Mapping: 1
     - _Metallic: 0
     - _MirrorOnBack: 0
@@ -112,8 +112,8 @@ Material:
     - _SkyColor3: {r: 0.29073212, g: 0.7658334, b: 0.9433962, a: 1}
     - _SkyTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _SunColor: {r: 0.99204314, g: 0.8901674, b: 0.6508727, a: 1}
-    - _SunVector: {r: -0.03467374, g: 0.113558754, b: -0.99292606, a: 0}
+    - _SunColor: {r: 0.99060816, g: 0.88980526, b: 0.6495148, a: 1}
+    - _SunVector: {r: 0.001506486, g: 0.9990679, b: 0.043140113, a: 0}
     - _Tint: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
   m_BuildTextureStacks: []
 --- !u!114 &7809984279631307998
